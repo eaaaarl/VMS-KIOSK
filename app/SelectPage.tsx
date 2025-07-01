@@ -10,12 +10,11 @@ export default function SelectPage() {
   }
 
   const handleSetKioskFunction = () => {
-    router.push('/SettingKiosk')
+    router.push('/(setting)/SettingKiosk')
   }
 
   const handleReturnIDs = () => {
     console.log('Return IDs selected')
-    // Add your navigation logic here
   }
 
   return (

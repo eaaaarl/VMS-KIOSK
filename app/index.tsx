@@ -1,10 +1,25 @@
+import { useAppSelector } from "@/lib/redux/hook";
 import { useRouter } from "expo-router";
+import { useEffect } from "react";
 import { SafeAreaView, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 
 export default function Index() {
   const router = useRouter();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
+  const { kioskSettingId } = useAppSelector((state) => state.kiosk);
+
+  useEffect(() => {
+    if (!kioskSettingId) {
+      console.log('No kioskSettingId found, redirecting to settings...', kioskSettingId);
+
+      const timeoutId = setTimeout(() => {
+        router.replace('/(setting)/SettingKiosk');
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [kioskSettingId, router]);
 
   return (
     <SafeAreaView className="flex-1 bg-gradient-to-br from-blue-400 to-blue-600">

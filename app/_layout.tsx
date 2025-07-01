@@ -2,6 +2,7 @@ import { store as reduxStore } from "@/lib/redux/store";
 import { Stack } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useEffect } from "react";
+import Toast from 'react-native-toast-message';
 import { Provider as ReduxProvider } from "react-redux";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
@@ -27,8 +28,8 @@ export default function RootLayout() {
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" />
           <Stack.Screen name="SelectPage" />
-          <Stack.Screen name="SettingKiosk" />
         </Stack>
+        <Toast />
       </PersistGate>
     </ReduxProvider>
   );

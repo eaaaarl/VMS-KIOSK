@@ -17,6 +17,7 @@ const persistConfig = {
   version: 1,
   blacklist: [...apisReducerPath],
 };
+
 AsyncStorage.getAllKeys().then(console.log).catch(console.error);
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

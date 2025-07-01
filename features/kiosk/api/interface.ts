@@ -10,3 +10,14 @@ export interface SettingKioskOption {
 export interface SettingKioskResponse {
   results: SettingKioskOption[];
 }
+
+export interface SettingKiosk {
+  id: number;
+  name: string;
+  deviceType: number;
+  transactionType: number;
+}
+
+export interface SettingKioskParam {
+  id: number;
+}
