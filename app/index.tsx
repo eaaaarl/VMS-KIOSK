@@ -1,42 +1,77 @@
+import { useGetVisitorsReturnedQuery } from "@/features/visitors/api/visitorApi";
+import { formattedDate } from "@/features/visitors/utils/FormattedDate";
 import { useAppSelector } from "@/lib/redux/hook";
 import { useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SafeAreaView, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
+
+let hasShownVisitorInfoGlobal = false;
 
 export default function Index() {
   const router = useRouter();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
   const { kioskSettingId } = useAppSelector((state) => state.kiosk);
+  const [componentMounted, setComponentMounted] = useState(false);
 
   useEffect(() => {
-    if (!kioskSettingId) {
-      console.log('No kioskSettingId found, redirecting to settings...', kioskSettingId);
+    setComponentMounted(true);
+  }, []);
 
+  useEffect(() => {
+    if (!kioskSettingId && componentMounted) {
       const timeoutId = setTimeout(() => {
         router.replace('/(setting)/SettingKiosk');
       }, 100);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [kioskSettingId, router, componentMounted]);
+
+  const todaysDate = formattedDate(new Date());
+  const { data: visitorsReturned, isLoading, isSuccess } = useGetVisitorsReturnedQuery(
+    { date: todaysDate },
+    {
+      skip: !kioskSettingId || !componentMounted,
+    }
+  );
+
+  const countReturned = visitorsReturned?.results?.length || 0;
+
+  useEffect(() => {
+    if (
+      componentMounted &&
+      kioskSettingId &&
+      isSuccess &&
+      !isLoading &&
+      !hasShownVisitorInfoGlobal &&
+      countReturned > 0
+    ) {
+      console.log('Redirecting to VisitorInformation. Unreturned visitors:', countReturned);
+
+      const timeoutId = setTimeout(() => {
+        hasShownVisitorInfoGlobal = true;
+        router.push('/VisitorInformation');
+      }, 50);
 
       return () => clearTimeout(timeoutId);
     }
-  }, [kioskSettingId, router]);
+  }, [componentMounted, kioskSettingId, isSuccess, isLoading, countReturned, router]);
+
+
 
   return (
     <SafeAreaView className="flex-1 bg-gradient-to-br from-blue-400 to-blue-600">
       <View className="flex-1 justify-center px-3">
-        {/* Header */}
         <View className={`${isLandscape ? 'mb-3' : 'mb-12'} items-center`}>
-          <Text className={`text-white ${isLandscape ? 'text-2xl' : 'text-2xl'} font-light mb-1 tracking-wide`}>
+          <Text className={`text-gray-700 ${isLandscape ? 'text-2xl' : 'text-2xl'} font-light mb-1 tracking-wide`}>
             Welcome to
           </Text>
-          <Text className={`text-white ${isLandscape ? 'text-3xl' : 'text-3xl'} font-bold text-center tracking-wide`}>
+          <Text className={`text-gray-700 ${isLandscape ? 'text-3xl' : 'text-3xl'} font-bold text-center tracking-wide`}>
             Visitors Management System
           </Text>
         </View>
 
-        {/* Cards Container */}
         <View className={`flex-row ${isLandscape ? 'gap-4' : 'gap-6'} w-full justify-center`}>
-          {/* Sign In Card */}
           <TouchableOpacity
             className={`flex-1 bg-white/90 rounded-2xl ${isLandscape ? 'p-5' : 'p-8'} items-center shadow-lg max-w-[320px] active:bg-white/80 active:scale-95 transition-transform`}
             onPress={() => alert('Sign In pressed!')}
@@ -80,6 +115,8 @@ export default function Index() {
         >
           <Text className={`text-white ${isLandscape ? 'text-xl' : 'text-4xl'}`}>⚙️</Text>
         </TouchableOpacity>
+
+
 
       </View>
     </SafeAreaView>
