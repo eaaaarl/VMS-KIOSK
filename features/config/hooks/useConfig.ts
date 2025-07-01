@@ -12,7 +12,7 @@ export const useConfig = () => {
   )?.Value;
 
   return {
-    getIdCount,
+    getIdTotalCount: getIdCount,
 
     configLoading,
     configError,

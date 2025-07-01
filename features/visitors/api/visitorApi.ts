@@ -18,8 +18,18 @@ export const visitorApi = createApi({
         method: "GET",
       }),
     }),
+
+    getVisitorsLogByDay: builder.query<{ maxDailyLog: number }, void>({
+      query: () => ({
+        url: `visitor/public/max-log-by-day`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useGetVisitorsTodaysQuery, useGetVisitorsReturnedQuery } =
-  visitorApi;
+export const {
+  useGetVisitorsTodaysQuery,
+  useGetVisitorsReturnedQuery,
+  useGetVisitorsLogByDayQuery,
+} = visitorApi;

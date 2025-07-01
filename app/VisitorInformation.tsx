@@ -1,8 +1,27 @@
+import { useConfig } from '@/features/config/hooks/useConfig';
+import { useGetVisitorsLogByDayQuery, useGetVisitorsReturnedQuery, useGetVisitorsTodaysQuery } from '@/features/visitors/api/visitorApi';
+import { formattedDate } from '@/features/visitors/utils/FormattedDate';
 import { router } from 'expo-router';
 import React from 'react';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 export default function VisitorInformation() {
+  const { getIdTotalCount } = useConfig();
+  const { data: visitorsReturned } = useGetVisitorsReturnedQuery({ date: formattedDate(new Date()) });
+  const countReturned = visitorsReturned?.results?.length || 0;
+  const unreturnedPercentageCount = (countReturned / (getIdTotalCount as any)) * 100;
+
+
+  const { data: visitorsTodays } = useGetVisitorsTodaysQuery({ date: formattedDate(new Date()) });
+  const countTodays = visitorsTodays?.results?.length || 0;
+  const todaysPercentageCount = (countTodays / (getIdTotalCount as any)) * 100;
+
+  const numbersAvailable = (getIdTotalCount as any) - (countReturned + countTodays);
+  const availablePercentageCount = (numbersAvailable / (getIdTotalCount as any)) * 100;
+
+  const { data: maxDailyLog } = useGetVisitorsLogByDayQuery();
+  const daysToMakeAllNumbersUnavailable = numbersAvailable / (maxDailyLog?.maxDailyLog as any);
+
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       <ScrollView className="flex-1">
@@ -20,29 +39,29 @@ export default function VisitorInformation() {
             <View className="px-4 py-6 bg-gray-50">
               <View className="flex-row flex-wrap items-baseline mb-4">
                 <Text className="text-gray-700 text-base">There are </Text>
-                <Text className="text-red-500 text-xl font-semibold">1</Text>
+                <Text className="text-red-500 text-xl font-semibold">{countReturned}</Text>
                 <Text className="text-gray-700 text-base"> not signed out/unreturned numbers, </Text>
-                <Text className="text-blue-400 text-xl font-semibold">0.25%</Text>
+                <Text className="text-blue-400 text-xl font-semibold">{unreturnedPercentageCount.toFixed(2)}%</Text>
                 <Text className="text-gray-700 text-base"> of </Text>
-                <Text className="text-blue-500 text-xl font-semibold">400</Text>
+                <Text className="text-blue-500 text-xl font-semibold">{getIdTotalCount}</Text>
                 <Text className="text-gray-700 text-base"> total id count.</Text>
               </View>
 
               <View className="flex-row flex-wrap items-baseline mb-3">
-                <Text className="text-blue-500 text-xl font-semibold">2</Text>
+                <Text className="text-blue-500 text-xl font-semibold">{countTodays}</Text>
                 <Text className="text-gray-700 text-base"> numbers are used for today, </Text>
-                <Text className="text-blue-400 text-xl font-semibold">0.50%</Text>
+                <Text className="text-blue-400 text-xl font-semibold">{todaysPercentageCount.toFixed(2)}%</Text>
                 <Text className="text-gray-700 text-base"> of </Text>
-                <Text className="text-blue-500 text-xl font-semibold">400</Text>
+                <Text className="text-blue-500 text-xl font-semibold">{getIdTotalCount}</Text>
                 <Text className="text-gray-700 text-base"> total id count.</Text>
               </View>
 
               <View className="flex-row flex-wrap items-baseline mb-6">
-                <Text className="text-blue-500 text-xl font-semibold">397</Text>
+                <Text className="text-blue-500 text-xl font-semibold">{numbersAvailable}</Text>
                 <Text className="text-gray-700 text-base"> numbers are available, </Text>
-                <Text className="text-blue-400 text-xl font-semibold">99.25%</Text>
+                <Text className="text-blue-400 text-xl font-semibold">{availablePercentageCount.toFixed(2)}%</Text>
                 <Text className="text-gray-700 text-base"> of </Text>
-                <Text className="text-blue-500 text-xl font-semibold">400</Text>
+                <Text className="text-blue-500 text-xl font-semibold">{getIdTotalCount}</Text>
                 <Text className="text-gray-700 text-base"> total id count.</Text>
               </View>
 
@@ -50,13 +69,13 @@ export default function VisitorInformation() {
                 <Text className="text-gray-700 text-base">
                   On a daily log basis, base on the log count per day, it will only take approximately{' '}
                 </Text>
-                <Text className="text-red-500 text-xl font-bold">2 days</Text>
+                <Text className="text-red-500 text-xl font-bold">{daysToMakeAllNumbersUnavailable.toFixed(0)} days</Text>
                 <Text className="text-gray-700 text-base"> to make all numbers unavailable.</Text>
               </View>
 
               <View className="flex-row flex-wrap items-baseline mb-6">
                 <Text className="text-gray-700 text-base">Would you like to return all </Text>
-                <Text className="text-red-500 text-xl font-semibold">1</Text>
+                <Text className="text-red-500 text-xl font-semibold">{countReturned}</Text>
                 <Text className="text-gray-700 text-base"> not signed out/unreturned numbers?</Text>
               </View>
 
