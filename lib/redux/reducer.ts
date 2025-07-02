@@ -1,5 +1,7 @@
 import { configApi } from "@/features/config/api/configApi";
 import { kioskApi } from "@/features/kiosk/api/kioskApi";
+import { officeApi } from "@/features/office/api/officeApi";
+import { serviceApi } from "@/features/service/api/serviceApi";
 import { userApi } from "@/features/user/api/userApi";
 import { visitorApi } from "@/features/visitors/api/visitorApi";
 import { combineReducers } from "@reduxjs/toolkit";
@@ -12,9 +14,19 @@ const rootReducer = combineReducers({
   [visitorApi.reducerPath]: visitorApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [configApi.reducerPath]: configApi.reducer,
+  [officeApi.reducerPath]: officeApi.reducer,
+  [serviceApi.reducerPath]: serviceApi.reducer,
 });
 
-export const apis = [kioskApi, visitorApi, userApi, configApi];
+export const apis = [
+  kioskApi,
+  visitorApi,
+  userApi,
+  configApi,
+  officeApi,
+  serviceApi,
+];
+
 export const apisReducerPath = apis.map((api) => api.reducerPath);
 
 export default rootReducer;
