@@ -6,9 +6,11 @@ import { userApi } from "@/features/user/api/userApi";
 import { visitorApi } from "@/features/visitors/api/visitorApi";
 import { combineReducers } from "@reduxjs/toolkit";
 import { kioskReducer } from "./state/kioskSlice";
+import { visitorReducer } from "./state/visitorSlice";
 
 const rootReducer = combineReducers({
   kiosk: kioskReducer,
+  visitor: visitorReducer,
 
   [kioskApi.reducerPath]: kioskApi.reducer,
   [visitorApi.reducerPath]: visitorApi.reducer,

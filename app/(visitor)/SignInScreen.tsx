@@ -1,7 +1,9 @@
+import { useConfig } from '@/features/config/hooks/useConfig';
 import { useGetOfficesQuery } from '@/features/office/api/officeApi';
 import { useGetServicesQuery } from '@/features/service/api/serviceApi';
-import { useGetAllAvailableVisitorsQuery } from '@/features/visitors/api/visitorApi';
+import { useGetAllAvailableVisitorsQuery, useGetVisitorsReturnedQuery } from '@/features/visitors/api/visitorApi';
 import { formattedDate } from '@/features/visitors/utils/FormattedDate';
+import { useAppSelector } from '@/lib/redux/hook';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -19,12 +21,16 @@ import {
 
 
 export default function SignInScreen() {
+  const { faceImageId, cardImageId } = useAppSelector((state) => state.visitor);
   const [formData, setFormData] = useState({
     visitorName: '',
+    visitorId: 0,
     mobileNumber: '',
-    officeToVisit: '',
+    officeToVisitId: '',
     reasonForVisit: '',
-    otherReason: ''
+    otherReason: '',
+    faceImageId: faceImageId ?? '',
+    cardImageId: cardImageId ?? ''
   });
 
   const { data: visitors } = useGetAllAvailableVisitorsQuery({ dateNow: formattedDate(new Date()) });
@@ -61,7 +67,8 @@ export default function SignInScreen() {
     setFormData(prev => ({
       ...prev,
       visitorName: visitor.name,
-      mobileNumber: visitor.contactNo1.toString() ?? visitor.contactNo2.toString() ?? visitor.contactNo3.toString()
+      mobileNumber: visitor.contactNo1.toString() ?? visitor.contactNo2.toString() ?? visitor.contactNo3.toString(),
+      visitorId: visitor.id
     }));
     setShowDropdown(false);
   };
@@ -76,9 +83,7 @@ export default function SignInScreen() {
     router.push('/(camera)/FaceCamera');
   };
 
-  const handleSignIn = () => {
-    console.log('Sign In data:', formData);
-  };
+
 
   const handleBack = () => {
     router.push('/(visitor)/VisitorRegistrationScreen')
@@ -89,6 +94,30 @@ export default function SignInScreen() {
     setShowDropdown(false);
     setShowOfficeDropdown(false);
     setShowServiceDropdown(false);
+  };
+
+  const { data: visitorsReturned } = useGetVisitorsReturnedQuery({ date: formattedDate(new Date()) })
+
+  const { getPrefixId, getSeparatorId, getIdLength } = useConfig();
+  const idLength = getIdLength as any;
+  const idCode = '0'.repeat(idLength);
+
+  const id = getPrefixId ?? '' + getSeparatorId ?? '' + idCode;
+
+  const handleSignIn = () => {
+    const payload = {
+      id: 1,
+      strId: id,
+      logIn: formattedDate(new Date()),
+      logInDate: formattedDate(new Date()),
+      visitorId: formData.visitorId,
+      officeId: formData.officeToVisitId,
+      serviceId: formData.reasonForVisit,
+      returned: false,
+      specService: formData.otherReason,
+    }
+
+    console.log('SENDING DATA TO API :', payload)
   };
 
   return (
@@ -197,8 +226,8 @@ export default function SignInScreen() {
                       }}
                       className="bg-white border border-gray-200 rounded-lg px-4 py-3 flex-row justify-between items-center"
                     >
-                      <Text className={`text-base ${formData.officeToVisit ? 'text-gray-900' : 'text-gray-400'}`}>
-                        {formData.officeToVisit || 'Select office'}
+                      <Text className={`text-base ${formData.officeToVisitId ? 'text-gray-900' : 'text-gray-400'}`}>
+                        {formData.officeToVisitId || 'Select office'}
                       </Text>
                       <View className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-blue-500" />
                     </TouchableOpacity>
@@ -211,7 +240,7 @@ export default function SignInScreen() {
                             <TouchableOpacity
                               className="px-4 py-3 border-b border-gray-100"
                               onPress={() => {
-                                setFormData(prev => ({ ...prev, officeToVisit: item.name }));
+                                setFormData(prev => ({ ...prev, officeToVisitId: item.id.toString() }));
                                 setShowOfficeDropdown(false);
                               }}
                             >

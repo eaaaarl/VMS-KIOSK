@@ -1,11 +1,15 @@
+import { formattedDate } from '@/features/visitors/utils/FormattedDate';
+import { setFaceImageId } from '@/lib/redux/state/visitorSlice';
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 export default function FaceCamera() {
+  const dispatch = useDispatch();
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
   const [cameraReady, setCameraReady] = useState(false);
@@ -45,7 +49,7 @@ export default function FaceCamera() {
           skipProcessing: false,
         });
 
-        const timestamp = new Date().getTime();
+        const timestamp = formattedDate(new Date());
         const newFilename = `FACE_${timestamp}.png`;
 
         const fileUri = `${FileSystem.cacheDirectory}${newFilename}`;
@@ -58,8 +62,9 @@ export default function FaceCamera() {
         console.log('Photo captured with formatted name:', newFilename);
         console.log('Photo full path:', fileUri);
 
-        Alert.alert('Success', 'ID photo captured successfully!');
-
+        // Alert.alert('Success', 'Face photo captured successfully!');
+        dispatch(setFaceImageId({ faceImageId: newFilename }))
+        router.push('/(visitor)/SignInScreen')
       } catch (error) {
         console.error('Error taking picture:', error);
         Alert.alert('Error', 'Failed to capture photo. Please try again.');

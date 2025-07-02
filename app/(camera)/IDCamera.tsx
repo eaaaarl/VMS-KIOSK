@@ -1,10 +1,15 @@
+import { formattedDate } from '@/features/visitors/utils/FormattedDate';
+import { setCardImageId } from '@/lib/redux/state/visitorSlice';
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 export default function IDCamera() {
+  const dispatch = useDispatch();
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
   const [cameraReady, setCameraReady] = useState(false);
@@ -44,10 +49,23 @@ export default function IDCamera() {
           skipProcessing: false,
         });
 
-        // Handle the captured photo here
-        console.log('Photo captured:', photo.uri);
-        Alert.alert('Success', 'ID photo captured successfully!');
+        const timestamp = formattedDate(new Date());
+        const newFilename = `CARD_${timestamp}.png`;
 
+        const fileUri = `${FileSystem.cacheDirectory}${newFilename}`;
+
+        await FileSystem.moveAsync({
+          from: photo.uri,
+          to: fileUri
+        });
+
+        console.log('Photo captured with formatted name:', newFilename);
+        console.log('Photo full path:', fileUri);
+
+        // Alert.alert('Success', 'ID Card photo captured successfully!');
+        dispatch(setCardImageId({ cardImageId: newFilename }))
+
+        router.push('/(visitor)/SignInScreen')
       } catch (error) {
         console.error('Error taking picture:', error);
         Alert.alert('Error', 'Failed to capture photo. Please try again.');
