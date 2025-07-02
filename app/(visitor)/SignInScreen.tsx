@@ -68,6 +68,7 @@ export default function SignInScreen() {
 
   const handleIdSnapshot = () => {
     setIdSnapshotTaken(true);
+    router.push('/(camera)/IDCamera');
   };
 
   const handlePhotoSnapshot = () => {

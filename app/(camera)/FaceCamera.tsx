@@ -1,13 +1,14 @@
+import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
-import { Alert, StatusBar, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 
 export default function FaceCamera() {
   const [permission, requestPermission] = useCameraPermissions();
+  const cameraRef = useRef<CameraView>(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
-  const cameraRef = useRef<CameraView>(null);
 
   if (!permission) {
     return <View />;
@@ -33,71 +34,114 @@ export default function FaceCamera() {
     setCameraReady(true);
   };
 
-  const handleTakeSnapshot = async () => {
+  const takePicture = async () => {
     if (cameraRef.current && cameraReady && !isCapturing) {
       try {
         setIsCapturing(true);
         const photo = await cameraRef.current.takePictureAsync({
           quality: 0.8,
           base64: false,
-          skipProcessing: true,
+          skipProcessing: false,
         });
+
+        // Handle the captured photo here
         console.log('Photo captured:', photo.uri);
-        Alert.alert('Success', 'Face captured successfully!');
+        Alert.alert('Success', 'ID photo captured successfully!');
+
       } catch (error) {
         console.error('Error taking picture:', error);
-        Alert.alert('Error', 'Failed to capture photo');
+        Alert.alert('Error', 'Failed to capture photo. Please try again.');
       } finally {
         setIsCapturing(false);
       }
     }
   };
 
-  const handleClose = () => {
-    console.log('Close camera');
-    router.back();
-  };
-
   return (
     <View className="flex-1 bg-black">
-      <StatusBar hidden />
-      {/* Header */}
-      <View className="absolute top-0 left-0 right-0 z-10 bg-yellow-400 flex-row items-center justify-between px-4 py-3 pt-12">
-        <View className="flex-row items-center">
-          <View className="w-6 h-6 mr-2">
-            <View className="w-4 h-4 bg-black rounded-full mt-1" />
+      <View className="absolute top-0 left-0 right-0 z-10 bg-red-500 pt-12 pb-4 px-4">
+        <View className="flex-row items-center justify-between">
+          <View className="flex-row items-center">
+            <Ionicons name="person-outline" size={24} color="white" />
+            <Text className="text-white text-lg font-semibold ml-2">
+              Capture Face
+            </Text>
           </View>
-          <Text className="text-black text-lg font-semibold">
-            Capture Face
-          </Text>
+          <TouchableOpacity className="p-1" onPress={() => router.back()}>
+            <Ionicons name="close" size={24} color="white" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          onPress={handleClose}
-          className="w-8 h-8 bg-yellow-600 rounded-full items-center justify-center"
-        >
-          <Text className="text-white text-lg font-bold">×</Text>
-        </TouchableOpacity>
       </View>
 
-      <CameraView
-        ref={cameraRef}
-        style={{ flex: 1 }}
-        facing="front"
-        onCameraReady={handleCameraReady}
-      >
-        <View className="flex-1 bg-transparent">
-          {/* Face Guide Overlay */}
-          <View className="flex-1 items-center justify-center">
-            <View className="w-64 h-80 border-2 border-white border-dashed rounded-3xl opacity-50" />
+      {/* Camera View - NO CHILDREN */}
+      <View className="flex-1 mt-20">
+        <CameraView
+          ref={cameraRef}
+          style={{ flex: 1 }}
+          facing='front'
+          onCameraReady={handleCameraReady}
+        />
+      </View>
+
+      <View className="absolute top-20 left-0 right-0 bottom-0 justify-center items-center pointer-events-none">
+        <View className="absolute top-20 left-0 right-0 bottom-0 justify-center items-center pointer-events-none">
+          {/* Oval face guide */}
+          <View
+            className="border-2 border-white border-dashed bg-transparent"
+            style={{
+              width: 250,
+              height: 320,
+              borderRadius: 125, // Makes it oval
+            }}>
+
+            {/* Top instruction */}
+            <View className="absolute -top-12 left-0 right-0">
+              <Text className="text-white text-center text-sm font-medium">
+                Position your face within the oval
+              </Text>
+            </View>
+
+            {/* Bottom instruction */}
+            <View className="absolute -bottom-8 left-0 right-0">
+              <Text className="text-white text-center text-xs opacity-80">
+                Keep your face centered and well-lit
+              </Text>
+            </View>
+          </View>
+
+          {/* Optional: Corner brackets for better visual guidance */}
+          <View className="absolute" style={{ width: 250, height: 320 }}>
+            {/* Top-left bracket */}
+            <View className="absolute top-0 left-0">
+              <View className="w-6 h-0.5 bg-yellow-400" />
+              <View className="w-0.5 h-6 bg-yellow-400" />
+            </View>
+
+            {/* Top-right bracket */}
+            <View className="absolute top-0 right-0">
+              <View className="w-6 h-0.5 bg-yellow-400" />
+              <View className="w-0.5 h-6 bg-yellow-400 ml-auto" />
+            </View>
+
+            {/* Bottom-left bracket */}
+            <View className="absolute bottom-0 left-0">
+              <View className="w-0.5 h-6 bg-yellow-400" />
+              <View className="w-6 h-0.5 bg-yellow-400" />
+            </View>
+
+            {/* Bottom-right bracket */}
+            <View className="absolute bottom-0 right-0">
+              <View className="w-0.5 h-6 bg-yellow-400 ml-auto" />
+              <View className="w-6 h-0.5 bg-yellow-400" />
+            </View>
           </View>
         </View>
-      </CameraView>
+      </View>
 
-      {/* Bottom Controls */}
       <View className="absolute bottom-0 left-0 right-0 pb-8 pt-4 bg-gradient-to-t from-black/80 to-transparent">
         <View className="items-center">
           <TouchableOpacity
-            onPress={handleTakeSnapshot}
+            onPress={takePicture}
             disabled={!cameraReady || isCapturing}
             className={`rounded-full py-4 px-8 ${cameraReady && !isCapturing
               ? 'bg-yellow-400'
