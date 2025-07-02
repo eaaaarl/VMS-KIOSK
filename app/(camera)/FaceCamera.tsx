@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
@@ -44,8 +45,19 @@ export default function FaceCamera() {
           skipProcessing: false,
         });
 
-        // Handle the captured photo here
-        console.log('Photo captured:', photo.uri);
+        const timestamp = new Date().getTime();
+        const newFilename = `FACE_${timestamp}.png`;
+
+        const fileUri = `${FileSystem.cacheDirectory}${newFilename}`;
+
+        await FileSystem.moveAsync({
+          from: photo.uri,
+          to: fileUri
+        });
+
+        console.log('Photo captured with formatted name:', newFilename);
+        console.log('Photo full path:', fileUri);
+
         Alert.alert('Success', 'ID photo captured successfully!');
 
       } catch (error) {
