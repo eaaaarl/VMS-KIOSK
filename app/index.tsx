@@ -74,7 +74,7 @@ export default function Index() {
         <View className={`flex-row ${isLandscape ? 'gap-4' : 'gap-6'} w-full justify-center`}>
           <TouchableOpacity
             className={`flex-1 bg-white/90 rounded-2xl ${isLandscape ? 'p-5' : 'p-8'} items-center shadow-lg max-w-[320px] active:bg-white/80 active:scale-95 transition-transform`}
-            onPress={() => router.push('/(visitor)/VisitorRegistration')}
+            onPress={() => router.push('/(visitor)/VisitorRegistrationScreen')}
           >
             <View className={`${isLandscape ? 'w-16 h-16' : 'w-20 h-20'} bg-blue-100 rounded-xl items-center justify-center ${isLandscape ? 'mb-3' : 'mb-6'}`}>
               <View className="w-8 h-8 bg-blue-500 rounded items-center justify-center">

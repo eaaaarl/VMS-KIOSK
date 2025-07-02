@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -64,7 +65,7 @@ export default function VisitorRegistration() {
   };
 
   const handleSkip = () => {
-    console.log('Skipped registration');
+    router.push('/(visitor)/SignInScreen');
   };
 
   const handleBack = () => {
@@ -72,7 +73,7 @@ export default function VisitorRegistration() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gradient-to-br from-blue-400 to-blue-600">
+    <SafeAreaView className="flex-1 bg-gradient-to-br bg-white from-blue-400 to-blue-600">
       <ScrollView className="flex-1 px-4 pt-6 pb-4">
         <Text className="text-xl font-bold text-gray-800 mb-6">
           Visitors Registration
