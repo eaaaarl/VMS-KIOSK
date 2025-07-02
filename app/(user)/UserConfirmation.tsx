@@ -39,7 +39,7 @@ export default function UserConfirmation() {
       });
 
       dispatch(setKioskSettingId({ kioskSettingId: parseInt(kioskSettingId as string) }))
-      router.replace('/')
+      router.replace('/(main)')
     } catch (error: any) {
       console.error(error)
       Toast.show({

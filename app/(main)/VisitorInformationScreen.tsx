@@ -30,7 +30,7 @@ export default function VisitorInformationScreen() {
               <Text className="text-white text-xl font-bold tracking-wider">
                 NUMBER INFORMATION
               </Text>
-              <TouchableOpacity onPress={() => router.push('/')} className="p-1">
+              <TouchableOpacity onPress={() => router.push('/(main)')} className="p-1">
                 <Text className="text-white text-2xl font-light">×</Text>
               </TouchableOpacity>
             </View>
@@ -80,7 +80,7 @@ export default function VisitorInformationScreen() {
 
               <View className="flex-col gap-3">
                 <TouchableOpacity
-                  onPress={() => router.push('/')}
+                  onPress={() => router.push('/(main)')}
                   className="bg-blue-500 px-4 py-3 rounded-full w-full"
                 >
                   <Text className="text-white text-center font-medium text-base">Ask me next time</Text>

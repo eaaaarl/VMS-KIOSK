@@ -2,6 +2,7 @@ import { useGetOfficesQuery } from '@/features/office/api/officeApi';
 import { useGetServicesQuery } from '@/features/service/api/serviceApi';
 import { useGetAllAvailableVisitorsQuery } from '@/features/visitors/api/visitorApi';
 import { formattedDate } from '@/features/visitors/utils/FormattedDate';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
   FlatList,
@@ -80,7 +81,7 @@ export default function SignInScreen() {
   };
 
   const handleBack = () => {
-    console.log('Back pressed');
+    router.push('/(visitor)/VisitorRegistrationScreen')
   };
 
   const dismissKeyboard = () => {

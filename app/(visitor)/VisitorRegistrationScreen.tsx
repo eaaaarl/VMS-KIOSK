@@ -69,7 +69,7 @@ export default function VisitorRegistration() {
   };
 
   const handleBack = () => {
-    console.log('Back pressed');
+    router.push('/(main)')
   };
 
   return (
