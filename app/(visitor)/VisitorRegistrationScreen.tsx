@@ -1,8 +1,12 @@
+import { ICreateVisitorPayload } from '@/features/visitors/api/interface';
+import { useCreateVisitorMutation } from '@/features/visitors/api/visitorApi';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 export default function VisitorRegistration() {
+
   const [formData, setFormData] = useState({
     lastName: '',
     firstName: '',
@@ -59,9 +63,39 @@ export default function VisitorRegistration() {
     );
   }, [formData, errors]);
 
-  const handleRegister = () => {
+
+  const [createVisitor, { isLoading }] = useCreateVisitorMutation();
+
+
+
+  const handleRegister = async () => {
     if (!isFormValid) return;
-    console.log('Registration data:', formData);
+    try {
+      const payload: ICreateVisitorPayload = {
+        firstname: formData.firstName.toUpperCase(),
+        lastname: formData.lastName.toUpperCase(),
+        middlename: formData.middleName ? formData.middleName.toUpperCase() : '',
+        contactNo1: formData.mobileNumber
+      }
+
+      await createVisitor(payload);
+
+      Toast.show({
+        type: 'success',
+        text1: 'Visitor created successfully',
+        text2: 'You can now proceed to the sign in screen',
+      });
+
+      router.push('/(visitor)/SignInScreen');
+    } catch (error) {
+      console.log(error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to create visitor',
+      });
+    }
+
   };
 
   const handleSkip = () => {
@@ -85,7 +119,7 @@ export default function VisitorRegistration() {
               Last Name <Text className="text-red-500">*</Text>
             </Text>
             <TextInput
-              className={`bg-gray-50 border rounded-lg px-3 py-2.5 text-base ${errors.lastName ? 'border-red-500' : 'border-gray-200'
+              className={`bg-gray-50 uppercase border rounded-lg px-3 py-2.5 text-base ${errors.lastName ? 'border-red-500' : 'border-gray-200'
                 }`}
               placeholder="Last Name"
               value={formData.lastName}
@@ -102,7 +136,7 @@ export default function VisitorRegistration() {
               First Name <Text className="text-red-500">*</Text>
             </Text>
             <TextInput
-              className={`bg-gray-50 border rounded-lg px-3 py-2.5 text-base ${errors.firstName ? 'border-red-500' : 'border-gray-200'
+              className={`bg-gray-50 uppercase border rounded-lg px-3 py-2.5 text-base ${errors.firstName ? 'border-red-500' : 'border-gray-200'
                 }`}
               placeholder="First Name"
               value={formData.firstName}
@@ -119,7 +153,7 @@ export default function VisitorRegistration() {
               Middle Name <Text className="text-gray-400">(optional)</Text>
             </Text>
             <TextInput
-              className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-base"
+              className="bg-gray-50 uppercase border border-gray-200 rounded-lg px-3 py-2.5 text-base"
               placeholder="Middle Name"
               value={formData.middleName}
               onChangeText={(value) => handleInputChange('middleName', value)}
@@ -171,12 +205,12 @@ export default function VisitorRegistration() {
 
         <TouchableOpacity
           onPress={handleRegister}
-          disabled={!isFormValid}
+          disabled={!isFormValid || isLoading}
           className={`rounded-lg py-3.5 ${isFormValid ? 'bg-blue-500' : 'bg-blue-300'
             }`}
         >
           <Text className="text-white text-sm font-semibold text-center">
-            Register and Proceed to Next Step
+            {isLoading ? 'Registering...' : 'Register and Proceed to Next Step'}
           </Text>
         </TouchableOpacity>
       </View>

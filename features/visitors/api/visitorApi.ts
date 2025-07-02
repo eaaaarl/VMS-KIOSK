@@ -1,5 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { IAvailableVisitorResponse, IVisitorLogResponse } from "./interface";
+import {
+  IAvailableVisitorResponse,
+  ICreateVisitorPayload,
+  ICreateVisitorResponse,
+  IVisitorLogResponse,
+} from "./interface";
 
 export const visitorApi = createApi({
   reducerPath: "visitorApi",
@@ -35,6 +40,17 @@ export const visitorApi = createApi({
         method: "GET",
       }),
     }),
+
+    createVisitor: builder.mutation<
+      ICreateVisitorResponse,
+      ICreateVisitorPayload
+    >({
+      query: (payload) => ({
+        url: `visitor/public/visitor`,
+        method: "POST",
+        body: payload,
+      }),
+    }),
   }),
 });
 
@@ -43,4 +59,5 @@ export const {
   useGetVisitorsReturnedQuery,
   useGetVisitorsLogByDayQuery,
   useGetAllAvailableVisitorsQuery,
+  useCreateVisitorMutation,
 } = visitorApi;
