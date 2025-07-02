@@ -50,7 +50,7 @@ export default function Index() {
 
       const timeoutId = setTimeout(() => {
         hasShownVisitorInfoGlobal = true;
-        router.push('/VisitorInformation');
+        router.push('/VisitorInformationScreen');
       }, 50);
 
       return () => clearTimeout(timeoutId);
@@ -74,7 +74,7 @@ export default function Index() {
         <View className={`flex-row ${isLandscape ? 'gap-4' : 'gap-6'} w-full justify-center`}>
           <TouchableOpacity
             className={`flex-1 bg-white/90 rounded-2xl ${isLandscape ? 'p-5' : 'p-8'} items-center shadow-lg max-w-[320px] active:bg-white/80 active:scale-95 transition-transform`}
-            onPress={() => alert('Sign In pressed!')}
+            onPress={() => router.push('/(visitor)/VisitorRegistrationScreen')}
           >
             <View className={`${isLandscape ? 'w-16 h-16' : 'w-20 h-20'} bg-blue-100 rounded-xl items-center justify-center ${isLandscape ? 'mb-3' : 'mb-6'}`}>
               <View className="w-8 h-8 bg-blue-500 rounded items-center justify-center">
@@ -92,7 +92,7 @@ export default function Index() {
 
           <TouchableOpacity
             className={`flex-1 bg-white/90 rounded-2xl ${isLandscape ? 'p-5' : 'p-8'} items-center shadow-lg max-w-[320px] active:bg-white/80 active:scale-95 transition-transform`}
-            onPress={() => alert('Sign Out pressed!')}
+            onPress={() => router.push('/(visitor)/SignOutScreen')}
           >
             <View className={`${isLandscape ? 'w-16 h-16' : 'w-20 h-20'} bg-green-100 rounded-xl items-center justify-center ${isLandscape ? 'mb-3' : 'mb-6'}`}>
               <View className="w-8 h-8 bg-green-500 rounded items-center justify-center">
@@ -111,7 +111,7 @@ export default function Index() {
 
         <TouchableOpacity
           className={`absolute ${isLandscape ? 'top-3 right-5 w-10 h-10' : 'bottom-5 right-10'} bg-white/30 rounded-full items-center justify-center backdrop-blur-sm active:bg-white/40`}
-          onPress={() => router.push('/SelectPage')}
+          onPress={() => router.push('/SelectScreen')}
         >
           <Text className={`text-white ${isLandscape ? 'text-xl' : 'text-4xl'}`}>⚙️</Text>
         </TouchableOpacity>

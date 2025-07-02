@@ -1,9 +1,14 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { IVisitorLogResponse } from "./interface";
+import {
+  IAvailableVisitorResponse,
+  ICreateVisitorPayload,
+  ICreateVisitorResponse,
+  IVisitorLogResponse,
+} from "./interface";
 
 export const visitorApi = createApi({
   reducerPath: "visitorApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://192.168.1.23:4000" }),
+  baseQuery: fetchBaseQuery({ baseUrl: process.env.EXPO_PUBLIC_BACKEND_URL }),
   endpoints: (builder) => ({
     getVisitorsTodays: builder.query<IVisitorLogResponse, { date: string }>({
       query: ({ date }) => ({
@@ -25,6 +30,27 @@ export const visitorApi = createApi({
         method: "GET",
       }),
     }),
+
+    getAllAvailableVisitors: builder.query<
+      IAvailableVisitorResponse,
+      { dateNow: string }
+    >({
+      query: ({ dateNow }) => ({
+        url: `visitor/public/visitor/available?dateNow=${dateNow}`,
+        method: "GET",
+      }),
+    }),
+
+    createVisitor: builder.mutation<
+      ICreateVisitorResponse,
+      ICreateVisitorPayload
+    >({
+      query: (payload) => ({
+        url: `visitor/public/visitor`,
+        method: "POST",
+        body: payload,
+      }),
+    }),
   }),
 });
 
@@ -32,4 +58,6 @@ export const {
   useGetVisitorsTodaysQuery,
   useGetVisitorsReturnedQuery,
   useGetVisitorsLogByDayQuery,
+  useGetAllAvailableVisitorsQuery,
+  useCreateVisitorMutation,
 } = visitorApi;

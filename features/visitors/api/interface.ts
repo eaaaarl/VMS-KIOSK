@@ -32,3 +32,31 @@ export interface IVisitorLog {
 export interface IVisitorLogResponse {
   results: IVisitorLog[];
 }
+
+export interface IAvailableVisitor {
+  id: number;
+  firstname: string;
+  lastname: string;
+  middlename: string;
+  contactNo1: number;
+  contactNo2: string;
+  contactNo3: number;
+  name: string;
+}
+
+export interface IAvailableVisitorResponse {
+  results: IAvailableVisitor[];
+}
+
+export interface ICreateVisitorPayload {
+  firstname: string;
+  lastname: string;
+  middlename: string;
+  contactNo1: string;
+}
+
+export interface ICreateVisitorResponse {
+  ghError: number;
+  ghMessage: string;
+  visitorId: number;
+}

@@ -5,12 +5,11 @@ import { router } from 'expo-router';
 import React from 'react';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
-export default function VisitorInformation() {
+export default function VisitorInformationScreen() {
   const { getIdTotalCount } = useConfig();
   const { data: visitorsReturned } = useGetVisitorsReturnedQuery({ date: formattedDate(new Date()) });
   const countReturned = visitorsReturned?.results?.length || 0;
   const unreturnedPercentageCount = (countReturned / (getIdTotalCount as any)) * 100;
-
 
   const { data: visitorsTodays } = useGetVisitorsTodaysQuery({ date: formattedDate(new Date()) });
   const countTodays = visitorsTodays?.results?.length || 0;
@@ -31,7 +30,7 @@ export default function VisitorInformation() {
               <Text className="text-white text-xl font-bold tracking-wider">
                 NUMBER INFORMATION
               </Text>
-              <TouchableOpacity onPress={() => router.push('/')} className="p-1">
+              <TouchableOpacity onPress={() => router.push('/(main)')} className="p-1">
                 <Text className="text-white text-2xl font-light">×</Text>
               </TouchableOpacity>
             </View>
@@ -81,7 +80,7 @@ export default function VisitorInformation() {
 
               <View className="flex-col gap-3">
                 <TouchableOpacity
-                  onPress={() => router.push('/')}
+                  onPress={() => router.push('/(main)')}
                   className="bg-blue-500 px-4 py-3 rounded-full w-full"
                 >
                   <Text className="text-white text-center font-medium text-base">Ask me next time</Text>
@@ -91,7 +90,7 @@ export default function VisitorInformation() {
                   onPress={() => { }}
                   className="bg-red-400 px-4 py-3 rounded-full w-full"
                 >
-                  <Text className="text-white text-center font-medium text-base">Return all 1 numbers</Text>
+                  <Text className="text-white text-center font-medium text-base">Return all {countReturned} numbers</Text>
                 </TouchableOpacity>
               </View>
             </View>

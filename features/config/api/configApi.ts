@@ -3,7 +3,7 @@ import { ConfigResponse } from "./interface";
 
 export const configApi = createApi({
   reducerPath: "configApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://192.168.1.23:4000" }),
+  baseQuery: fetchBaseQuery({ baseUrl: process.env.EXPO_PUBLIC_BACKEND_URL }),
   endpoints: (builder) => ({
     getConfig: builder.query<ConfigResponse[], void>({
       query: () => ({

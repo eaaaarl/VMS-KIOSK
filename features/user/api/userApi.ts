@@ -3,7 +3,7 @@ import { AuthResponse } from "./interface";
 
 export const userApi = createApi({
   reducerPath: "userApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://192.168.1.23:4000" }),
+  baseQuery: fetchBaseQuery({ baseUrl: process.env.EXPO_PUBLIC_BACKEND_URL }),
   endpoints: (builder) => ({
     userLogin: builder.mutation<
       AuthResponse,
