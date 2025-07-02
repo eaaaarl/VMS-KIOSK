@@ -25,10 +25,7 @@ export default function RootLayout() {
   return (
     <ReduxProvider store={reduxStore}>
       <PersistGate loading={null} persistor={persistor}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="SelectPage" />
-        </Stack>
+        <Stack screenOptions={{ headerShown: false }} />
         <Toast />
       </PersistGate>
     </ReduxProvider>

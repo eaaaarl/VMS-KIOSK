@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 
-export default function SelectPage() {
+export default function SelectScreen() {
   const router = useRouter()
   const todaysDate = formattedDate(new Date());
   const { data: visitorsReturned } = useGetVisitorsReturnedQuery({ date: todaysDate });
@@ -17,8 +17,6 @@ export default function SelectPage() {
   const handleSetKioskFunction = () => {
     router.push('/(setting)/SettingKiosk')
   }
-
-
 
   return (
     <SafeAreaView className="flex-1 justify-center items-center bg-black/50">

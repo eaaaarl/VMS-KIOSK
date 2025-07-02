@@ -5,12 +5,11 @@ import { router } from 'expo-router';
 import React from 'react';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
-export default function VisitorInformation() {
+export default function VisitorInformationScreen() {
   const { getIdTotalCount } = useConfig();
   const { data: visitorsReturned } = useGetVisitorsReturnedQuery({ date: formattedDate(new Date()) });
   const countReturned = visitorsReturned?.results?.length || 0;
   const unreturnedPercentageCount = (countReturned / (getIdTotalCount as any)) * 100;
-
 
   const { data: visitorsTodays } = useGetVisitorsTodaysQuery({ date: formattedDate(new Date()) });
   const countTodays = visitorsTodays?.results?.length || 0;
@@ -91,7 +90,7 @@ export default function VisitorInformation() {
                   onPress={() => { }}
                   className="bg-red-400 px-4 py-3 rounded-full w-full"
                 >
-                  <Text className="text-white text-center font-medium text-base">Return all 1 numbers</Text>
+                  <Text className="text-white text-center font-medium text-base">Return all {countReturned} numbers</Text>
                 </TouchableOpacity>
               </View>
             </View>
