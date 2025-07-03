@@ -10,7 +10,7 @@ import {
   useUploadVisitorImagesMutation
 } from '@/features/visitors/api/visitorApi';
 import { IFormData } from '@/features/visitors/types/visitorTypes';
-import { formattedDate, formattedDateTime } from '@/features/visitors/utils/FormattedDate';
+import { formattedDate, formattedDateTime, formattedDateTimeWithDashes } from '@/features/visitors/utils/FormattedDate';
 import { useAppSelector } from '@/lib/redux/hook';
 import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
@@ -142,7 +142,7 @@ export default function SignInScreen() {
 
       await signInVisitorLog(payload).unwrap();
 
-      const uploadImage = async (imageId: string, imageType: 'face' | 'card') => {
+      const uploadImage = async (imageId: string, imageType: string) => {
         try {
           const imageUri = `${FileSystem.cacheDirectory}${imageId}`;
           console.log(`${imageType.toUpperCase()} IMAGE URI`, imageUri);
@@ -152,10 +152,9 @@ export default function SignInScreen() {
             throw new Error(`${imageType} image file not found`);
           }
 
-          console.log(`Original ${imageType} image info:`, fileInfo);
 
-          const fileName = `${imageType}_image.png`;
-
+          const fileName = `${imageType}_${formattedDateTimeWithDashes(new Date())}.png`;
+          console.log('FILE NAME', fileName)
           const formData = new FormData();
           formData.append('photo', {
             uri: fileInfo.uri,
@@ -197,7 +196,7 @@ export default function SignInScreen() {
       }
 
       if (cardImageId) {
-        imageUploadPromises.push(uploadImage(cardImageId, 'card'));
+        imageUploadPromises.push(uploadImage(cardImageId, 'id'));
       }
 
       if (imageUploadPromises.length > 0) {
