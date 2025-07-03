@@ -214,7 +214,7 @@ export default function SignInScreen() {
         console.log(`${successfulUploads.length} out of ${results.length} images uploaded successfully`);
       }
 
-      router.replace('/(main)');
+      router.replace('/(visitor)/SignInSuccess');
 
     } catch (error: any) {
       if (error?.data?.ghMessage) {
