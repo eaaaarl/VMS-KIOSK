@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import { SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import Toast from 'react-native-toast-message'
 
-export default function UserConfirmation() {
+export default function UserConfirmationScreen() {
   const { kioskSettingId } = useLocalSearchParams()
   const dispatch = useAppDispatch()
   const [userLogin, { isLoading }] = useUserLoginMutation()

@@ -25,7 +25,7 @@ export default function SettingKiosk() {
   const handleSave = () => {
     if (selectedKioskId) {
       router.replace({
-        pathname: '/(user)/UserConfirmation',
+        pathname: '/(user)/UserConfirmationScreen',
         params: {
           kioskSettingId: selectedKioskId.toString()
         }

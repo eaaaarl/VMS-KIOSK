@@ -1,4 +1,3 @@
-import { formattedDate } from '@/features/visitors/utils/FormattedDate';
 import { setCardImageId } from '@/lib/redux/state/visitorSlice';
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -49,8 +48,11 @@ export default function IDCamera() {
           skipProcessing: false,
         });
 
-        const timestamp = formattedDate(new Date());
-        const newFilename = `CARD_${timestamp}.png`;
+        // Create filename in the format expected by the backend
+        const now = new Date();
+        const formattedDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
+        const formattedTime = now.toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-mm-ss
+        const newFilename = `id_${formattedDate}_${formattedTime}.png`;
 
         const fileUri = `${FileSystem.cacheDirectory}${newFilename}`;
 
@@ -62,10 +64,13 @@ export default function IDCamera() {
         console.log('Photo captured with formatted name:', newFilename);
         console.log('Photo full path:', fileUri);
 
-        // Alert.alert('Success', 'ID Card photo captured successfully!');
+        // Store the filename in Redux (this will be used directly for upload)
         dispatch(setCardImageId({ cardImageId: newFilename }))
 
-        router.push('/(visitor)/SignInScreen')
+        setTimeout(() => {
+          router.push('/(visitor)/SignInScreen')
+        }, 1000)
+
       } catch (error) {
         console.error('Error taking picture:', error);
         Alert.alert('Error', 'Failed to capture photo. Please try again.');

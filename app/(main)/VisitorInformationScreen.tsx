@@ -12,14 +12,17 @@ export default function VisitorInformationScreen() {
   const unreturnedPercentageCount = (countReturned / (getIdTotalCount as any)) * 100;
 
   const { data: visitorsTodays } = useGetVisitorsTodaysQuery({ date: formattedDate(new Date()) });
-  const countTodays = visitorsTodays?.results?.length || 0;
-  const todaysPercentageCount = (countTodays / (getIdTotalCount as any)) * 100;
 
+  const countTodays = visitorsTodays?.results?.filter(vt => !vt.returned?.data?.[0] === true).length || 0;
+
+  const todaysPercentageCount = (countTodays / (getIdTotalCount as any)) * 100;
   const numbersAvailable = (getIdTotalCount as any) - (countReturned + countTodays);
   const availablePercentageCount = (numbersAvailable / (getIdTotalCount as any)) * 100;
 
   const { data: maxDailyLog } = useGetVisitorsLogByDayQuery();
   const daysToMakeAllNumbersUnavailable = numbersAvailable / (maxDailyLog?.maxDailyLog as any);
+
+  
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100">

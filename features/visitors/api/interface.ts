@@ -60,3 +60,21 @@ export interface ICreateVisitorResponse {
   ghMessage: string;
   visitorId: number;
 }
+
+export interface ICreateVisitorLogPayload {
+  log: {
+    id: number;
+    strId: string;
+    logIn: string;
+    logInDate: string;
+    visitorId: number;
+    officeId: number;
+    serviceId: number;
+    specService: string;
+    returned: boolean;
+  };
+}
+
+export interface IUploadVisitorImagesPayload {
+  photo: Blob;
+}
