@@ -1,9 +1,18 @@
 import { useConfig } from '@/features/config/hooks/useConfig';
 import { useGetOfficesQuery } from '@/features/office/api/officeApi';
 import { useGetServicesQuery } from '@/features/service/api/serviceApi';
-import { useGetAllAvailableVisitorsQuery, useGetVisitorsReturnedQuery } from '@/features/visitors/api/visitorApi';
-import { formattedDate } from '@/features/visitors/utils/FormattedDate';
+import { ICreateVisitorLogPayload } from '@/features/visitors/api/interface';
+import {
+  useGetAllAvailableVisitorsQuery,
+  useGetVisitorsReturnedQuery,
+  useGetVisitorsTodaysQuery,
+  useSignInVisitorLogMutation,
+  useUploadVisitorImagesMutation
+} from '@/features/visitors/api/visitorApi';
+import { IFormData } from '@/features/visitors/types/visitorTypes';
+import { formattedDate, formattedDateTime } from '@/features/visitors/utils/FormattedDate';
 import { useAppSelector } from '@/lib/redux/hook';
+import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -19,27 +28,45 @@ import {
   View
 } from 'react-native';
 
-
 export default function SignInScreen() {
   const { faceImageId, cardImageId } = useAppSelector((state) => state.visitor);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<IFormData>({
     visitorName: '',
     visitorId: 0,
     mobileNumber: '',
-    officeToVisitId: '',
+    officeToVisitId: 0,
+    serviceId: null,
     reasonForVisit: '',
-    otherReason: '',
-    faceImageId: faceImageId ?? '',
-    cardImageId: cardImageId ?? ''
+    otherReason: null,
   });
 
   const { data: visitors } = useGetAllAvailableVisitorsQuery({ dateNow: formattedDate(new Date()) });
   const { data: offices } = useGetOfficesQuery();
   const { data: services } = useGetServicesQuery();
+  const { data: visitorsReturned } = useGetVisitorsReturnedQuery({ date: formattedDate(new Date()) });
+  const { data: visitorsTodays } = useGetVisitorsTodaysQuery({ date: formattedDate(new Date()) });
+  const { getPrefixId, getSeparatorId, getIdLength, getIdTotalCount } = useConfig();
 
   const availableVisitors = visitors?.results || [];
   const availableOffices = offices?.results || [];
-  const availableServices = [...(services?.results || []), { id: 'other', name: 'Other' }];
+  const availableServices = [...(services?.results || []), { id: 0, name: 'Other' }];
+
+  const idList: number[] = [];
+
+  const usedIds = new Set([
+    ...(visitorsReturned?.results?.map(vr => vr.id) || []),
+    ...(visitorsTodays?.results?.filter(vt => !vt.returned?.data?.[0] === true).map(vt => vt.id) || [])
+  ]);
+
+  for (let i = 1; i < (getIdTotalCount as any); i++) {
+    if (!usedIds.has(i)) {
+      idList.push(i);
+    }
+  }
+
+  const nextAvailableId = idList[0];
+  const idCode = String(nextAvailableId).padStart(getIdLength as any, '0');
+  const id = getPrefixId! + getSeparatorId! + idCode!;
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [showOfficeDropdown, setShowOfficeDropdown] = useState(false);
@@ -48,7 +75,7 @@ export default function SignInScreen() {
   const [idSnapshotTaken, setIdSnapshotTaken] = useState(false);
   const [photoSnapshotTaken, setPhotoSnapshotTaken] = useState(false);
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: keyof IFormData, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -83,8 +110,6 @@ export default function SignInScreen() {
     router.push('/(camera)/FaceCamera');
   };
 
-
-
   const handleBack = () => {
     router.push('/(visitor)/VisitorRegistrationScreen')
   };
@@ -96,28 +121,110 @@ export default function SignInScreen() {
     setShowServiceDropdown(false);
   };
 
-  const { data: visitorsReturned } = useGetVisitorsReturnedQuery({ date: formattedDate(new Date()) })
+  const [signInVisitorLog, { isLoading: isSignInLoading }] = useSignInVisitorLogMutation();
+  const [uploadVisitorImages, { isLoading: isUploadingImages }] = useUploadVisitorImagesMutation();
 
-  const { getPrefixId, getSeparatorId, getIdLength } = useConfig();
-  const idLength = getIdLength as any;
-  const idCode = '0'.repeat(idLength);
+  const handleSignIn = async () => {
+    try {
+      const payload: ICreateVisitorLogPayload = {
+        log: {
+          id: idList[0],
+          strId: id,
+          logIn: formattedDateTime(new Date()),
+          logInDate: formattedDate(new Date()),
+          visitorId: formData.visitorId,
+          officeId: formData.officeToVisitId,
+          serviceId: formData.serviceId === null ? 0 : formData.serviceId,
+          returned: false,
+          specService: formData.serviceId === null ? formData.otherReason ?? '' : '',
+        }
+      };
 
-  const id = getPrefixId ?? '' + getSeparatorId ?? '' + idCode;
+      await signInVisitorLog(payload).unwrap();
 
-  const handleSignIn = () => {
-    const payload = {
-      id: 1,
-      strId: id,
-      logIn: formattedDate(new Date()),
-      logInDate: formattedDate(new Date()),
-      visitorId: formData.visitorId,
-      officeId: formData.officeToVisitId,
-      serviceId: formData.reasonForVisit,
-      returned: false,
-      specService: formData.otherReason,
+      const uploadImage = async (imageId: string, imageType: 'face' | 'card') => {
+        try {
+          const imageUri = `${FileSystem.cacheDirectory}${imageId}`;
+          console.log(`${imageType.toUpperCase()} IMAGE URI`, imageUri);
+
+          const fileInfo = await FileSystem.getInfoAsync(imageUri);
+          if (!fileInfo.exists) {
+            throw new Error(`${imageType} image file not found`);
+          }
+
+          console.log(`Original ${imageType} image info:`, fileInfo);
+
+          const fileName = `${imageType}_image.png`;
+
+          const formData = new FormData();
+          formData.append('photo', {
+            uri: fileInfo.uri,
+            type: `image/png`,
+            name: fileName,
+          } as any);
+
+          const uploadResponse = await fetch(
+            `${process.env.EXPO_PUBLIC_BACKEND_URL}/visitors-log/public/visit-log/photo`,
+            {
+              method: 'POST',
+              body: formData,
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            }
+          );
+
+          if (!uploadResponse.ok) {
+            const errorText = await uploadResponse.text();
+            throw new Error(`Upload failed: ${uploadResponse.status} - ${errorText}`);
+          }
+
+          const result = await uploadResponse.json();
+          console.log(`${imageType} upload result:`, result);
+          return result;
+
+        } catch (error) {
+          console.error(`Error processing ${imageType} image:`, error);
+          alert(`${imageType} image could not be processed. Continuing without ${imageType} image.`);
+          throw error;
+        }
+      };
+
+      const imageUploadPromises: Promise<any>[] = [];
+
+      if (faceImageId) {
+        imageUploadPromises.push(uploadImage(faceImageId, 'face'));
+      }
+
+      if (cardImageId) {
+        imageUploadPromises.push(uploadImage(cardImageId, 'card'));
+      }
+
+      if (imageUploadPromises.length > 0) {
+        const results = await Promise.allSettled(imageUploadPromises);
+
+        results.forEach((result, index) => {
+          if (result.status === 'fulfilled') {
+            console.log(`Image upload ${index + 1} succeeded:`, result.value);
+          } else {
+            console.error(`Image upload ${index + 1} failed:`, result.reason);
+          }
+        });
+
+        const successfulUploads = results.filter(result => result.status === 'fulfilled');
+        console.log(`${successfulUploads.length} out of ${results.length} images uploaded successfully`);
+      }
+
+      router.replace('/(main)');
+
+    } catch (error: any) {
+      if (error?.data?.ghMessage) {
+        alert(`Error: ${error.data.ghMessage}`);
+      } else {
+        alert('An error occurred while signing in. Please try again.');
+      }
+      console.error('Sign-in error:', error);
     }
-
-    console.log('SENDING DATA TO API :', payload)
   };
 
   return (
@@ -227,7 +334,7 @@ export default function SignInScreen() {
                       className="bg-white border border-gray-200 rounded-lg px-4 py-3 flex-row justify-between items-center"
                     >
                       <Text className={`text-base ${formData.officeToVisitId ? 'text-gray-900' : 'text-gray-400'}`}>
-                        {formData.officeToVisitId || 'Select office'}
+                        {formData.officeToVisitId ? availableOffices.find((office) => office.id as number === formData.officeToVisitId as number)?.name : 'Select office'}
                       </Text>
                       <View className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-blue-500" />
                     </TouchableOpacity>
@@ -240,7 +347,7 @@ export default function SignInScreen() {
                             <TouchableOpacity
                               className="px-4 py-3 border-b border-gray-100"
                               onPress={() => {
-                                setFormData(prev => ({ ...prev, officeToVisitId: item.id.toString() }));
+                                setFormData(prev => ({ ...prev, officeToVisitId: item.id as number }));
                                 setShowOfficeDropdown(false);
                               }}
                             >
@@ -283,7 +390,8 @@ export default function SignInScreen() {
                                 setFormData(prev => ({
                                   ...prev,
                                   reasonForVisit: item.name,
-                                  otherReason: item.id === 'other' ? '' : prev.otherReason
+                                  serviceId: item.id === 0 ? null : item.id,
+                                  otherReason: item.id === 0 ? prev.otherReason : null
                                 }));
                                 setShowServiceDropdown(false);
                               }}
@@ -302,11 +410,11 @@ export default function SignInScreen() {
                         <TextInput
                           className="bg-white border border-gray-200 rounded-lg px-4 py-3 text-base"
                           placeholder="Please specify your reason"
-                          value={formData.otherReason}
+                          value={formData.otherReason ?? ''}
                           multiline={true}
                           numberOfLines={4}
                           textAlignVertical="top"
-                          onChangeText={(value) => setFormData(prev => ({ ...prev, otherReason: value }))}
+                          onChangeText={(value) => setFormData(prev => ({ ...prev, otherReason: value ?? null }))}
                         />
                       </View>
                     )}
@@ -327,9 +435,10 @@ export default function SignInScreen() {
                 <TouchableOpacity
                   onPress={handleSignIn}
                   className="bg-blue-400 rounded-full py-3 px-8 shadow-sm"
+                  disabled={isSignInLoading || isUploadingImages}
                 >
                   <Text className="text-white text-base font-semibold">
-                    Sign In
+                    {isSignInLoading || isUploadingImages ? 'Signing In...' : 'Sign In'}
                   </Text>
                 </TouchableOpacity>
               </View>

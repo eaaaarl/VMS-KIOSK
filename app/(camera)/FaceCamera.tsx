@@ -1,4 +1,4 @@
-import { formattedDate } from '@/features/visitors/utils/FormattedDate';
+import { formattedDateTimeWithDashes } from '@/features/visitors/utils/FormattedDate';
 import { setFaceImageId } from '@/lib/redux/state/visitorSlice';
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -49,8 +49,8 @@ export default function FaceCamera() {
           skipProcessing: false,
         });
 
-        const timestamp = formattedDate(new Date());
-        const newFilename = `FACE_${timestamp}.png`;
+        const timestamp = formattedDateTimeWithDashes(new Date());
+        const newFilename = `face_${timestamp}.png`;
 
         const fileUri = `${FileSystem.cacheDirectory}${newFilename}`;
 
@@ -59,12 +59,14 @@ export default function FaceCamera() {
           to: fileUri
         });
 
-        console.log('Photo captured with formatted name:', newFilename);
-        console.log('Photo full path:', fileUri);
+        // console.log('Photo captured with formatted name:', newFilename);
+        // console.log('Photo full path:', fileUri);
 
-        // Alert.alert('Success', 'Face photo captured successfully!');
         dispatch(setFaceImageId({ faceImageId: newFilename }))
-        router.push('/(visitor)/SignInScreen')
+
+        setTimeout(() => {
+          router.push('/(visitor)/SignInScreen')
+        }, 1000)
       } catch (error) {
         console.error('Error taking picture:', error);
         Alert.alert('Error', 'Failed to capture photo. Please try again.');
