@@ -4,19 +4,26 @@ import {
   ICreateVisitorLogPayload,
   ICreateVisitorPayload,
   ICreateVisitorResponse,
-  IUploadVisitorImagesPayload,
   IVisitorLogResponse,
 } from './interface';
 
 export const visitorApi = createApi({
   reducerPath: 'visitorApi',
   baseQuery: fetchBaseQuery({ baseUrl: process.env.EXPO_PUBLIC_BACKEND_URL }),
+  tagTypes: [
+    'VisitorsTodays',
+    'VisitorsReturned',
+    'VisitorsLogByDay',
+    'AllAvailableVisitors',
+    'UploadVisitorImages',
+  ],
   endpoints: builder => ({
     getVisitorsTodays: builder.query<IVisitorLogResponse, { date: string }>({
       query: ({ date }) => ({
         url: `visitors-log/public/visit-log/2?DATE(logIn)='${date}'&order=logIn`,
         method: 'GET',
       }),
+      providesTags: ['VisitorsTodays'],
     }),
 
     getVisitorsReturned: builder.query<IVisitorLogResponse, { date: string }>({
@@ -24,6 +31,7 @@ export const visitorApi = createApi({
         url: `visitors-log/public/visit-log/2?returned=!TRUE&DATE(logIn)=!'${date}'`,
         method: 'GET',
       }),
+      providesTags: ['VisitorsReturned'],
     }),
 
     getVisitorsLogByDay: builder.query<{ maxDailyLog: number }, void>({
@@ -31,6 +39,7 @@ export const visitorApi = createApi({
         url: `visitor/public/max-log-by-day`,
         method: 'GET',
       }),
+      providesTags: ['VisitorsLogByDay'],
     }),
 
     getAllAvailableVisitors: builder.query<IAvailableVisitorResponse, { dateNow: string }>({
@@ -38,6 +47,7 @@ export const visitorApi = createApi({
         url: `visitor/public/visitor/available?dateNow=${dateNow}`,
         method: 'GET',
       }),
+      providesTags: ['AllAvailableVisitors'],
     }),
 
     createVisitor: builder.mutation<ICreateVisitorResponse, ICreateVisitorPayload>({
@@ -46,6 +56,8 @@ export const visitorApi = createApi({
         method: 'POST',
         body: payload,
       }),
+
+      invalidatesTags: ['AllAvailableVisitors'],
     }),
 
     SignInVisitorLog: builder.mutation<string, ICreateVisitorLogPayload>({
@@ -54,14 +66,16 @@ export const visitorApi = createApi({
         method: 'POST',
         body: payload,
       }),
+      invalidatesTags: ['VisitorsTodays', 'VisitorsReturned'],
     }),
 
-    uploadVisitorImages: builder.mutation<string, IUploadVisitorImagesPayload>({
-      query: payload => ({
+    uploadVisitorImages: builder.mutation<string, FormData>({
+      query: (payload: FormData) => ({
         url: `visitors-log/public/visit-log/photo`,
         method: 'POST',
         body: payload,
       }),
+      invalidatesTags: ['VisitorsTodays', 'VisitorsReturned'],
     }),
   }),
 });

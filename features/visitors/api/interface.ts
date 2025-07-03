@@ -76,5 +76,5 @@ export interface ICreateVisitorLogPayload {
 }
 
 export interface IUploadVisitorImagesPayload {
-  photo: string;
+  photo: Blob;
 }

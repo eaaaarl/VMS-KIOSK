@@ -11,7 +11,8 @@ import {
 } from '@/features/visitors/api/visitorApi';
 import { IFormData } from '@/features/visitors/types/visitorTypes';
 import { formattedDate, formattedDateTime, formattedDateTimeWithDashes } from '@/features/visitors/utils/FormattedDate';
-import { useAppSelector } from '@/lib/redux/hook';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hook';
+import { setCardImageId, setFaceImageId } from '@/lib/redux/state/visitorSlice';
 import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -29,6 +30,7 @@ import {
 } from 'react-native';
 
 export default function SignInScreen() {
+  const dispatch = useAppDispatch();
   const { faceImageId, cardImageId } = useAppSelector((state) => state.visitor);
   const [formData, setFormData] = useState<IFormData>({
     visitorName: '',
@@ -142,63 +144,39 @@ export default function SignInScreen() {
 
       await signInVisitorLog(payload).unwrap();
 
-      const uploadImage = async (imageId: string, imageType: string) => {
-        try {
-          const imageUri = `${FileSystem.cacheDirectory}${imageId}`;
-          console.log(`${imageType.toUpperCase()} IMAGE URI`, imageUri);
+      const createImageFormData = async (imageId: string, imageType: string) => {
+        const imageUri = `${FileSystem.cacheDirectory}${imageId}`;
+        const fileInfo = await FileSystem.getInfoAsync(imageUri);
 
-          const fileInfo = await FileSystem.getInfoAsync(imageUri);
-          if (!fileInfo.exists) {
-            throw new Error(`${imageType} image file not found`);
-          }
-
-
-          const fileName = `${imageType}_${formattedDateTimeWithDashes(new Date())}.png`;
-          console.log('FILE NAME', fileName)
-          const formData = new FormData();
-          formData.append('photo', {
-            uri: fileInfo.uri,
-            type: `image/png`,
-            name: fileName,
-          } as any);
-
-          const uploadResponse = await fetch(
-            `${process.env.EXPO_PUBLIC_BACKEND_URL}/visitors-log/public/visit-log/photo`,
-            {
-              method: 'POST',
-              body: formData,
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
-            }
-          );
-
-          if (!uploadResponse.ok) {
-            const errorText = await uploadResponse.text();
-            throw new Error(`Upload failed: ${uploadResponse.status} - ${errorText}`);
-          }
-
-          const result = await uploadResponse.json();
-          console.log(`${imageType} upload result:`, result);
-          return result;
-
-        } catch (error) {
-          console.error(`Error processing ${imageType} image:`, error);
-          alert(`${imageType} image could not be processed. Continuing without ${imageType} image.`);
-          throw error;
+        if (!fileInfo.exists) {
+          throw new Error(`${imageType} image file not found`);
         }
+
+        const fileName = `${imageType}_${formattedDateTimeWithDashes(new Date())}.png`;
+        const formData = new FormData();
+        formData.append('photo', {
+          uri: fileInfo.uri,
+          type: 'image/png',
+          name: fileName,
+        } as any);
+
+        return formData;
       };
 
+      // Upload images using RTK Query
       const imageUploadPromises: Promise<any>[] = [];
 
       if (faceImageId) {
-        imageUploadPromises.push(uploadImage(faceImageId, 'face'));
+        const faceFormData = await createImageFormData(faceImageId, 'face');
+        imageUploadPromises.push(uploadVisitorImages(faceFormData).unwrap());
       }
 
       if (cardImageId) {
-        imageUploadPromises.push(uploadImage(cardImageId, 'id'));
+        const cardFormData = await createImageFormData(cardImageId, 'id');
+        imageUploadPromises.push(uploadVisitorImages(cardFormData).unwrap());
       }
 
+      // Wait for all uploads to complete
       if (imageUploadPromises.length > 0) {
         const results = await Promise.allSettled(imageUploadPromises);
 
@@ -207,6 +185,7 @@ export default function SignInScreen() {
             console.log(`Image upload ${index + 1} succeeded:`, result.value);
           } else {
             console.error(`Image upload ${index + 1} failed:`, result.reason);
+            alert(`Image ${index + 1} could not be processed. Continuing without this image.`);
           }
         });
 
@@ -214,7 +193,17 @@ export default function SignInScreen() {
         console.log(`${successfulUploads.length} out of ${results.length} images uploaded successfully`);
       }
 
-      router.replace('/(visitor)/SignInSuccess');
+      // Clean up
+      dispatch(setFaceImageId({ faceImageId: '' }));
+      dispatch(setCardImageId({ cardImageId: '' }));
+
+      router.replace({
+        pathname: '/(visitor)/SignInSuccess',
+        params: {
+          ticketNumber: payload.log.strId,
+          visitorName: formData.visitorName
+        }
+      });
 
     } catch (error: any) {
       if (error?.data?.ghMessage) {

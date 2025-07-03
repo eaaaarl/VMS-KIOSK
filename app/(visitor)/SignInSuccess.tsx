@@ -1,10 +1,11 @@
-import React from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { router, useLocalSearchParams } from 'expo-router';
+import React from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 export default function SignInSuccess() {
+  const { ticketNumber, visitorName } = useLocalSearchParams();
   const handleDone = () => {
-    // Handle navigation or completion action
-    console.log('Done pressed')
+    router.replace('/(main)');
   }
 
   return (
@@ -21,12 +22,12 @@ export default function SignInSuccess() {
 
       {/* Ticket Number */}
       <Text className="text-6xl font-bold text-blue-500 text-center mb-6">
-        00-0014
+        {ticketNumber}
       </Text>
 
       {/* User Name */}
       <Text className="text-xl font-semibold text-gray-700 text-center mb-16">
-        HERNANDEZ, JOCELYN A
+        {visitorName}
       </Text>
 
       {/* Done Button */}
