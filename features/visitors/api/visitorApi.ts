@@ -97,7 +97,13 @@ export const visitorApi = createApi({
           returned: true,
         },
       }),
-      invalidatesTags: ['GetVisitorIdNumber'],
+      invalidatesTags: [
+        'GetVisitorIdNumber',
+        'VisitorsTodays',
+        'VisitorsReturned',
+        'VisitorsLogByDay',
+        'AllAvailableVisitors',
+      ],
     }),
   }),
 });
