@@ -1,12 +1,38 @@
 import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { Alert, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, Animated, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function SignOutScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [ticketNumber, setTicketNumber] = useState('');
   const [cameraActive, setCameraActive] = useState(false);
+  const animatedValue = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (cameraActive) {
+      // Start the scanning animation
+      const animateScanning = () => {
+        Animated.sequence([
+          Animated.timing(animatedValue, {
+            toValue: 1,
+            duration: 2000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(animatedValue, {
+            toValue: 0,
+            duration: 2000,
+            useNativeDriver: true,
+          }),
+        ]).start(() => {
+          if (cameraActive) {
+            animateScanning();
+          }
+        });
+      };
+      animateScanning();
+    }
+  }, [cameraActive, animatedValue]);
 
   if (!permission) {
     return <View />;
@@ -29,18 +55,11 @@ export default function SignOutScreen() {
   }
 
   const handleBarCodeScanned = (scanResult: BarcodeScanningResult) => {
-    // Deactivate camera after successful scan
-    setCameraActive(false);
-
     // Set the scanned QR code data as ticket number
     setTicketNumber(scanResult.data);
 
-    // Show success message
-    Alert.alert(
-      "QR Code Scanned",
-      "Ticket number has been captured successfully.",
-      [{ text: "OK" }]
-    );
+    // Immediately deactivate camera after successful scan
+    setCameraActive(false);
   };
 
   const handleSignOut = () => {
@@ -68,7 +87,7 @@ export default function SignOutScreen() {
 
         <TouchableOpacity
           onPress={toggleCamera}
-          className="bg-gray-900 rounded-lg mb-8 h-64 items-center justify-center overflow-hidden"
+          className="bg-gray-900 rounded-lg mb-8 h-96 items-center justify-center overflow-hidden"
         >
           {cameraActive ? (
             <View className="w-full h-full">
@@ -78,10 +97,34 @@ export default function SignOutScreen() {
                 barcodeScannerSettings={{
                   barcodeTypes: ['qr'],
                 }}
+                facing='front'
               />
-              <View className="absolute bottom-4 left-0 right-0 items-center">
-                <Text className="text-white text-sm bg-black bg-opacity-50 px-3 py-1 rounded">
-                  Position QR code in view
+              <View className="absolute inset-0 flex items-center justify-center">
+                {/* Scanning Box */}
+                <View className="w-64 h-64 border-2 border-white border-opacity-50 relative">
+                  {/* Corner indicators */}
+                  <View className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-yellow-400" />
+                  <View className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-yellow-400" />
+                  <View className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-yellow-400" />
+                  <View className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-yellow-400" />
+
+                  {/* Animated scanning line */}
+                  <Animated.View
+                    className="absolute left-0 right-0 h-1 bg-yellow-400 opacity-75"
+                    style={{
+                      transform: [
+                        {
+                          translateY: animatedValue.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0, 252], // 64*4 - 4 (height of box minus line height)
+                          }),
+                        },
+                      ],
+                    }}
+                  />
+                </View>
+                <Text className="text-white text-sm mt-4 bg-black bg-opacity-50 px-3 py-1 rounded">
+                  Position QR code within frame
                 </Text>
               </View>
             </View>
