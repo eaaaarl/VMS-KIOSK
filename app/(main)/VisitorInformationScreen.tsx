@@ -22,8 +22,6 @@ export default function VisitorInformationScreen() {
   const { data: maxDailyLog } = useGetVisitorsLogByDayQuery();
   const daysToMakeAllNumbersUnavailable = numbersAvailable / (maxDailyLog?.maxDailyLog as any);
 
-  
-
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       <ScrollView className="flex-1">

@@ -48,7 +48,6 @@ export default function IDCamera() {
           skipProcessing: false,
         });
 
-        // Create filename in the format expected by the backend
         const now = new Date();
         const formattedDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
         const formattedTime = now.toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-mm-ss
@@ -61,15 +60,9 @@ export default function IDCamera() {
           to: fileUri
         });
 
-        console.log('Photo captured with formatted name:', newFilename);
-        console.log('Photo full path:', fileUri);
-
-        // Store the filename in Redux (this will be used directly for upload)
         dispatch(setCardImageId({ cardImageId: newFilename }))
 
-        setTimeout(() => {
-          router.push('/(visitor)/SignInScreen')
-        }, 1000)
+        router.push('/(visitor)/SignInScreen')
 
       } catch (error) {
         console.error('Error taking picture:', error);

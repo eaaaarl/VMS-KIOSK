@@ -116,8 +116,6 @@ export default function Index() {
           <Text className={`text-white ${isLandscape ? 'text-xl' : 'text-4xl'}`}>⚙️</Text>
         </TouchableOpacity>
 
-
-
       </View>
     </SafeAreaView>
   );

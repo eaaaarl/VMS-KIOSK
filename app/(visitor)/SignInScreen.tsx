@@ -163,7 +163,6 @@ export default function SignInScreen() {
         return formData;
       };
 
-      // Upload images using RTK Query
       const imageUploadPromises: Promise<any>[] = [];
 
       if (faceImageId) {
@@ -176,7 +175,6 @@ export default function SignInScreen() {
         imageUploadPromises.push(uploadVisitorImages(cardFormData).unwrap());
       }
 
-      // Wait for all uploads to complete
       if (imageUploadPromises.length > 0) {
         const results = await Promise.allSettled(imageUploadPromises);
 
@@ -193,7 +191,6 @@ export default function SignInScreen() {
         console.log(`${successfulUploads.length} out of ${results.length} images uploaded successfully`);
       }
 
-      // Clean up
       dispatch(setFaceImageId({ faceImageId: '' }));
       dispatch(setCardImageId({ cardImageId: '' }));
 
@@ -245,7 +242,6 @@ export default function SignInScreen() {
                     </View>
                   </TouchableOpacity>
 
-                  {/* Photo Snapshot */}
                   <TouchableOpacity
                     onPress={handlePhotoSnapshot}
                     className={`flex-1 border-2 rounded-lg p-6 items-center justify-center h-32 ${photoSnapshotTaken ? 'border-green-400 bg-green-50' : 'border-yellow-300 bg-yellow-50'

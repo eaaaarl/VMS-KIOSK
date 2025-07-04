@@ -59,14 +59,10 @@ export default function FaceCamera() {
           to: fileUri
         });
 
-        // console.log('Photo captured with formatted name:', newFilename);
-        // console.log('Photo full path:', fileUri);
-
         dispatch(setFaceImageId({ faceImageId: newFilename }))
 
-        setTimeout(() => {
-          router.push('/(visitor)/SignInScreen')
-        }, 1000)
+        router.push('/(visitor)/SignInScreen')
+
       } catch (error) {
         console.error('Error taking picture:', error);
         Alert.alert('Error', 'Failed to capture photo. Please try again.');
