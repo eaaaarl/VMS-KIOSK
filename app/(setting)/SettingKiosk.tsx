@@ -17,7 +17,6 @@ export default function SettingKiosk() {
     { id: selectedKioskId as number },
     { skip: !selectedKioskId }
   )
-
   const handleClose = () => {
     router.replace('/')
   }

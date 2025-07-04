@@ -16,15 +16,17 @@ export default function Index() {
   const { kioskSettingId } = useAppSelector((state) => state.kiosk);
   const [componentMounted, setComponentMounted] = useState(false);
   const [isInformationModalOpen, setIsInformationModalOpen] = useState(false);
-
+  console.log(kioskSettingId);
   useEffect(() => {
     setComponentMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!kioskSettingId && componentMounted) {
+    if (componentMounted) {
       const timeoutId = setTimeout(() => {
-        router.replace('/(setting)/SettingKiosk');
+        if (!kioskSettingId) {
+          router.replace('/(setting)/SettingKiosk');
+        }
       }, 100);
       return () => clearTimeout(timeoutId);
     }
@@ -56,7 +58,27 @@ export default function Index() {
       }, 50);
 
       return () => clearTimeout(timeoutId);
-    }
+    }/*  else if (
+      componentMounted &&
+      kioskSettingId === 2 &&
+      (!countReturned || hasShownVisitorInfoGlobal)
+    ) {
+      console.log('Redirecting to VisitorRegistrationScreen');
+      const timeoutId = setTimeout(() => {
+        router.push('/(visitor)/VisitorRegistrationScreen');
+      }, 50);
+      return () => clearTimeout(timeoutId);
+    } else if (
+      componentMounted &&
+      kioskSettingId === 3 &&
+      (!countReturned || hasShownVisitorInfoGlobal)
+    )  {
+      console.log('Redirecting to SignOutScreen');
+      const timeoutId = setTimeout(() => {
+        router.push('/(visitor)/SignOutScreen');
+      }, 50);
+      return () => clearTimeout(timeoutId);
+    }*/
   }, [componentMounted, kioskSettingId, isSuccess, isLoading, countReturned, router]);
 
   return (
@@ -72,41 +94,54 @@ export default function Index() {
         </View>
 
         <View className={`flex-row ${isLandscape ? 'gap-4' : 'gap-6'} w-full justify-center`}>
-          <TouchableOpacity
-            className={`flex-1 bg-white/90 rounded-2xl ${isLandscape ? 'p-5' : 'p-8'} items-center shadow-lg max-w-[320px] active:bg-white/80 active:scale-95 transition-transform`}
-            onPress={() => router.push('/(visitor)/VisitorRegistrationScreen')}
-          >
-            <View className={`${isLandscape ? 'w-16 h-16' : 'w-20 h-20'} bg-blue-100 rounded-xl items-center justify-center ${isLandscape ? 'mb-3' : 'mb-6'}`}>
-              <View className="w-8 h-8 bg-blue-500 rounded items-center justify-center">
-                <Text className="text-white text-lg">👤</Text>
-              </View>
-            </View>
+          {kioskSettingId === 3 ? (
+            <></>
+          ) : (
+            <>
+              <TouchableOpacity
+                className={`flex-1 bg-white/90 rounded-2xl ${isLandscape ? 'p-5' : 'p-8'} items-center shadow-lg max-w-[320px] active:bg-white/80 active:scale-95 transition-transform`}
+                onPress={() => router.push('/(visitor)/VisitorRegistrationScreen')}
+              >
+                <View className={`${isLandscape ? 'w-16 h-16' : 'w-20 h-20'} bg-blue-100 rounded-xl items-center justify-center ${isLandscape ? 'mb-3' : 'mb-6'}`}>
+                  <View className="w-8 h-8 bg-blue-500 rounded items-center justify-center">
+                    <Text className="text-white text-lg">👤</Text>
+                  </View>
+                </View>
 
-            <Text className={`text-gray-800 ${isLandscape ? 'text-2xl' : 'text-2xl'} font-bold mb-2 tracking-wide`}>
-              SIGN IN
-            </Text>
-            <Text className={`text-gray-600 text-center text-base`}>
-              Register and Sign In
-            </Text>
-          </TouchableOpacity>
+                <Text className={`text-gray-800 ${isLandscape ? 'text-2xl' : 'text-2xl'} font-bold mb-2 tracking-wide`}>
+                  SIGN IN
+                </Text>
+                <Text className={`text-gray-600 text-center text-base`}>
+                  Register and Sign In
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
 
-          <TouchableOpacity
-            className={`flex-1 bg-white/90 rounded-2xl ${isLandscape ? 'p-5' : 'p-8'} items-center shadow-lg max-w-[320px] active:bg-white/80 active:scale-95 transition-transform`}
-            onPress={() => router.push('/(visitor)/SignOutScreen')}
-          >
-            <View className={`${isLandscape ? 'w-16 h-16' : 'w-20 h-20'} bg-green-100 rounded-xl items-center justify-center ${isLandscape ? 'mb-3' : 'mb-6'}`}>
-              <View className="w-8 h-8 bg-green-500 rounded items-center justify-center">
-                <Text className="text-white text-lg">🚪</Text>
-              </View>
-            </View>
+          {kioskSettingId === 2 ? (
+            <></>
+          ) : (
+            <>
+              <TouchableOpacity
+                className={`flex-1 bg-white/90 rounded-2xl ${isLandscape ? 'p-5' : 'p-8'} items-center shadow-lg max-w-[320px] active:bg-white/80 active:scale-95 transition-transform`}
+                onPress={() => router.push('/(visitor)/SignOutScreen')}
+              >
+                <View className={`${isLandscape ? 'w-16 h-16' : 'w-20 h-20'} bg-green-100 rounded-xl items-center justify-center ${isLandscape ? 'mb-3' : 'mb-6'}`}>
+                  <View className="w-8 h-8 bg-green-500 rounded items-center justify-center">
+                    <Text className="text-white text-lg">🚪</Text>
+                  </View>
+                </View>
 
-            <Text className={`text-gray-800 ${isLandscape ? 'text-2xl' : 'text-2xl'} font-bold mb-2 tracking-wide`}>
-              SIGN OUT
-            </Text>
-            <Text className={`text-gray-600 text-center text-base`}>
-              Sign Out Properly
-            </Text>
-          </TouchableOpacity>
+                <Text className={`text-gray-800 ${isLandscape ? 'text-2xl' : 'text-2xl'} font-bold mb-2 tracking-wide`}>
+                  SIGN OUT
+                </Text>
+                <Text className={`text-gray-600 text-center text-base`}>
+                  Sign Out Properly
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
+
         </View>
 
         <TouchableOpacity
@@ -120,8 +155,17 @@ export default function Index() {
 
       <VisitorInformationModal
         isOpen={isInformationModalOpen}
-        onClose={() => setIsInformationModalOpen(false)}
+        onClose={() => {
+          setIsInformationModalOpen(false);
+          /*     if (kioskSettingId === 2) {
+                router.push('/(visitor)/VisitorRegistrationScreen');
+              } else if (kioskSettingId === 3) {
+                router.push('/(visitor)/SignOutScreen');
+              } else {
+                router.push('/(main)');
+              } */
+        }}
       />
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }
