@@ -77,6 +77,13 @@ export const visitorApi = createApi({
       }),
       invalidatesTags: ['VisitorsTodays', 'VisitorsReturned'],
     }),
+
+    checkIDNumber: builder.query<{ results: [] }, { strId: string }>({
+      query: ({ strId }) => ({
+        url: `visitors-log/public/visit-log/?strId=${strId}&logOut=IS NULL&returned=FALSE`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -88,4 +95,5 @@ export const {
   useCreateVisitorMutation,
   useSignInVisitorLogMutation,
   useUploadVisitorImagesMutation,
+  useCheckIDNumberQuery,
 } = visitorApi;
