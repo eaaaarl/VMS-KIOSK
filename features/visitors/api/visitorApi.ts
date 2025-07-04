@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   IAvailableVisitorResponse,
+  ICheckIDNumberResponse,
   ICreateVisitorLogPayload,
   ICreateVisitorPayload,
   ICreateVisitorResponse,
@@ -16,6 +17,7 @@ export const visitorApi = createApi({
     'VisitorsLogByDay',
     'AllAvailableVisitors',
     'UploadVisitorImages',
+    'GetVisitorIdNumber',
   ],
   endpoints: builder => ({
     getVisitorsTodays: builder.query<IVisitorLogResponse, { date: string }>({
@@ -78,11 +80,24 @@ export const visitorApi = createApi({
       invalidatesTags: ['VisitorsTodays', 'VisitorsReturned'],
     }),
 
-    checkIDNumber: builder.query<{ results: [] }, { strId: string }>({
+    checkIDNumber: builder.query<ICheckIDNumberResponse, { strId: string }>({
       query: ({ strId }) => ({
-        url: `visitors-log/public/visit-log/?strId=${strId}&logOut=IS NULL&returned=FALSE`,
+        url: `visitors-log/public/visit-log/2?strId='${strId}'&logOut=IS NULL&returned=FALSE`,
         method: 'GET',
       }),
+      providesTags: ['GetVisitorIdNumber'],
+    }),
+
+    signOutVisitor: builder.mutation<string, { strId: string; dateNow: string; logOut: string }>({
+      query: ({ strId, dateNow, logOut }) => ({
+        url: `visitors-log/public/visit-log/${strId}/${dateNow}`,
+        method: 'PUT',
+        body: {
+          logOut,
+          returned: true,
+        },
+      }),
+      invalidatesTags: ['GetVisitorIdNumber'],
     }),
   }),
 });
@@ -96,4 +111,5 @@ export const {
   useSignInVisitorLogMutation,
   useUploadVisitorImagesMutation,
   useCheckIDNumberQuery,
+  useSignOutVisitorMutation,
 } = visitorApi;

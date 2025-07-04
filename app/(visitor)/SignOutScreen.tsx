@@ -1,13 +1,19 @@
+import { useCheckIDNumberQuery, useSignOutVisitorMutation } from '@/features/visitors/api/visitorApi';
+import { formattedDateTimeWithSpace } from '@/features/visitors/utils/FormattedDate';
 import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Animated, Keyboard, SafeAreaView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Animated, Keyboard, SafeAreaView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 export default function SignOutScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [ticketNumber, setTicketNumber] = useState('');
   const [cameraActive, setCameraActive] = useState(false);
+  const [error, setError] = useState('');
   const animatedValue = useRef(new Animated.Value(0)).current;
+  const { data: idNumberData } = useCheckIDNumberQuery({ strId: ticketNumber }, { skip: !ticketNumber });
+  const [signOutVisitor, { isLoading: isSigningOut }] = useSignOutVisitorMutation();
 
   useEffect(() => {
     if (cameraActive) {
@@ -33,6 +39,8 @@ export default function SignOutScreen() {
     }
   }, [cameraActive, animatedValue]);
 
+
+
   if (!permission) {
     return <View />;
   }
@@ -56,23 +64,64 @@ export default function SignOutScreen() {
   const handleBarCodeScanned = (scanResult: BarcodeScanningResult) => {
     setTicketNumber(scanResult.data);
     setCameraActive(false);
-  };
-
-  const handleSignOut = () => {
-    if (!ticketNumber) {
-      Alert.alert("Error", "Please scan a QR code or enter ticket number");
-      return;
-    }
-    console.log('Sign Out with ticket:', ticketNumber);
+    setError('');
   };
 
   const handleBack = () => {
-    router.push('/(main)')
+    router.push('/(main)');
   };
 
   const toggleCamera = () => {
     setCameraActive(!cameraActive);
+    if (error) {
+      setError('');
+    }
   };
+
+  const handleTicketNumberChange = (text: string) => {
+    setTicketNumber(text);
+    if (error) {
+      setError('');
+    }
+  };
+
+  const handleSignOut = async () => {
+    if (!ticketNumber) {
+      setError("Please scan a QR code or enter ticket number");
+      return;
+    }
+
+    if (idNumberData?.results.length === 0) {
+      setError("Ticket number not found");
+      return;
+    }
+
+    try {
+
+      await signOutVisitor({
+        strId: ticketNumber,
+        dateNow: idNumberData?.results?.[0]?.strLogIn as string,
+        logOut: formattedDateTimeWithSpace(new Date()),
+      });
+
+      setTicketNumber('');
+
+      router.replace({
+        pathname: '/(visitor)/SignOutSuccess',
+        params: { ticketNumber, name: idNumberData?.results?.[0]?.name as string },
+      });
+
+    } catch (error) {
+      console.log(error);
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to sign out',
+        text2: 'Please try again',
+      });
+    }
+  };
+
+
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -94,7 +143,7 @@ export default function SignOutScreen() {
                   barcodeScannerSettings={{
                     barcodeTypes: ['qr'],
                   }}
-                  facing='front'
+                  facing='back'
                 />
                 <View className="absolute inset-0 flex items-center justify-center">
                   <View className="w-64 h-64 border-2 border-white border-opacity-50 relative">
@@ -106,7 +155,6 @@ export default function SignOutScreen() {
                   <Text className="text-white text-sm mt-4 bg-black bg-opacity-50 px-3 py-1 rounded">
                     Position QR code within frame
                   </Text>
-
                 </View>
               </View>
             ) : (
@@ -122,11 +170,12 @@ export default function SignOutScreen() {
 
           <View className="mb-8">
             <TextInput
-              className="bg-white border border-gray-200 rounded-lg px-4 py-4 text-base items-center text-center"
-              placeholder="Ticket Number Or Scan QR Code"
+              className={`bg-white border ${error ? 'border-red-500' : 'border-gray-200'} rounded-lg px-4 py-6 text-base items-center text-center`}
+              placeholder={error || "Ticket Number Or Scan QR Code"}
+              placeholderTextColor={error ? "#ef4444" : "gray"}
               value={ticketNumber}
-              onChangeText={setTicketNumber}
-              keyboardType="numeric"
+              onChangeText={handleTicketNumberChange}
+              keyboardType="default"
             />
           </View>
 
@@ -134,9 +183,10 @@ export default function SignOutScreen() {
             <TouchableOpacity
               onPress={handleSignOut}
               className="bg-blue-400 rounded-full py-4 px-12 shadow-sm"
+              disabled={isSigningOut}
             >
               <Text className="text-white text-base font-semibold">
-                Sign Out
+                {isSigningOut ? "Signing Out..." : "Sign Out"}
               </Text>
             </TouchableOpacity>
           </View>

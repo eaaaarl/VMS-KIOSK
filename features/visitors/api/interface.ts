@@ -78,3 +78,7 @@ export interface ICreateVisitorLogPayload {
 export interface IUploadVisitorImagesPayload {
   photo: Blob;
 }
+
+export interface ICheckIDNumberResponse {
+  results: IVisitorLog[];
+}
