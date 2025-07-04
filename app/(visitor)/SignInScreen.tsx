@@ -18,6 +18,7 @@ import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
+  FlatList,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -312,18 +313,24 @@ export default function SignInScreen() {
                       {showDropdown && filteredVisitors.length > 0 && (
                         <View className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-50">
                           <View style={{ maxHeight: 200 }}>
-                            {filteredVisitors.slice(0, 5).map((item) => (
-                              <TouchableOpacity
-                                key={item.id.toString()}
-                                className="px-4 py-3 border-b border-gray-100"
-                                onPress={() => handleSelectVisitor(item)}
-                              >
-                                <Text className="text-gray-800 text-base">{item.name}</Text>
-                                <Text className="text-gray-500 text-sm">
-                                  {item.contactNo1.toString() ?? item.contactNo2.toString() ?? item.contactNo3.toString()}
-                                </Text>
-                              </TouchableOpacity>
-                            ))}
+                            <FlatList
+                              data={filteredVisitors.slice(0, 5)}
+                              keyExtractor={(item) => item.id.toString()}
+                              renderItem={({ item }) => (
+                                <TouchableOpacity
+                                  className="px-4 py-3 border-b border-gray-100"
+                                  onPress={() => handleSelectVisitor(item)}
+                                >
+                                  <Text className="text-gray-800 text-base">{item.name}</Text>
+                                  <Text className="text-gray-500 text-sm">
+                                    {item.contactNo1.toString() ?? item.contactNo2.toString() ?? item.contactNo3.toString()}
+                                  </Text>
+                                </TouchableOpacity>
+                              )}
+                              scrollEnabled={true}
+                              nestedScrollEnabled={true}
+                              showsVerticalScrollIndicator={false}
+                            />
                           </View>
                         </View>
                       )}
@@ -369,18 +376,24 @@ export default function SignInScreen() {
                       {showOfficeDropdown && availableOffices.length > 0 && (
                         <View className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-50">
                           <View style={{ maxHeight: 200 }}>
-                            {availableOffices.map((item) => (
-                              <TouchableOpacity
-                                key={item.id.toString()}
-                                className="px-4 py-3 border-b border-gray-100"
-                                onPress={() => {
-                                  setFormData(prev => ({ ...prev, officeToVisitId: item.id as number }));
-                                  setShowOfficeDropdown(false);
-                                }}
-                              >
-                                <Text className="text-gray-800 text-base">{item.name}</Text>
-                              </TouchableOpacity>
-                            ))}
+                            <FlatList
+                              data={availableOffices}
+                              keyExtractor={(item) => item.id.toString()}
+                              renderItem={({ item }) => (
+                                <TouchableOpacity
+                                  className="px-4 py-3 border-b border-gray-100"
+                                  onPress={() => {
+                                    setFormData(prev => ({ ...prev, officeToVisitId: item.id as number }));
+                                    setShowOfficeDropdown(false);
+                                  }}
+                                >
+                                  <Text className="text-gray-800 text-base">{item.name}</Text>
+                                </TouchableOpacity>
+                              )}
+                              scrollEnabled={true}
+                              nestedScrollEnabled={true}
+                              showsVerticalScrollIndicator={false}
+                            />
                           </View>
                         </View>
                       )}
@@ -407,23 +420,29 @@ export default function SignInScreen() {
                       {showServiceDropdown && availableServices.length > 0 && (
                         <View className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-50">
                           <View style={{ maxHeight: 200 }}>
-                            {availableServices.map((item) => (
-                              <TouchableOpacity
-                                key={item.id.toString()}
-                                className="px-4 py-3 border-b border-gray-100"
-                                onPress={() => {
-                                  setFormData(prev => ({
-                                    ...prev,
-                                    reasonForVisit: item.name,
-                                    serviceId: item.id === 0 ? null : item.id,
-                                    otherReason: item.id === 0 ? prev.otherReason : null
-                                  }));
-                                  setShowServiceDropdown(false);
-                                }}
-                              >
-                                <Text className="text-gray-800 text-base">{item.name}</Text>
-                              </TouchableOpacity>
-                            ))}
+                            <FlatList
+                              data={availableServices}
+                              keyExtractor={(item) => item.id.toString()}
+                              renderItem={({ item }) => (
+                                <TouchableOpacity
+                                  className="px-4 py-3 border-b border-gray-100"
+                                  onPress={() => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      reasonForVisit: item.name,
+                                      serviceId: item.id === 0 ? null : item.id,
+                                      otherReason: item.id === 0 ? prev.otherReason : null
+                                    }));
+                                    setShowServiceDropdown(false);
+                                  }}
+                                >
+                                  <Text className="text-gray-800 text-base">{item.name}</Text>
+                                </TouchableOpacity>
+                              )}
+                              scrollEnabled={true}
+                              nestedScrollEnabled={true}
+                              showsVerticalScrollIndicator={false}
+                            />
                           </View>
                         </View>
                       )}
