@@ -1,3 +1,4 @@
+import VisitorInformationModal from "@/features/kiosk/components/VisitorInformation";
 import { useGetVisitorsReturnedQuery } from "@/features/visitors/api/visitorApi";
 import { formattedDate } from "@/features/visitors/utils/FormattedDate";
 import { useAppSelector } from "@/lib/redux/hook";
@@ -8,11 +9,13 @@ import { SafeAreaView, Text, TouchableOpacity, View, useWindowDimensions } from 
 let hasShownVisitorInfoGlobal = false;
 
 export default function Index() {
+
   const router = useRouter();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
   const { kioskSettingId } = useAppSelector((state) => state.kiosk);
   const [componentMounted, setComponentMounted] = useState(false);
+  const [isInformationModalOpen, setIsInformationModalOpen] = useState(false);
 
   useEffect(() => {
     setComponentMounted(true);
@@ -36,7 +39,6 @@ export default function Index() {
   );
 
   const countReturned = visitorsReturned?.results?.length || 0;
-
   useEffect(() => {
     if (
       componentMounted &&
@@ -50,14 +52,12 @@ export default function Index() {
 
       const timeoutId = setTimeout(() => {
         hasShownVisitorInfoGlobal = true;
-        router.push('/VisitorInformationScreen');
+        setIsInformationModalOpen(true);
       }, 50);
 
       return () => clearTimeout(timeoutId);
     }
   }, [componentMounted, kioskSettingId, isSuccess, isLoading, countReturned, router]);
-
-
 
   return (
     <SafeAreaView className="flex-1 bg-gradient-to-br from-blue-400 to-blue-600">
@@ -117,6 +117,11 @@ export default function Index() {
         </TouchableOpacity>
 
       </View>
+
+      <VisitorInformationModal
+        isOpen={isInformationModalOpen}
+        onClose={() => setIsInformationModalOpen(false)}
+      />
     </SafeAreaView>
   );
 }
