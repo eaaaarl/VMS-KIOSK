@@ -15,13 +15,12 @@ import { useAppDispatch, useAppSelector } from '@/lib/redux/hook';
 import { setCardImageId, setFaceImageId } from '@/lib/redux/state/visitorSlice';
 import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  FlatList,
+  Dimensions,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
@@ -30,10 +29,13 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+const { height: screenHeight } = Dimensions.get('window');
+
 export default function SignInScreen() {
   const insets = useSafeAreaInsets();
   const dispatch = useAppDispatch();
   const { faceImageId, cardImageId } = useAppSelector((state) => state.visitor);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [formData, setFormData] = useState<IFormData>({
     visitorName: '',
     visitorId: 0,
@@ -78,6 +80,22 @@ export default function SignInScreen() {
   const [filteredVisitors, setFilteredVisitors] = useState(availableVisitors);
   const [idSnapshotTaken, setIdSnapshotTaken] = useState(false);
   const [photoSnapshotTaken, setPhotoSnapshotTaken] = useState(false);
+
+  // Keyboard event listeners
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (event) => {
+      setKeyboardHeight(event.endCoordinates.height);
+    });
+
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const handleInputChange = (field: keyof IFormData, value: string) => {
     setFormData(prev => ({
@@ -219,27 +237,30 @@ export default function SignInScreen() {
     formData.reasonForVisit !== '' &&
     (formData.reasonForVisit !== 'Other' || (formData.otherReason && formData.otherReason.trim() !== ''));
 
+  // Calculate available height for content
+  const availableHeight = screenHeight - insets.top - insets.bottom - keyboardHeight;
+  const shouldShowSidebar = availableHeight > 600 && keyboardHeight === 0;
+
   return (
-    <View className="flex-1 bg-gradient-to-br bg-white from-blue-400 to-blue-600">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
-        style={{
-          paddingTop: insets.top,
-          paddingBottom: Math.max(insets.bottom, 20)
-        }}
-      >
+    <View
+      className="flex-1 bg-white"
+      style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+    >
+      <TouchableWithoutFeedback onPress={dismissKeyboard}>
         <View className="flex-1">
-          <TouchableWithoutFeedback onPress={dismissKeyboard}>
-            <View className="flex-1 flex-row">
-              {/* Left Side - Form Content */}
-              <View className="flex-1 px-8 py-6">
-                <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          <View className="flex-row flex-1">
+            <View className="flex-1">
+              <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                className="flex-1"
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+              >
+                <View className="flex-1 px-8 py-6">
                   <Text className="text-3xl font-bold text-gray-800 mb-8">
                     Sign In
                   </Text>
 
-                  {/* Camera Actions */}
+                  {/* Camera Buttons */}
                   <View className="flex-row gap-4 mb-8">
                     <TouchableOpacity
                       onPress={handleIdSnapshot}
@@ -274,7 +295,7 @@ export default function SignInScreen() {
 
                   {/* Form Fields */}
                   <View className="gap-6">
-                    {/* Visitor Name */}
+                    {/* Visitor Name with Dropdown */}
                     <View className="relative z-40">
                       <Text className="text-base font-semibold text-gray-700 mb-2">
                         Visitor&apos;s Name <Text className="text-red-500">*</Text>
@@ -286,14 +307,14 @@ export default function SignInScreen() {
                         value={formData.visitorName}
                         onChangeText={(value) => handleInputChange('visitorName', value)}
                         onFocus={() => setShowDropdown(true)}
+                        returnKeyType="next"
                       />
                       {showDropdown && filteredVisitors.length > 0 && (
-                        <View className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 z-10 max-h-40">
-                          <FlatList
-                            data={filteredVisitors}
-                            keyExtractor={(item) => item.id.toString()}
-                            renderItem={({ item }) => (
+                        <View className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-50">
+                          <View style={{ maxHeight: 200 }}>
+                            {filteredVisitors.slice(0, 5).map((item) => (
                               <TouchableOpacity
+                                key={item.id.toString()}
                                 className="px-4 py-3 border-b border-gray-100"
                                 onPress={() => handleSelectVisitor(item)}
                               >
@@ -302,8 +323,8 @@ export default function SignInScreen() {
                                   {item.contactNo1.toString() ?? item.contactNo2.toString() ?? item.contactNo3.toString()}
                                 </Text>
                               </TouchableOpacity>
-                            )}
-                          />
+                            ))}
+                          </View>
                         </View>
                       )}
                     </View>
@@ -320,6 +341,7 @@ export default function SignInScreen() {
                         value={formData.mobileNumber}
                         onChangeText={(value) => handleInputChange('mobileNumber', value)}
                         keyboardType="phone-pad"
+                        returnKeyType="next"
                       />
                     </View>
 
@@ -330,7 +352,6 @@ export default function SignInScreen() {
                       </Text>
                       <TouchableOpacity
                         onPress={() => {
-                          Keyboard.dismiss();
                           setShowOfficeDropdown(!showOfficeDropdown);
                           setShowServiceDropdown(false);
                           setShowDropdown(false);
@@ -346,12 +367,11 @@ export default function SignInScreen() {
                         <View className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-blue-500" />
                       </TouchableOpacity>
                       {showOfficeDropdown && availableOffices.length > 0 && (
-                        <View className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 z-10 max-h-40">
-                          <FlatList
-                            data={availableOffices}
-                            keyExtractor={(item) => item.id.toString()}
-                            renderItem={({ item }) => (
+                        <View className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-50">
+                          <View style={{ maxHeight: 200 }}>
+                            {availableOffices.map((item) => (
                               <TouchableOpacity
+                                key={item.id.toString()}
                                 className="px-4 py-3 border-b border-gray-100"
                                 onPress={() => {
                                   setFormData(prev => ({ ...prev, officeToVisitId: item.id as number }));
@@ -360,8 +380,8 @@ export default function SignInScreen() {
                               >
                                 <Text className="text-gray-800 text-base">{item.name}</Text>
                               </TouchableOpacity>
-                            )}
-                          />
+                            ))}
+                          </View>
                         </View>
                       )}
                     </View>
@@ -373,7 +393,6 @@ export default function SignInScreen() {
                       </Text>
                       <TouchableOpacity
                         onPress={() => {
-                          Keyboard.dismiss();
                           setShowServiceDropdown(!showServiceDropdown);
                           setShowOfficeDropdown(false);
                           setShowDropdown(false);
@@ -386,12 +405,11 @@ export default function SignInScreen() {
                         <View className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-blue-500" />
                       </TouchableOpacity>
                       {showServiceDropdown && availableServices.length > 0 && (
-                        <View className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 z-10 max-h-40">
-                          <FlatList
-                            data={availableServices}
-                            keyExtractor={(item) => item.id.toString()}
-                            renderItem={({ item }) => (
+                        <View className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-50">
+                          <View style={{ maxHeight: 200 }}>
+                            {availableServices.map((item) => (
                               <TouchableOpacity
+                                key={item.id.toString()}
                                 className="px-4 py-3 border-b border-gray-100"
                                 onPress={() => {
                                   setFormData(prev => ({
@@ -405,8 +423,8 @@ export default function SignInScreen() {
                               >
                                 <Text className="text-gray-800 text-base">{item.name}</Text>
                               </TouchableOpacity>
-                            )}
-                          />
+                            ))}
+                          </View>
                         </View>
                       )}
                       {formData.reasonForVisit === 'Other' && (
@@ -426,10 +444,74 @@ export default function SignInScreen() {
                         </View>
                       )}
                     </View>
-                  </View>
-                </ScrollView>
-              </View>
 
+                    {/* Mobile Action Buttons - Show when sidebar is hidden */}
+                    {!shouldShowSidebar && (
+                      <View className="mt-8 gap-4">
+                        {/* Status indicators */}
+                        <View className="p-4 bg-gray-50 rounded-lg">
+                          <Text className="text-sm font-medium text-gray-600 mb-3">Status</Text>
+                          <View className="gap-2">
+                            <View className="flex-row items-center gap-2">
+                              <View className={`w-3 h-3 rounded-full ${idSnapshotTaken ? 'bg-green-500' : 'bg-red-400'}`} />
+                              <Text className="text-sm text-gray-700">ID Snapshot</Text>
+                            </View>
+                            <View className="flex-row items-center gap-2">
+                              <View className={`w-3 h-3 rounded-full ${photoSnapshotTaken ? 'bg-green-500' : 'bg-yellow-400'}`} />
+                              <Text className="text-sm text-gray-700">Photo Snapshot</Text>
+                            </View>
+                            <View className="flex-row items-center gap-2">
+                              <View className={`w-3 h-3 rounded-full ${isFormValid ? 'bg-green-500' : 'bg-gray-400'}`} />
+                              <Text className="text-sm text-gray-700">Form Complete</Text>
+                            </View>
+                          </View>
+                        </View>
+
+                        {/* Generated ID */}
+                        {nextAvailableId && (
+                          <View className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <Text className="text-sm font-medium text-blue-800 mb-1">
+                              Generated ID
+                            </Text>
+                            <Text className="text-lg font-bold text-blue-900">
+                              {id}
+                            </Text>
+                          </View>
+                        )}
+
+                        {/* Action Buttons */}
+                        <View className="gap-3">
+                          <TouchableOpacity
+                            onPress={handleBack}
+                            className="bg-gray-100 rounded-lg py-4 border border-gray-200"
+                          >
+                            <Text className="text-gray-700 text-lg font-medium text-center">
+                              Back
+                            </Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            onPress={handleSignIn}
+                            disabled={!isFormValid || isSignInLoading || isUploadingImages}
+                            className={`rounded-lg py-4 ${isFormValid && !isSignInLoading && !isUploadingImages
+                              ? 'bg-blue-500'
+                              : 'bg-blue-300'
+                              }`}
+                          >
+                            <Text className="text-white text-lg font-semibold text-center">
+                              {isSignInLoading || isUploadingImages ? 'Signing In...' : 'Sign In'}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                </View>
+              </KeyboardAvoidingView>
+            </View>
+
+            {/* Sidebar - Show only when there's enough space */}
+            {shouldShowSidebar && (
               <View className="w-80 px-6 py-6 bg-gray-50 border-l border-gray-200">
                 <View className="flex-1 justify-between">
                   <View>
@@ -489,10 +571,10 @@ export default function SignInScreen() {
                   </View>
                 </View>
               </View>
-            </View>
-          </TouchableWithoutFeedback>
+            )}
+          </View>
         </View>
-      </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </View>
   );
 }

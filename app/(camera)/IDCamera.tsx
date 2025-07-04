@@ -1,9 +1,10 @@
+import { formattedDateTimeWithDashes } from '@/features/visitors/utils/FormattedDate';
 import { setCardImageId } from '@/lib/redux/state/visitorSlice';
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 
@@ -13,6 +14,7 @@ export default function IDCamera() {
   const cameraRef = useRef<CameraView>(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
 
   const { width, height } = Dimensions.get('window');
   const isTablet = width >= 768 || height >= 1024;
@@ -21,7 +23,22 @@ export default function IDCamera() {
   const cardWidth = isTablet ? Math.min(width * 0.6, 400) : 300;
   const cardHeight = cardWidth * 0.63; // Standard ID card ratio
   const headerHeight = isTablet ? 80 : 60;
-  const bottomPadding = isTablet ? 40 : 20;
+  const bottomPadding = isTablet ? 50 : 20;
+
+  // Countdown timer effect
+  useEffect(() => {
+    let timer: any;
+    if (countdown && countdown > 0) {
+      timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+    } else if (countdown === 0) {
+      takePicture();
+      setCountdown(null);
+    }
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countdown]);
 
   if (!permission) {
     return <View />;
@@ -49,6 +66,16 @@ export default function IDCamera() {
     setCameraReady(true);
   };
 
+  const startCountdown = () => {
+    if (cameraReady && !isCapturing) {
+      setCountdown(3); // 3 second countdown
+    }
+  };
+
+  const cancelCountdown = () => {
+    setCountdown(null);
+  };
+
   const takePicture = async () => {
     if (cameraRef.current && cameraReady && !isCapturing) {
       try {
@@ -59,11 +86,8 @@ export default function IDCamera() {
           skipProcessing: false,
         });
 
-        const now = new Date();
-        const formattedDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
-        const formattedTime = now.toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-mm-ss
-        const newFilename = `id_${formattedDate}_${formattedTime}.png`;
-
+        const timestamp = formattedDateTimeWithDashes(new Date());
+        const newFilename = `id_${timestamp}.png`;
         const fileUri = `${FileSystem.cacheDirectory}${newFilename}`;
 
         await FileSystem.moveAsync({
@@ -71,10 +95,8 @@ export default function IDCamera() {
           to: fileUri
         });
 
-        dispatch(setCardImageId({ cardImageId: newFilename }))
-
-        router.replace('/(visitor)/SignInScreen')
-
+        dispatch(setCardImageId({ cardImageId: newFilename }));
+        router.replace('/(visitor)/SignInScreen');
       } catch (error) {
         console.error('Error taking picture:', error);
         Alert.alert('Error', 'Failed to capture photo. Please try again.');
@@ -123,9 +145,18 @@ export default function IDCamera() {
         style={{ top: headerHeight, bottom: 0 }}
       >
         <View className="justify-center items-center">
+          {/* Countdown Display */}
+          {countdown !== null && (
+            <View className="absolute z-20 bg-black/70 rounded-full w-20 h-20 justify-center items-center">
+              <Text className="text-white text-4xl font-bold">
+                {countdown}
+              </Text>
+            </View>
+          )}
+
           {/* ID Card Frame */}
           <View
-            className="border-2 border-white border-dashed rounded-lg bg-transparent"
+            className={`border-2 border-dashed rounded-lg bg-transparent ${countdown !== null ? 'border-yellow-400' : 'border-white'}`}
             style={{
               width: cardWidth,
               height: cardHeight,
@@ -134,7 +165,7 @@ export default function IDCamera() {
             {/* Top instruction */}
             <View className="absolute left-0 right-0" style={{ top: isTablet ? -60 : -48 }}>
               <Text className={`text-white text-center font-medium ${isTablet ? 'text-lg' : 'text-sm'}`}>
-                Align ID within the frame
+                {countdown !== null ? 'Get Ready!' : 'Align ID within the frame'}
               </Text>
             </View>
 
@@ -198,31 +229,27 @@ export default function IDCamera() {
         </View>
       </View>
 
+      {/* Capture Button */}
       <View
-        className="absolute bottom-3 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent"
-        style={{ paddingBottom: bottomPadding, paddingTop: 16 }}
+        className="absolute left-0 right-0 items-center"
+        style={{ bottom: bottomPadding }}
       >
-        <View className="items-center">
+        {countdown === null ? (
           <TouchableOpacity
-            onPress={takePicture}
+            onPress={startCountdown}
             disabled={!cameraReady || isCapturing}
-            className={`rounded-full ${isTablet ? 'py-5 px-12' : 'py-4 px-8'} ${cameraReady && !isCapturing ? 'bg-yellow-400' : 'bg-gray-600'
-              }`}
-            style={{
-              minWidth: isTablet ? 200 : 150,
-              minHeight: isTablet ? 60 : 50,
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
+            className={`rounded-full p-4 ${!cameraReady || isCapturing ? 'bg-gray-500' : 'bg-white'}`}
           >
-            <Text
-              className={`font-semibold ${isTablet ? 'text-xl' : 'text-lg'} ${cameraReady && !isCapturing ? 'text-black' : 'text-gray-400'
-                }`}
-            >
-              {isCapturing ? 'Capturing...' : 'Take Snapshot'}
-            </Text>
+            <View className="w-16 h-16 rounded-full border-4 border-red-500" />
           </TouchableOpacity>
-        </View>
+        ) : (
+          <TouchableOpacity
+            onPress={cancelCountdown}
+            className="rounded-full p-4 bg-red-500"
+          >
+            <Text className="text-white font-bold">Cancel</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
