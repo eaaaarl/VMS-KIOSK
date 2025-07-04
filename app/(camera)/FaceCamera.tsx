@@ -5,7 +5,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
-import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 
 export default function FaceCamera() {
@@ -15,6 +15,15 @@ export default function FaceCamera() {
   const [cameraReady, setCameraReady] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
 
+  const { width, height } = Dimensions.get('window');
+  const isTablet = width >= 768 || height >= 1024;
+
+  // Responsive dimensions
+  const ovalWidth = isTablet ? Math.min(width * 0.4, 350) : 250;
+  const ovalHeight = isTablet ? Math.min(height * 0.45, 450) : 320;
+  const headerHeight = isTablet ? 80 : 60;
+  const bottomPadding = isTablet ? 40 : 20;
+
   if (!permission) {
     return <View />;
   }
@@ -22,14 +31,16 @@ export default function FaceCamera() {
   if (!permission.granted) {
     return (
       <View className="flex-1 bg-black items-center justify-center px-6">
-        <Text className="text-white text-lg text-center mb-4">
+        <Text className={`text-white text-center mb-6 ${isTablet ? 'text-2xl' : 'text-lg'}`}>
           We need your permission to show the camera
         </Text>
         <TouchableOpacity
           onPress={requestPermission}
-          className="bg-yellow-400 rounded-full py-3 px-6"
+          className={`bg-yellow-400 rounded-full ${isTablet ? 'py-4 px-12' : 'py-3 px-6'}`}
         >
-          <Text className="text-black font-semibold">Grant Permission</Text>
+          <Text className={`text-black font-semibold ${isTablet ? 'text-xl' : 'text-base'}`}>
+            Grant Permission
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -61,7 +72,7 @@ export default function FaceCamera() {
 
         dispatch(setFaceImageId({ faceImageId: newFilename }))
 
-        router.push('/(visitor)/SignInScreen')
+        router.replace('/(visitor)/SignInScreen')
 
       } catch (error) {
         console.error('Error taking picture:', error);
@@ -74,22 +85,29 @@ export default function FaceCamera() {
 
   return (
     <View className="flex-1 bg-black">
-      <View className="absolute top-0 left-0 right-0 z-10 bg-red-500 pt-12 pb-4 px-4">
+      {/* Header */}
+      <View
+        className="absolute top-0 left-0 right-0 z-10 bg-red-500 px-4"
+        style={{ paddingTop: isTablet ? 20 : 48, paddingBottom: 16, height: headerHeight }}
+      >
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center">
-            <Ionicons name="person-outline" size={24} color="white" />
-            <Text className="text-white text-lg font-semibold ml-2">
+            <Ionicons name="person-outline" size={isTablet ? 32 : 24} color="white" />
+            <Text className={`text-white font-semibold ml-3 ${isTablet ? 'text-2xl' : 'text-lg'}`}>
               Capture Face
             </Text>
           </View>
-          <TouchableOpacity className="p-1" onPress={() => router.back()}>
-            <Ionicons name="close" size={24} color="white" />
+          <TouchableOpacity
+            className={`p-2 ${isTablet ? 'p-3' : 'p-1'}`}
+            onPress={() => router.back()}
+          >
+            <Ionicons name="close" size={isTablet ? 32 : 24} color="white" />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Camera View - NO CHILDREN */}
-      <View className="flex-1 mt-20">
+      {/* Camera View */}
+      <View className="flex-1" style={{ marginTop: headerHeight }}>
         <CameraView
           ref={cameraRef}
           style={{ flex: 1 }}
@@ -98,75 +116,85 @@ export default function FaceCamera() {
         />
       </View>
 
-      <View className="absolute top-20 left-0 right-0 bottom-0 justify-center items-center pointer-events-none">
-        <View className="absolute top-20 left-0 right-0 bottom-0 justify-center items-center pointer-events-none">
+      {/* Face Guide Overlay */}
+      <View
+        className="absolute left-0 right-0 justify-center items-center pointer-events-none"
+        style={{ top: headerHeight, bottom: 0 }}
+      >
+        <View className="justify-center items-center">
           {/* Oval face guide */}
           <View
             className="border-2 border-white border-dashed bg-transparent"
             style={{
-              width: 250,
-              height: 320,
-              borderRadius: 125, // Makes it oval
-            }}>
-
+              width: ovalWidth,
+              height: ovalHeight,
+              borderRadius: ovalWidth / 2,
+            }}
+          >
             {/* Top instruction */}
-            <View className="absolute -top-12 left-0 right-0">
-              <Text className="text-white text-center text-sm font-medium">
+            <View className="absolute left-0 right-0" style={{ top: isTablet ? -60 : -48 }}>
+              <Text className={`text-white text-center font-medium ${isTablet ? 'text-lg' : 'text-sm'}`}>
                 Position your face within the oval
               </Text>
             </View>
 
             {/* Bottom instruction */}
-            <View className="absolute -bottom-8 left-0 right-0">
-              <Text className="text-white text-center text-xs opacity-80">
+            <View className="absolute left-0 right-0" style={{ bottom: isTablet ? -40 : -32 }}>
+              <Text className={`text-white text-center opacity-80 ${isTablet ? 'text-base' : 'text-xs'}`}>
                 Keep your face centered and well-lit
               </Text>
             </View>
           </View>
 
-          {/* Optional: Corner brackets for better visual guidance */}
-          <View className="absolute" style={{ width: 250, height: 320 }}>
+          {/* Corner brackets */}
+          <View className="absolute" style={{ width: ovalWidth, height: ovalHeight }}>
             {/* Top-left bracket */}
             <View className="absolute top-0 left-0">
-              <View className="w-6 h-0.5 bg-yellow-400" />
-              <View className="w-0.5 h-6 bg-yellow-400" />
+              <View className={`bg-yellow-400 ${isTablet ? 'w-10 h-1' : 'w-6 h-0.5'}`} />
+              <View className={`bg-yellow-400 ${isTablet ? 'w-1 h-10' : 'w-0.5 h-6'}`} />
             </View>
 
             {/* Top-right bracket */}
             <View className="absolute top-0 right-0">
-              <View className="w-6 h-0.5 bg-yellow-400" />
-              <View className="w-0.5 h-6 bg-yellow-400 ml-auto" />
+              <View className={`bg-yellow-400 ${isTablet ? 'w-10 h-1' : 'w-6 h-0.5'}`} />
+              <View className={`bg-yellow-400 ml-auto ${isTablet ? 'w-1 h-10' : 'w-0.5 h-6'}`} />
             </View>
 
             {/* Bottom-left bracket */}
             <View className="absolute bottom-0 left-0">
-              <View className="w-0.5 h-6 bg-yellow-400" />
-              <View className="w-6 h-0.5 bg-yellow-400" />
+              <View className={`bg-yellow-400 ${isTablet ? 'w-1 h-10' : 'w-0.5 h-6'}`} />
+              <View className={`bg-yellow-400 ${isTablet ? 'w-10 h-1' : 'w-6 h-0.5'}`} />
             </View>
 
             {/* Bottom-right bracket */}
             <View className="absolute bottom-0 right-0">
-              <View className="w-0.5 h-6 bg-yellow-400 ml-auto" />
-              <View className="w-6 h-0.5 bg-yellow-400" />
+              <View className={`bg-yellow-400 ml-auto ${isTablet ? 'w-1 h-10' : 'w-0.5 h-6'}`} />
+              <View className={`bg-yellow-400 ${isTablet ? 'w-10 h-1' : 'w-6 h-0.5'}`} />
             </View>
           </View>
         </View>
       </View>
 
-      <View className="absolute bottom-0 left-0 right-0 pb-8 pt-4 bg-gradient-to-t from-black/80 to-transparent">
+      {/* Bottom Controls */}
+      <View
+        className="absolute bottom-3 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent"
+        style={{ paddingBottom: bottomPadding, paddingTop: 16 }}
+      >
         <View className="items-center">
           <TouchableOpacity
             onPress={takePicture}
             disabled={!cameraReady || isCapturing}
-            className={`rounded-full py-4 px-8 ${cameraReady && !isCapturing
-              ? 'bg-yellow-400'
-              : 'bg-gray-600'
+            className={`rounded-full ${isTablet ? 'py-5 px-12' : 'py-4 px-8'} ${cameraReady && !isCapturing ? 'bg-yellow-400' : 'bg-gray-600'
               }`}
+            style={{
+              minWidth: isTablet ? 200 : 150,
+              minHeight: isTablet ? 60 : 50,
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
           >
             <Text
-              className={`text-lg font-semibold ${cameraReady && !isCapturing
-                ? 'text-black'
-                : 'text-gray-400'
+              className={`font-semibold ${isTablet ? 'text-xl' : 'text-lg'} ${cameraReady && !isCapturing ? 'text-black' : 'text-gray-400'
                 }`}
             >
               {isCapturing ? 'Capturing...' : 'Take Snapshot'}

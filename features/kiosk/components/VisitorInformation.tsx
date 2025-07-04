@@ -1,3 +1,4 @@
+// VisitorInformationModal.js - Fixed version
 import { useConfig } from '@/features/config/hooks/useConfig';
 import { useGetVisitorsLogByDayQuery, useGetVisitorsReturnedQuery, useGetVisitorsTodaysQuery } from '@/features/visitors/api/visitorApi';
 import { formattedDate } from '@/features/visitors/utils/FormattedDate';
@@ -35,8 +36,10 @@ export default function VisitorInformationModal({ isOpen, onClose }: VisitorInfo
     >
       <SafeAreaView className="flex-1 bg-black/50 justify-center">
         <ScrollView className="flex-1 px-4">
-          <View className="flex-1 justify-center items-center">
-            <View className="bg-white rounded-2xl w-full shadow-lg overflow-hidden">
+          <View className="flex-1 justify-center items-center mt-10">
+            <View
+              className="bg-white rounded-2xl w-full overflow-hidden"
+            >
               <View className="bg-red-400 px-4 py-4 flex-row justify-between items-center">
                 <Text className="text-white text-xl font-bold tracking-wider">
                   NUMBER INFORMATION
@@ -89,17 +92,17 @@ export default function VisitorInformationModal({ isOpen, onClose }: VisitorInfo
                   <Text className="text-gray-700 text-base"> not signed out/unreturned numbers?</Text>
                 </View>
 
-                <View className="flex-col gap-3">
+                <View className="flex-row gap-3">
                   <TouchableOpacity
                     onPress={onClose}
-                    className="bg-blue-500 px-4 py-3 rounded-full w-full"
+                    className="bg-blue-500 px-4 py-3 rounded-full"
                   >
                     <Text className="text-white text-center font-medium text-base">Ask me next time</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     onPress={() => { }}
-                    className="bg-red-400 px-4 py-3 rounded-full w-full"
+                    className="bg-red-400 px-4 py-3 rounded-full"
                   >
                     <Text className="text-white text-center font-medium text-base">Return all {countReturned} numbers</Text>
                   </TouchableOpacity>

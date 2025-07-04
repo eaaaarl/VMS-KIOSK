@@ -4,7 +4,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
-import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 
 export default function IDCamera() {
@@ -14,6 +14,15 @@ export default function IDCamera() {
   const [cameraReady, setCameraReady] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
 
+  const { width, height } = Dimensions.get('window');
+  const isTablet = width >= 768 || height >= 1024;
+
+  // Responsive dimensions for ID card frame
+  const cardWidth = isTablet ? Math.min(width * 0.6, 400) : 300;
+  const cardHeight = cardWidth * 0.63; // Standard ID card ratio
+  const headerHeight = isTablet ? 80 : 60;
+  const bottomPadding = isTablet ? 40 : 20;
+
   if (!permission) {
     return <View />;
   }
@@ -21,14 +30,16 @@ export default function IDCamera() {
   if (!permission.granted) {
     return (
       <View className="flex-1 bg-black items-center justify-center px-6">
-        <Text className="text-white text-lg text-center mb-4">
+        <Text className={`text-white text-center mb-6 ${isTablet ? 'text-2xl' : 'text-lg'}`}>
           We need your permission to show the camera
         </Text>
         <TouchableOpacity
           onPress={requestPermission}
-          className="bg-yellow-400 rounded-full py-3 px-6"
+          className={`bg-yellow-400 rounded-full ${isTablet ? 'py-4 px-12' : 'py-3 px-6'}`}
         >
-          <Text className="text-black font-semibold">Grant Permission</Text>
+          <Text className={`text-black font-semibold ${isTablet ? 'text-xl' : 'text-base'}`}>
+            Grant Permission
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -62,7 +73,7 @@ export default function IDCamera() {
 
         dispatch(setCardImageId({ cardImageId: newFilename }))
 
-        router.push('/(visitor)/SignInScreen')
+        router.replace('/(visitor)/SignInScreen')
 
       } catch (error) {
         console.error('Error taking picture:', error);
@@ -75,22 +86,29 @@ export default function IDCamera() {
 
   return (
     <View className="flex-1 bg-black">
-      <View className="absolute top-0 left-0 right-0 z-10 bg-red-500 pt-12 pb-4 px-4">
+      {/* Header */}
+      <View
+        className="absolute top-0 left-0 right-0 z-10 bg-red-500 px-4"
+        style={{ paddingTop: isTablet ? 20 : 48, paddingBottom: 16, height: headerHeight }}
+      >
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center">
-            <Ionicons name="card-outline" size={24} color="white" />
-            <Text className="text-white text-lg font-semibold ml-2">
+            <Ionicons name="card-outline" size={isTablet ? 32 : 24} color="white" />
+            <Text className={`text-white font-semibold ml-3 ${isTablet ? 'text-2xl' : 'text-lg'}`}>
               Capture ID
             </Text>
           </View>
-          <TouchableOpacity className="p-1" onPress={() => router.back()}>
-            <Ionicons name="close" size={24} color="white" />
+          <TouchableOpacity
+            className={`p-2 ${isTablet ? 'p-3' : 'p-1'}`}
+            onPress={() => router.back()}
+          >
+            <Ionicons name="close" size={isTablet ? 32 : 24} color="white" />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Camera View - NO CHILDREN */}
-      <View className="flex-1 mt-20">
+      {/* Camera View */}
+      <View className="flex-1" style={{ marginTop: headerHeight }}>
         <CameraView
           ref={cameraRef}
           style={{ flex: 1 }}
@@ -99,36 +117,106 @@ export default function IDCamera() {
         />
       </View>
 
-      {/* ID Card Overlay Guide - ABSOLUTE POSITIONED */}
-      <View className="absolute top-20 left-0 right-0 bottom-0 justify-center items-center pointer-events-none">
-        <View className="border-2 border-white border-dashed rounded-lg bg-transparent"
-          style={{
-            width: 300,
-            height: 300 * 0.63,
-          }}>
-          <View className="absolute -top-8 left-0 right-0">
-            <Text className="text-white text-center text-sm font-medium">
-              Align ID within the frame
-            </Text>
+      {/* ID Card Overlay Guide */}
+      <View
+        className="absolute left-0 right-0 justify-center items-center pointer-events-none"
+        style={{ top: headerHeight, bottom: 0 }}
+      >
+        <View className="justify-center items-center">
+          {/* ID Card Frame */}
+          <View
+            className="border-2 border-white border-dashed rounded-lg bg-transparent"
+            style={{
+              width: cardWidth,
+              height: cardHeight,
+            }}
+          >
+            {/* Top instruction */}
+            <View className="absolute left-0 right-0" style={{ top: isTablet ? -60 : -48 }}>
+              <Text className={`text-white text-center font-medium ${isTablet ? 'text-lg' : 'text-sm'}`}>
+                Align ID within the frame
+              </Text>
+            </View>
+
+            {/* Bottom instruction */}
+            <View className="absolute left-0 right-0" style={{ bottom: isTablet ? -40 : -32 }}>
+              <Text className={`text-white text-center opacity-80 ${isTablet ? 'text-base' : 'text-xs'}`}>
+                Ensure all text is clear and readable
+              </Text>
+            </View>
+          </View>
+
+          {/* Corner brackets for ID card */}
+          <View className="absolute" style={{ width: cardWidth, height: cardHeight }}>
+            {/* Top-left bracket */}
+            <View className="absolute top-0 left-0">
+              <View className={`bg-yellow-400 ${isTablet ? 'w-8 h-1' : 'w-6 h-0.5'}`} />
+              <View className={`bg-yellow-400 ${isTablet ? 'w-1 h-8' : 'w-0.5 h-6'}`} />
+            </View>
+
+            {/* Top-right bracket */}
+            <View className="absolute top-0 right-0">
+              <View className={`bg-yellow-400 ${isTablet ? 'w-8 h-1' : 'w-6 h-0.5'}`} />
+              <View className={`bg-yellow-400 ml-auto ${isTablet ? 'w-1 h-8' : 'w-0.5 h-6'}`} />
+            </View>
+
+            {/* Bottom-left bracket */}
+            <View className="absolute bottom-0 left-0">
+              <View className={`bg-yellow-400 ${isTablet ? 'w-1 h-8' : 'w-0.5 h-6'}`} />
+              <View className={`bg-yellow-400 ${isTablet ? 'w-8 h-1' : 'w-6 h-0.5'}`} />
+            </View>
+
+            {/* Bottom-right bracket */}
+            <View className="absolute bottom-0 right-0">
+              <View className={`bg-yellow-400 ml-auto ${isTablet ? 'w-1 h-8' : 'w-0.5 h-6'}`} />
+              <View className={`bg-yellow-400 ${isTablet ? 'w-8 h-1' : 'w-6 h-0.5'}`} />
+            </View>
+          </View>
+
+          {/* ID Card Guidelines */}
+          <View className="absolute" style={{ width: cardWidth, height: cardHeight }}>
+            {/* Horizontal center line */}
+            <View
+              className="absolute left-0 right-0 bg-white opacity-30"
+              style={{
+                top: cardHeight / 2 - 0.5,
+                height: 1,
+                marginHorizontal: isTablet ? 40 : 30
+              }}
+            />
+
+            {/* Vertical center line */}
+            <View
+              className="absolute top-0 bottom-0 bg-white opacity-30"
+              style={{
+                left: cardWidth / 2 - 0.5,
+                width: 1,
+                marginVertical: isTablet ? 30 : 20
+              }}
+            />
           </View>
         </View>
       </View>
 
-      {/* Camera Controls - ABSOLUTE POSITIONED */}
-      <View className="absolute bottom-0 left-0 right-0 pb-8 pt-4 bg-gradient-to-t from-black/80 to-transparent">
+      <View
+        className="absolute bottom-3 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent"
+        style={{ paddingBottom: bottomPadding, paddingTop: 16 }}
+      >
         <View className="items-center">
           <TouchableOpacity
             onPress={takePicture}
             disabled={!cameraReady || isCapturing}
-            className={`rounded-full py-4 px-8 ${cameraReady && !isCapturing
-              ? 'bg-yellow-400'
-              : 'bg-gray-600'
+            className={`rounded-full ${isTablet ? 'py-5 px-12' : 'py-4 px-8'} ${cameraReady && !isCapturing ? 'bg-yellow-400' : 'bg-gray-600'
               }`}
+            style={{
+              minWidth: isTablet ? 200 : 150,
+              minHeight: isTablet ? 60 : 50,
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
           >
             <Text
-              className={`text-lg font-semibold ${cameraReady && !isCapturing
-                ? 'text-black'
-                : 'text-gray-400'
+              className={`font-semibold ${isTablet ? 'text-xl' : 'text-lg'} ${cameraReady && !isCapturing ? 'text-black' : 'text-gray-400'
                 }`}
             >
               {isCapturing ? 'Capturing...' : 'Take Snapshot'}
