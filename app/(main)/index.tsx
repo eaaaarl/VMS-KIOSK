@@ -8,15 +8,23 @@ import { useEffect, useState } from "react";
 import { SafeAreaView, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 
 export default function Index() {
+
   const router = useRouter();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
   const { kioskSettingId } = useAppSelector((state) => state.kiosk);
+  const { ipAddress, port } = useAppSelector((state) => state.config);
   const [componentMounted, setComponentMounted] = useState(false);
   const [isInformationModalOpen, setIsInformationModalOpen] = useState(false);
-  const [hasShownVisitorInfo, setHasShownVisitorInfo] = useState(false); // Use state instead of global variable
+  const [hasShownVisitorInfo, setHasShownVisitorInfo] = useState(false);
 
-  console.log(kioskSettingId);
+
+  useEffect(() => {
+    if (ipAddress === '' || port === 0) {
+      router.replace('/(developer)/setting');
+    }
+  }, [ipAddress, port, router]);
+
 
   useEffect(() => {
     setComponentMounted(true);
@@ -85,6 +93,7 @@ export default function Index() {
               <TouchableOpacity
                 className={`flex-1 py-5 bg-white/90 rounded-2xl items-center max-w-[320px] active:bg-white/80 active:scale-95 transition-transform`}
                 onPress={() => router.push('/(visitor)/VisitorRegistrationScreen')}
+                style={{ shadowColor: 'black', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84 }}
               >
                 <View className={`${isLandscape ? 'w-16 h-16' : 'w-20 h-20'} bg-blue-100 rounded-xl items-center justify-center ${isLandscape ? 'mb-3' : 'mb-6'}`}>
                   <View className="w-8 h-8 bg-blue-500 rounded items-center justify-center">
@@ -109,6 +118,7 @@ export default function Index() {
               <TouchableOpacity
                 className={`flex-1 py-5 bg-white/90 rounded-2xl items-center max-w-[320px] active:bg-white/80 active:scale-95 transition-transform`}
                 onPress={() => router.push('/(visitor)/SignOutScreen')}
+                style={{ shadowColor: 'black', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84 }}
               >
                 <View className={`${isLandscape ? 'w-16 h-16' : 'w-20 h-20'} bg-green-100 rounded-xl items-center justify-center ${isLandscape ? 'mb-3' : 'mb-6'}`}>
                   <View className="w-8 h-8 bg-green-500 rounded items-center justify-center">

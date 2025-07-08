@@ -19,8 +19,6 @@ export default {
     android: {
       adaptiveIcon: {
         foregroundImage: './assets/icons/adaptive-icon.png',
-        // monochromeImage: './assets/icons/adaptive-icon.png',
-        // backgroundImage: './assets/icons/adaptive-icon.png',
         backgroundColor: '#ffffff',
       },
       edgeToEdgeEnabled: true,

@@ -1,5 +1,5 @@
 import { useGetAllKioskSettingQuery, useGetKioskSettingQuery } from '@/features/kiosk/api/kioskApi'
-import { useAppDispatch, useAppSelector } from '@/lib/redux/hook'
+import { useAppSelector } from '@/lib/redux/hook'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import { Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
@@ -26,10 +26,8 @@ const styles = StyleSheet.create({
 export default function SettingKiosk() {
   const { kioskSettingId } = useAppSelector((state) => state.kiosk)
   const router = useRouter()
-  const dispatch = useAppDispatch()
   const { data } = useGetAllKioskSettingQuery()
   const kioskOptions = data?.results || []
-
   const [selectedKioskId, setSelectedKioskId] = useState<number | null>(kioskSettingId || null)
 
   const { data: kioskSetting } = useGetKioskSettingQuery(
