@@ -54,7 +54,7 @@ export default function SignInSuccess() {
           .line(ticketNumber as string)
           .line('Thank you for visiting!')
           .newline()
-          .line('- - - - - - - - - - - - - - - - - - - - ')
+          .line('- - - - - - - - - - - - - - - - - - - - - - - - -')
           .newline()
           .encode();
 
@@ -83,7 +83,7 @@ export default function SignInSuccess() {
     };
 
     printTicket();
-  }, [ticketNumber]); // Removed visitorName from dependencies since it's not used in printing
+  }, [ticketNumber, enabledPrintTicket]);
 
   const handleDone = () => {
     router.replace('/(main)');

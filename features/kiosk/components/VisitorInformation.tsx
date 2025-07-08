@@ -1,4 +1,3 @@
-// VisitorInformationModal.js - Fixed version
 import { useConfig } from '@/features/config/hooks/useConfig';
 import { useGetVisitorsLogByDayQuery, useGetVisitorsReturnedQuery, useGetVisitorsTodaysQuery } from '@/features/visitors/api/visitorApi';
 import { formattedDate } from '@/features/visitors/utils/FormattedDate';
@@ -8,9 +7,10 @@ import { Modal, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'r
 interface VisitorInformationModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onConfirm: () => void;
 }
 
-export default function VisitorInformationModal({ isOpen, onClose }: VisitorInformationModalProps) {
+export default function VisitorInformationModal({ isOpen, onClose, onConfirm }: VisitorInformationModalProps) {
   const { getIdTotalCount } = useConfig();
   const { data: visitorsReturned } = useGetVisitorsReturnedQuery({ date: formattedDate(new Date()) });
   const countReturned = visitorsReturned?.results?.length || 0;
@@ -101,7 +101,7 @@ export default function VisitorInformationModal({ isOpen, onClose }: VisitorInfo
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    onPress={() => { }}
+                    onPress={() => onConfirm()}
                     className="bg-red-400 px-4 py-3 rounded-full"
                   >
                     <Text className="text-white text-center font-medium text-base">Return all {countReturned} numbers</Text>

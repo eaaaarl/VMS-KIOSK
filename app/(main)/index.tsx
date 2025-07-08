@@ -1,11 +1,14 @@
 // Index.js - Fixed version
 import VisitorInformationModal from "@/features/kiosk/components/VisitorInformation";
-import { useGetVisitorsReturnedQuery } from "@/features/visitors/api/visitorApi";
+import { useGetVisitorsReturnedQuery, useSignOutAllVisitorsMutation, visitorApi } from "@/features/visitors/api/visitorApi";
 import { formattedDate } from "@/features/visitors/utils/FormattedDate";
 import { useAppSelector } from "@/lib/redux/hook";
+import type { AppDispatch } from "@/lib/redux/store";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { SafeAreaView, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
+import { UIActivityIndicator } from "react-native-indicators";
+import { useDispatch } from "react-redux";
 
 export default function Index() {
   const router = useRouter();
@@ -16,6 +19,7 @@ export default function Index() {
   const [componentMounted, setComponentMounted] = useState(false);
   const [isInformationModalOpen, setIsInformationModalOpen] = useState(false);
   const [hasShownVisitorInfo, setHasShownVisitorInfo] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     if (ipAddress === '' || port === 0) {
@@ -70,6 +74,41 @@ export default function Index() {
     }
   }, [componentMounted, kioskSettingId, isSuccess, isLoading, countReturned, hasShownVisitorInfo]);
 
+  let strId: string[] = [];
+  for (let i = 0; i < countReturned; i++) {
+    strId.push(visitorsReturned?.results?.[i]?.strId as string);
+  }
+
+  const [loading, setLoading] = useState(false);
+  const handleReturnAllVisitors = async () => {
+    try {
+      setIsInformationModalOpen(false);
+      setLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      // await fetchAllVisitorLogs(strId);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const [signOutAllVisitors, { isLoading: isSigningOutAllVisitors }] = useSignOutAllVisitorsMutation();
+
+  async function fetchAllVisitorLogs(strIds: string[]) {
+    for (const strId of strIds) {
+      const { results } = await dispatch(
+        visitorApi.endpoints.getVisitorLogInfo.initiate({ strId })
+      ).unwrap();
+
+      // Add a time delay of 200ms before signing out each visitor
+      /* 
+            await signOutAllVisitors({
+              strId: results?.[0]?.strId as string,
+              dateNow: results?.[0]?.strLogIn as string,
+            }); */
+    }
+  }
 
 
   return (
@@ -149,7 +188,38 @@ export default function Index() {
         onClose={() => {
           setIsInformationModalOpen(false);
         }}
+        onConfirm={handleReturnAllVisitors}
       />
+
+      {loading && (
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.35)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: 'rgba(30,30,30,0.85)',
+              borderRadius: 12,
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 13,
+              minWidth: 50,
+              minHeight: 50,
+            }}
+          >
+            <UIActivityIndicator color="#fff" size={30} />
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 }

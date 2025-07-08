@@ -54,6 +54,7 @@ export const visitorApi = createApi({
     'AllAvailableVisitors',
     'UploadVisitorImages',
     'GetVisitorIdNumber',
+    'GetVisitorLogInfo',
   ],
   endpoints: builder => ({
     getVisitorsTodays: builder.query<IVisitorLogResponse, { date: string }>({
@@ -124,6 +125,14 @@ export const visitorApi = createApi({
       providesTags: ['GetVisitorIdNumber'],
     }),
 
+    getVisitorLogInfo: builder.query<IVisitorLogResponse, { strId: string }>({
+      query: ({ strId }) => ({
+        url: `/visitors-log/public/visit-log/2?strId='${strId}'`,
+        method: 'GET',
+      }),
+      providesTags: ['GetVisitorLogInfo'],
+    }),
+
     signOutVisitor: builder.mutation<string, { strId: string; dateNow: string; logOut: string }>({
       query: ({ strId, dateNow, logOut }) => ({
         url: `/visitors-log/public/visit-log/${strId}/${dateNow}`,
@@ -141,6 +150,14 @@ export const visitorApi = createApi({
         'AllAvailableVisitors',
       ],
     }),
+
+    signOutAllVisitors: builder.mutation<string, { strId: string; dateNow: string }>({
+      query: ({ strId, dateNow }) => ({
+        url: `/visitors-log/public/visit-log/${strId}/${dateNow}`,
+        method: 'PUT',
+        body: { returned: true },
+      }),
+    }),
   }),
 });
 
@@ -154,4 +171,6 @@ export const {
   useUploadVisitorImagesMutation,
   useCheckIDNumberQuery,
   useSignOutVisitorMutation,
+  useGetVisitorLogInfoQuery,
+  useSignOutAllVisitorsMutation,
 } = visitorApi;
