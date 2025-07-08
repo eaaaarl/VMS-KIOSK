@@ -1,7 +1,7 @@
 import EscPosEncoder from '@manhnd/esc-pos-encoder';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
 
 export default function SignInSuccess() {
@@ -34,7 +34,9 @@ export default function SignInSuccess() {
         const connectedDevice = await getConnectedDevice();
 
         if (!connectedDevice) {
-          throw new Error("No Bluetooth printer connected");
+          // No printer found, skip printing and set as success
+          setPrintStatus('success');
+          return;
         }
 
         const result = encoder
@@ -60,15 +62,14 @@ export default function SignInSuccess() {
         );
 
         setPrintStatus('success');
-        console.log("Ticket printed successfully");
       } catch (error) {
-        console.error("Error printing ticket:", error);
+        console.log("Error printing ticket:", error);
         setPrintStatus('error');
-        Alert.alert(
-          "Printing Error",
-          "Failed to print ticket. Please contact support.",
-          [{ text: "OK" }]
-        );
+        // Alert.alert(
+        //   "Printing Error",
+        //   "Failed to print ticket. Please contact support.",
+        //   [{ text: "OK" }]
+        // );
       } finally {
         setIsPrinting(false);
       }
