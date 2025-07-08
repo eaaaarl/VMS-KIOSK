@@ -1,3 +1,4 @@
+import { useConfig } from '@/features/config/hooks/useConfig';
 import EscPosEncoder from '@manhnd/esc-pos-encoder';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -5,6 +6,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
 
 export default function SignInSuccess() {
+  const { enabledPrintTicket } = useConfig()
   const { ticketNumber, visitorName } = useLocalSearchParams();
   const [isPrinting, setIsPrinting] = useState(false);
   const [printStatus, setPrintStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -20,6 +22,11 @@ export default function SignInSuccess() {
   };
 
   useEffect(() => {
+    if (!enabledPrintTicket) {
+      setPrintStatus('success');
+      return;
+    }
+
     const printTicket = async () => {
       if (!ticketNumber) {
         console.warn("No ticket number provided");
