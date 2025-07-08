@@ -13,17 +13,17 @@ export default function Index() {
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
   const { kioskSettingId } = useAppSelector((state) => state.kiosk);
-  const { ipAddress, port } = useAppSelector((state) => state.config);
+  // const { ipAddress, port } = useAppSelector((state) => state.config);
   const [componentMounted, setComponentMounted] = useState(false);
   const [isInformationModalOpen, setIsInformationModalOpen] = useState(false);
   const [hasShownVisitorInfo, setHasShownVisitorInfo] = useState(false);
 
 
-  useEffect(() => {
-    if (ipAddress === '' || port === 0) {
-      router.replace('/(developer)/setting');
-    }
-  }, [ipAddress, port, router]);
+  // useEffect(() => {
+  //   if (ipAddress === '' || port === 0) {
+  //     router.replace('/(developer)/setting');
+  //   }
+  // }, [ipAddress, port, router]);
 
 
   useEffect(() => {
