@@ -10,6 +10,7 @@ export default function Index() {
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
   const { kioskSettingId } = useAppSelector((state) => state.kiosk);
+  
   const {
     isInformationModalOpen,
     setIsInformationModalOpen,
