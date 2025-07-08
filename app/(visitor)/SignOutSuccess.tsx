@@ -7,12 +7,10 @@ export default function SignOutSuccess() {
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       <View className="flex-1 justify-center items-center px-8">
-        {/* Success Message */}
         <Text className="text-4xl font-bold text-green-500 mb-2 text-center">
           Signed Out Successfully!
         </Text>
 
-        {/* Thank You Message */}
         <Text className="text-lg text-gray-700 mb-12 text-center">
           Thank You!
         </Text>
