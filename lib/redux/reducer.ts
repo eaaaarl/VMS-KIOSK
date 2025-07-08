@@ -1,16 +1,18 @@
-import { configApi } from "@/features/config/api/configApi";
-import { kioskApi } from "@/features/kiosk/api/kioskApi";
-import { officeApi } from "@/features/office/api/officeApi";
-import { serviceApi } from "@/features/service/api/serviceApi";
-import { userApi } from "@/features/user/api/userApi";
-import { visitorApi } from "@/features/visitors/api/visitorApi";
-import { combineReducers } from "@reduxjs/toolkit";
-import { kioskReducer } from "./state/kioskSlice";
-import { visitorReducer } from "./state/visitorSlice";
+import { configApi } from '@/features/config/api/configApi';
+import { kioskApi } from '@/features/kiosk/api/kioskApi';
+import { officeApi } from '@/features/office/api/officeApi';
+import { serviceApi } from '@/features/service/api/serviceApi';
+import { userApi } from '@/features/user/api/userApi';
+import { visitorApi } from '@/features/visitors/api/visitorApi';
+import { combineReducers } from '@reduxjs/toolkit';
+import { configReducer } from './state/configSlice';
+import { kioskReducer } from './state/kioskSlice';
+import { visitorReducer } from './state/visitorSlice';
 
 const rootReducer = combineReducers({
   kiosk: kioskReducer,
   visitor: visitorReducer,
+  config: configReducer,
 
   [kioskApi.reducerPath]: kioskApi.reducer,
   [visitorApi.reducerPath]: visitorApi.reducer,
@@ -20,15 +22,8 @@ const rootReducer = combineReducers({
   [serviceApi.reducerPath]: serviceApi.reducer,
 });
 
-export const apis = [
-  kioskApi,
-  visitorApi,
-  userApi,
-  configApi,
-  officeApi,
-  serviceApi,
-];
+export const apis = [kioskApi, visitorApi, userApi, configApi, officeApi, serviceApi];
 
-export const apisReducerPath = apis.map((api) => api.reducerPath);
+export const apisReducerPath = apis.map(api => api.reducerPath);
 
 export default rootReducer;

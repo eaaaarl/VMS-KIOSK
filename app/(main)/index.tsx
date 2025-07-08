@@ -1,22 +1,32 @@
 // Index.js - Fixed version
 import VisitorInformationModal from "@/features/kiosk/components/VisitorInformation";
-import { useGetVisitorsReturnedQuery } from "@/features/visitors/api/visitorApi";
+import { useGetVisitorsReturnedQuery, useSignOutAllVisitorsMutation, visitorApi } from "@/features/visitors/api/visitorApi";
 import { formattedDate } from "@/features/visitors/utils/FormattedDate";
 import { useAppSelector } from "@/lib/redux/hook";
+import type { AppDispatch } from "@/lib/redux/store";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { SafeAreaView, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
+import { UIActivityIndicator } from "react-native-indicators";
+import { useDispatch } from "react-redux";
 
 export default function Index() {
   const router = useRouter();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
   const { kioskSettingId } = useAppSelector((state) => state.kiosk);
+  const { ipAddress, port } = useAppSelector((state) => state.config);
   const [componentMounted, setComponentMounted] = useState(false);
   const [isInformationModalOpen, setIsInformationModalOpen] = useState(false);
-  const [hasShownVisitorInfo, setHasShownVisitorInfo] = useState(false); // Use state instead of global variable
+  const [hasShownVisitorInfo, setHasShownVisitorInfo] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
 
-  console.log(kioskSettingId);
+  useEffect(() => {
+    if (ipAddress === '' || port === 0) {
+      router.replace('/(developer)/setting');
+    }
+  }, [ipAddress, port, router]);
+
 
   useEffect(() => {
     setComponentMounted(true);
@@ -34,6 +44,7 @@ export default function Index() {
   }, [kioskSettingId, router, componentMounted]);
 
   const todaysDate = formattedDate(new Date());
+
   const { data: visitorsReturned, isLoading, isSuccess } = useGetVisitorsReturnedQuery(
     { date: todaysDate },
     {
@@ -63,6 +74,41 @@ export default function Index() {
     }
   }, [componentMounted, kioskSettingId, isSuccess, isLoading, countReturned, hasShownVisitorInfo]);
 
+  let strId: string[] = [];
+  for (let i = 0; i < countReturned; i++) {
+    strId.push(visitorsReturned?.results?.[i]?.strId as string);
+  }
+
+  const [loading, setLoading] = useState(false);
+  const handleReturnAllVisitors = async () => {
+    try {
+      setIsInformationModalOpen(false);
+      setLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      // await fetchAllVisitorLogs(strId);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const [signOutAllVisitors, { isLoading: isSigningOutAllVisitors }] = useSignOutAllVisitorsMutation();
+
+  async function fetchAllVisitorLogs(strIds: string[]) {
+    for (const strId of strIds) {
+      const { results } = await dispatch(
+        visitorApi.endpoints.getVisitorLogInfo.initiate({ strId })
+      ).unwrap();
+
+      // Add a time delay of 200ms before signing out each visitor
+      /* 
+            await signOutAllVisitors({
+              strId: results?.[0]?.strId as string,
+              dateNow: results?.[0]?.strLogIn as string,
+            }); */
+    }
+  }
 
 
   return (
@@ -85,6 +131,7 @@ export default function Index() {
               <TouchableOpacity
                 className={`flex-1 py-5 bg-white/90 rounded-2xl items-center max-w-[320px] active:bg-white/80 active:scale-95 transition-transform`}
                 onPress={() => router.push('/(visitor)/VisitorRegistrationScreen')}
+              // style={{ shadowColor: 'black', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84 }}
               >
                 <View className={`${isLandscape ? 'w-16 h-16' : 'w-20 h-20'} bg-blue-100 rounded-xl items-center justify-center ${isLandscape ? 'mb-3' : 'mb-6'}`}>
                   <View className="w-8 h-8 bg-blue-500 rounded items-center justify-center">
@@ -109,6 +156,7 @@ export default function Index() {
               <TouchableOpacity
                 className={`flex-1 py-5 bg-white/90 rounded-2xl items-center max-w-[320px] active:bg-white/80 active:scale-95 transition-transform`}
                 onPress={() => router.push('/(visitor)/SignOutScreen')}
+              // style={{ shadowColor: 'black', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84 }}
               >
                 <View className={`${isLandscape ? 'w-16 h-16' : 'w-20 h-20'} bg-green-100 rounded-xl items-center justify-center ${isLandscape ? 'mb-3' : 'mb-6'}`}>
                   <View className="w-8 h-8 bg-green-500 rounded items-center justify-center">
@@ -140,7 +188,38 @@ export default function Index() {
         onClose={() => {
           setIsInformationModalOpen(false);
         }}
+        onConfirm={handleReturnAllVisitors}
       />
+
+      {loading && (
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.35)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: 'rgba(30,30,30,0.85)',
+              borderRadius: 12,
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 13,
+              minWidth: 50,
+              minHeight: 50,
+            }}
+          >
+            <UIActivityIndicator color="#fff" size={30} />
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 }

@@ -15,13 +15,14 @@ import { useAppDispatch, useAppSelector } from '@/lib/redux/hook';
 import { setCardImageId, setFaceImageId } from '@/lib/redux/state/visitorSlice';
 import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  Dimensions,
   FlatList,
   Keyboard,
   KeyboardAvoidingView,
+  Modal,
   Platform,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
@@ -30,13 +31,11 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const { height: screenHeight } = Dimensions.get('window');
 
 export default function SignInScreen() {
   const insets = useSafeAreaInsets();
   const dispatch = useAppDispatch();
   const { faceImageId, cardImageId } = useAppSelector((state) => state.visitor);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [formData, setFormData] = useState<IFormData>({
     visitorName: '',
     visitorId: 0,
@@ -52,7 +51,7 @@ export default function SignInScreen() {
   const { data: services } = useGetServicesQuery();
   const { data: visitorsReturned } = useGetVisitorsReturnedQuery({ date: formattedDate(new Date()) });
   const { data: visitorsTodays } = useGetVisitorsTodaysQuery({ date: formattedDate(new Date()) });
-  const { getPrefixId, getSeparatorId, getIdLength, getIdTotalCount } = useConfig();
+  const { getPrefixId, getSeparatorId, getIdLength, getIdTotalCount, enabledRequiredFace, enabledRequiredId } = useConfig();
 
   const availableVisitors = visitors?.results || [];
   const availableOffices = offices?.results || [];
@@ -75,28 +74,13 @@ export default function SignInScreen() {
   const idCode = String(nextAvailableId).padStart(getIdLength as any, '0');
   const id = getPrefixId! + getSeparatorId! + idCode!;
 
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [showOfficeDropdown, setShowOfficeDropdown] = useState(false);
-  const [showServiceDropdown, setShowServiceDropdown] = useState(false);
   const [filteredVisitors, setFilteredVisitors] = useState(availableVisitors);
   const [idSnapshotTaken, setIdSnapshotTaken] = useState(false);
   const [photoSnapshotTaken, setPhotoSnapshotTaken] = useState(false);
 
-  // Keyboard event listeners
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (event) => {
-      setKeyboardHeight(event.endCoordinates.height);
-    });
-
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      setKeyboardHeight(0);
-    });
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
+  const [visitorModalVisible, setVisitorModalVisible] = useState(false);
+  const [officeModalVisible, setOfficeModalVisible] = useState(false);
+  const [serviceModalVisible, setServiceModalVisible] = useState(false);
 
   const handleInputChange = (field: keyof IFormData, value: string) => {
     setFormData(prev => ({
@@ -109,7 +93,6 @@ export default function SignInScreen() {
         visitor.name.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredVisitors(filtered);
-      setShowDropdown(true);
     }
   };
 
@@ -120,16 +103,23 @@ export default function SignInScreen() {
       mobileNumber: visitor.contactNo1.toString() ?? visitor.contactNo2.toString() ?? visitor.contactNo3.toString(),
       visitorId: visitor.id
     }));
-    setShowDropdown(false);
   };
 
   const handleIdSnapshot = () => {
-    setIdSnapshotTaken(true);
+    if (enabledRequiredId) {
+      setIdSnapshotTaken(true);
+    } else if (faceImageId) {
+      setIdSnapshotTaken(false);
+    }
     router.push('/(camera)/IDCamera');
   };
 
   const handlePhotoSnapshot = () => {
-    setPhotoSnapshotTaken(true);
+    if (enabledRequiredFace) {
+      setPhotoSnapshotTaken(true);
+    } else if (cardImageId) {
+      setPhotoSnapshotTaken(false);
+    }
     router.push('/(camera)/FaceCamera');
   };
 
@@ -139,9 +129,6 @@ export default function SignInScreen() {
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();
-    setShowDropdown(false);
-    setShowOfficeDropdown(false);
-    setShowServiceDropdown(false);
   };
 
   const [signInVisitorLog, { isLoading: isSignInLoading }] = useSignInVisitorLogMutation();
@@ -233,14 +220,16 @@ export default function SignInScreen() {
     }
   };
 
+  // Validate required snapshots based on config
+  const isSnapshotValid =
+    (!enabledRequiredFace || faceImageId) &&
+    (!enabledRequiredId || cardImageId);
+
   const isFormValid = formData.visitorName.trim() !== '' &&
     formData.officeToVisitId !== 0 &&
     formData.reasonForVisit !== '' &&
-    (formData.reasonForVisit !== 'Other' || (formData.otherReason && formData.otherReason.trim() !== ''));
-
-  // Calculate available height for content
-  const availableHeight = screenHeight - insets.top - insets.bottom - keyboardHeight;
-  const shouldShowSidebar = availableHeight > 600 && keyboardHeight === 0;
+    (formData.reasonForVisit !== 'Other' || (formData.otherReason && formData.otherReason.trim() !== '')) &&
+    isSnapshotValid;
 
   return (
     <View
@@ -250,347 +239,314 @@ export default function SignInScreen() {
       <TouchableWithoutFeedback onPress={dismissKeyboard}>
         <View className="flex-1">
           <View className="flex-row flex-1">
-            <View className="flex-1">
+            <View className="flex-1 px-8 py-6">
               <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 className="flex-1"
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
               >
-                <View className="flex-1 px-8 py-6">
-                  <Text className="text-3xl font-bold text-gray-800 mb-8">
-                    Sign In
-                  </Text>
-
-                  {/* Camera Buttons */}
-                  <View className="flex-row gap-4 mb-8">
-                    <TouchableOpacity
-                      onPress={handleIdSnapshot}
-                      className={`flex-1 border-2 rounded-lg p-6 items-center justify-center h-32 ${idSnapshotTaken ? 'border-green-400 bg-green-50' : 'border-red-300 bg-red-50'
-                        }`}
-                    >
-                      <View className="items-center">
-                        <View className="w-12 h-8 border-2 border-gray-400 rounded mb-2 items-center justify-center">
-                          <View className="w-4 h-4 bg-gray-600 rounded-full" />
-                        </View>
-                        <Text className="text-base font-medium text-gray-700 text-center">
-                          ID Snapshot
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={handlePhotoSnapshot}
-                      className={`flex-1 border-2 rounded-lg p-6 items-center justify-center h-32 ${photoSnapshotTaken ? 'border-green-400 bg-green-50' : 'border-yellow-300 bg-yellow-50'
-                        }`}
-                    >
-                      <View className="items-center">
-                        <View className="w-10 h-10 border-2 border-gray-400 rounded-full mb-2 items-center justify-center">
-                          <View className="w-6 h-6 bg-gray-300 rounded-full" />
-                        </View>
-                        <Text className="text-base font-medium text-gray-700 text-center">
-                          Photo Snapshot
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-
-                  {/* Form Fields */}
-                  <View className="gap-6">
-                    {/* Visitor Name with Dropdown */}
-                    <View className="relative z-40">
-                      <Text className="text-base font-semibold text-gray-700 mb-2">
-                        Visitor&apos;s Name <Text className="text-red-500">*</Text>
-                      </Text>
-                      <TextInput
-                        className="bg-white border border-blue-300 rounded-lg px-4 py-4 text-lg"
-                        placeholder="Search visitor"
-                        placeholderTextColor="gray"
-                        value={formData.visitorName}
-                        onChangeText={(value) => handleInputChange('visitorName', value)}
-                        onFocus={() => setShowDropdown(true)}
-                        returnKeyType="next"
-                      />
-                      {showDropdown && filteredVisitors.length > 0 && (
-                        <View className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-50">
-                          <View style={{ maxHeight: 200 }}>
-                            <FlatList
-                              data={filteredVisitors.slice(0, 5)}
-                              keyExtractor={(item) => item.id.toString()}
-                              renderItem={({ item }) => (
-                                <TouchableOpacity
-                                  className="px-4 py-3 border-b border-gray-100"
-                                  onPress={() => handleSelectVisitor(item)}
-                                >
-                                  <Text className="text-gray-800 text-base">{item.name}</Text>
-                                  <Text className="text-gray-500 text-sm">
-                                    {item.contactNo1.toString() ?? item.contactNo2.toString() ?? item.contactNo3.toString()}
-                                  </Text>
-                                </TouchableOpacity>
-                              )}
-                              scrollEnabled={true}
-                              nestedScrollEnabled={true}
-                              showsVerticalScrollIndicator={false}
-                            />
-                          </View>
-                        </View>
-                      )}
-                    </View>
-
-                    {/* Mobile Number */}
-                    <View>
-                      <Text className="text-base font-semibold text-gray-700 mb-2">
-                        Mobile Number
-                      </Text>
-                      <TextInput
-                        className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-4 text-lg"
-                        placeholder="Mobile Number"
-                        placeholderTextColor="gray"
-                        value={formData.mobileNumber}
-                        onChangeText={(value) => handleInputChange('mobileNumber', value)}
-                        keyboardType="phone-pad"
-                        returnKeyType="next"
-                      />
-                    </View>
-
-                    {/* Office to Visit */}
-                    <View className="relative z-30">
-                      <Text className="text-base font-semibold text-gray-700 mb-2">
-                        Office to visit <Text className="text-red-500">*</Text>
-                      </Text>
+                <ScrollView showsVerticalScrollIndicator={false} className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
+                  <View className="flex-1 px-8 py-6">
+                    <Text className="text-3xl font-bold text-gray-800 mb-8">
+                      Sign In
+                    </Text>
+                    {/* Camera Buttons at the top */}
+                    <View className="flex-row gap-4 mb-8">
                       <TouchableOpacity
-                        onPress={() => {
-                          setShowOfficeDropdown(!showOfficeDropdown);
-                          setShowServiceDropdown(false);
-                          setShowDropdown(false);
-                        }}
-                        className="bg-white border border-gray-200 rounded-lg px-4 py-4 flex-row justify-between items-center"
+                        onPress={handleIdSnapshot}
+                        className={`flex-1 border-2 rounded-lg p-6 items-center justify-center h-32 ${!idSnapshotTaken ? 'border-green-400 bg-green-50' : 'border-red-300 bg-red-50'}`}
                       >
-                        <Text className={`text-lg ${formData.officeToVisitId ? 'text-gray-900' : 'text-gray-400'}`}>
-                          {formData.officeToVisitId ?
-                            availableOffices.find((office) => office.id as number === formData.officeToVisitId as number)?.name :
-                            'Select office'
-                          }
-                        </Text>
-                        <View className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-blue-500" />
-                      </TouchableOpacity>
-                      {showOfficeDropdown && availableOffices.length > 0 && (
-                        <View className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-50">
-                          <View style={{ maxHeight: 200 }}>
-                            <FlatList
-                              data={availableOffices}
-                              keyExtractor={(item) => item.id.toString()}
-                              renderItem={({ item }) => (
-                                <TouchableOpacity
-                                  className="px-4 py-3 border-b border-gray-100"
-                                  onPress={() => {
-                                    setFormData(prev => ({ ...prev, officeToVisitId: item.id as number }));
-                                    setShowOfficeDropdown(false);
-                                  }}
-                                >
-                                  <Text className="text-gray-800 text-base">{item.name}</Text>
-                                </TouchableOpacity>
-                              )}
-                              scrollEnabled={true}
-                              nestedScrollEnabled={true}
-                              showsVerticalScrollIndicator={false}
-                            />
+                        <View className="items-center">
+                          <View className="w-12 h-8 border-2 border-gray-400 rounded mb-2 items-center justify-center">
+                            <View className="w-4 h-4 bg-gray-600 rounded-full" />
                           </View>
-                        </View>
-                      )}
-                    </View>
-
-                    {/* Reason for Visit */}
-                    <View className="relative z-20">
-                      <Text className="text-base font-semibold text-gray-700 mb-2">
-                        Reason for visit <Text className="text-red-500">*</Text>
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setShowServiceDropdown(!showServiceDropdown);
-                          setShowOfficeDropdown(false);
-                          setShowDropdown(false);
-                        }}
-                        className="bg-white border border-gray-200 rounded-lg px-4 py-4 flex-row justify-between items-center"
-                      >
-                        <Text className={`text-lg ${formData.reasonForVisit ? 'text-gray-900' : 'text-gray-400'}`}>
-                          {formData.reasonForVisit || 'Select reason'}
-                        </Text>
-                        <View className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-blue-500" />
-                      </TouchableOpacity>
-                      {showServiceDropdown && availableServices.length > 0 && (
-                        <View className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-50">
-                          <View style={{ maxHeight: 200 }}>
-                            <FlatList
-                              data={availableServices}
-                              keyExtractor={(item) => item.id.toString()}
-                              renderItem={({ item }) => (
-                                <TouchableOpacity
-                                  className="px-4 py-3 border-b border-gray-100"
-                                  onPress={() => {
-                                    setFormData(prev => ({
-                                      ...prev,
-                                      reasonForVisit: item.name,
-                                      serviceId: item.id === 0 ? null : item.id,
-                                      otherReason: item.id === 0 ? prev.otherReason : null
-                                    }));
-                                    setShowServiceDropdown(false);
-                                  }}
-                                >
-                                  <Text className="text-gray-800 text-base">{item.name}</Text>
-                                </TouchableOpacity>
-                              )}
-                              scrollEnabled={true}
-                              nestedScrollEnabled={true}
-                              showsVerticalScrollIndicator={false}
-                            />
-                          </View>
-                        </View>
-                      )}
-                      {formData.reasonForVisit === 'Other' && (
-                        <View className="mt-4">
-                          <Text className="text-base font-semibold text-gray-700 mb-2">
-                            Please specify <Text className="text-red-500">*</Text>
+                          <Text className="text-base font-medium text-gray-700 text-center">
+                            ID Snapshot
                           </Text>
-                          <TextInput
-                            className="bg-white border border-gray-200 rounded-lg px-4 py-4 text-lg"
-                            placeholder="Please specify your reason"
-                            value={formData.otherReason ?? ''}
-                            multiline={true}
-                            numberOfLines={4}
-                            textAlignVertical="top"
-                            onChangeText={(value) => setFormData(prev => ({ ...prev, otherReason: value ?? null }))}
-                          />
                         </View>
-                      )}
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={handlePhotoSnapshot}
+                        className={`flex-1 border-2 rounded-lg p-6 items-center justify-center h-32 ${!photoSnapshotTaken ? 'border-green-400 bg-green-50' : 'border-red-300 bg-yellow-50'}`}
+                      >
+                        <View className="items-center">
+                          <View className="w-10 h-10 border-2 border-gray-400 rounded-full mb-2 items-center justify-center">
+                            <View className="w-6 h-6 bg-gray-300 rounded-full" />
+                          </View>
+                          <Text className="text-base font-medium text-gray-700 text-center">
+                            Photo Snapshot
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
                     </View>
-
-                    {/* Mobile Action Buttons - Show when sidebar is hidden */}
-                    {!shouldShowSidebar && (
-                      <View className="mt-8 gap-4">
-                        {/* Status indicators */}
-                        <View className="p-4 bg-gray-50 rounded-lg">
-                          <Text className="text-sm font-medium text-gray-600 mb-3">Status</Text>
-                          <View className="gap-2">
-                            <View className="flex-row items-center gap-2">
-                              <View className={`w-3 h-3 rounded-full ${idSnapshotTaken ? 'bg-green-500' : 'bg-red-400'}`} />
-                              <Text className="text-sm text-gray-700">ID Snapshot</Text>
-                            </View>
-                            <View className="flex-row items-center gap-2">
-                              <View className={`w-3 h-3 rounded-full ${photoSnapshotTaken ? 'bg-green-500' : 'bg-yellow-400'}`} />
-                              <Text className="text-sm text-gray-700">Photo Snapshot</Text>
-                            </View>
-                            <View className="flex-row items-center gap-2">
-                              <View className={`w-3 h-3 rounded-full ${isFormValid ? 'bg-green-500' : 'bg-gray-400'}`} />
-                              <Text className="text-sm text-gray-700">Form Complete</Text>
+                    {/* Form Fields */}
+                    <View className="gap-6">
+                      {/* Visitor Name with Modal */}
+                      <View className="relative z-40">
+                        <Text className="text-base font-semibold text-gray-700 mb-2">
+                          Visitor&apos;s Name <Text className="text-red-500">*</Text>
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => setVisitorModalVisible(true)}
+                          className="bg-white border border-blue-300 rounded-lg px-4 py-4 text-lg"
+                        >
+                          <Text className={`text-lg ${formData.visitorName ? 'text-gray-900' : 'text-gray-400'}`}>
+                            {formData.visitorName || 'Search visitor'}
+                          </Text>
+                        </TouchableOpacity>
+                        <Modal
+                          visible={visitorModalVisible}
+                          animationType="slide"
+                          transparent={true}
+                          onRequestClose={() => setVisitorModalVisible(false)}
+                        >
+                          <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.3)' }}>
+                            <View style={{ backgroundColor: 'white', borderTopLeftRadius: 16, borderTopRightRadius: 16, maxHeight: '70%' }}>
+                              <View style={{ padding: 16 }}>
+                                <TextInput
+                                  className="bg-white border border-blue-300 rounded-lg px-4 py-4 text-lg mb-2"
+                                  placeholder="Search visitor"
+                                  placeholderTextColor="gray"
+                                  value={formData.visitorName}
+                                  onChangeText={(value) => handleInputChange('visitorName', value)}
+                                  autoFocus
+                                />
+                                <FlatList
+                                  data={filteredVisitors.slice(0, 20)}
+                                  keyExtractor={(item) => item.id.toString()}
+                                  renderItem={({ item }) => (
+                                    <TouchableOpacity
+                                      className="px-4 py-3 border-b border-gray-100"
+                                      onPress={() => {
+                                        handleSelectVisitor(item);
+                                        setVisitorModalVisible(false);
+                                      }}
+                                    >
+                                      <Text className="text-gray-800 text-base">{item.name}</Text>
+                                      <Text className="text-gray-500 text-sm">
+                                        {item.contactNo1?.toString() || item.contactNo2?.toString() || item.contactNo3?.toString()}
+                                      </Text>
+                                    </TouchableOpacity>
+                                  )}
+                                  scrollEnabled={true}
+                                  nestedScrollEnabled={true}
+                                  showsVerticalScrollIndicator={false}
+                                  style={{ maxHeight: 300 }}
+                                />
+                                <TouchableOpacity onPress={() => setVisitorModalVisible(false)} style={{ marginTop: 12, alignItems: 'center' }}>
+                                  <Text className="text-blue-500 font-semibold text-lg">Close</Text>
+                                </TouchableOpacity>
+                              </View>
                             </View>
                           </View>
-                        </View>
-
-                        {/* Generated ID */}
-                        {nextAvailableId && (
-                          <View className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                            <Text className="text-sm font-medium text-blue-800 mb-1">
-                              Generated ID
+                        </Modal>
+                      </View>
+                      {/* Mobile Number */}
+                      <View>
+                        <Text className="text-base font-semibold text-gray-700 mb-2">
+                          Mobile Number
+                        </Text>
+                        <TextInput
+                          className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-4 text-lg"
+                          placeholder="Mobile Number"
+                          placeholderTextColor="gray"
+                          value={formData.mobileNumber}
+                          onChangeText={(value) => handleInputChange('mobileNumber', value)}
+                          keyboardType="phone-pad"
+                          returnKeyType="next"
+                        />
+                      </View>
+                      {/* Office to Visit with Modal */}
+                      <View className="relative z-30">
+                        <Text className="text-base font-semibold text-gray-700 mb-2">
+                          Office to visit <Text className="text-red-500">*</Text>
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => setOfficeModalVisible(true)}
+                          className="bg-white border border-gray-200 rounded-lg px-4 py-4 flex-row justify-between items-center"
+                        >
+                          <Text className={`text-lg ${formData.officeToVisitId ? 'text-gray-900' : 'text-gray-400'}`}>
+                            {formData.officeToVisitId ?
+                              availableOffices.find((office) => office.id === formData.officeToVisitId)?.name :
+                              'Select office'
+                            }
+                          </Text>
+                          <View className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-blue-500" />
+                        </TouchableOpacity>
+                        <Modal
+                          visible={officeModalVisible}
+                          animationType="slide"
+                          transparent={true}
+                          onRequestClose={() => setOfficeModalVisible(false)}
+                        >
+                          <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.3)' }}>
+                            <View style={{ backgroundColor: 'white', borderTopLeftRadius: 16, borderTopRightRadius: 16, maxHeight: '70%' }}>
+                              <View style={{ padding: 16 }}>
+                                <FlatList
+                                  data={availableOffices}
+                                  keyExtractor={(item) => item.id.toString()}
+                                  renderItem={({ item }) => (
+                                    <TouchableOpacity
+                                      className="px-4 py-3 border-b border-gray-100"
+                                      onPress={() => {
+                                        setFormData(prev => ({ ...prev, officeToVisitId: item.id }));
+                                        setOfficeModalVisible(false);
+                                      }}
+                                    >
+                                      <Text className="text-gray-800 text-base">{item.name}</Text>
+                                    </TouchableOpacity>
+                                  )}
+                                  scrollEnabled={true}
+                                  nestedScrollEnabled={true}
+                                  showsVerticalScrollIndicator={false}
+                                  style={{ maxHeight: 300 }}
+                                />
+                                <TouchableOpacity onPress={() => setOfficeModalVisible(false)} style={{ marginTop: 12, alignItems: 'center' }}>
+                                  <Text className="text-blue-500 font-semibold text-lg">Close</Text>
+                                </TouchableOpacity>
+                              </View>
+                            </View>
+                          </View>
+                        </Modal>
+                      </View>
+                      {/* Reason for Visit with Modal */}
+                      <View className="relative z-20">
+                        <Text className="text-base font-semibold text-gray-700 mb-2">
+                          Reason for visit <Text className="text-red-500">*</Text>
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => setServiceModalVisible(true)}
+                          className="bg-white border border-gray-200 rounded-lg px-4 py-4 flex-row justify-between items-center"
+                        >
+                          <Text className={`text-lg ${formData.reasonForVisit ? 'text-gray-900' : 'text-gray-400'}`}>
+                            {formData.reasonForVisit || 'Select reason'}
+                          </Text>
+                          <View className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-blue-500" />
+                        </TouchableOpacity>
+                        <Modal
+                          visible={serviceModalVisible}
+                          animationType="slide"
+                          transparent={true}
+                          onRequestClose={() => setServiceModalVisible(false)}
+                        >
+                          <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.3)' }}>
+                            <View style={{ backgroundColor: 'white', borderTopLeftRadius: 16, borderTopRightRadius: 16, maxHeight: '70%' }}>
+                              <View style={{ padding: 16 }}>
+                                <FlatList
+                                  data={availableServices}
+                                  keyExtractor={(item) => item.id.toString()}
+                                  renderItem={({ item }) => (
+                                    <TouchableOpacity
+                                      className="px-4 py-3 border-b border-gray-100"
+                                      onPress={() => {
+                                        setFormData(prev => ({
+                                          ...prev,
+                                          reasonForVisit: item.name,
+                                          serviceId: item.id === 0 ? null : item.id,
+                                          otherReason: item.id === 0 ? prev.otherReason : null
+                                        }));
+                                        setServiceModalVisible(false);
+                                      }}
+                                    >
+                                      <Text className="text-gray-800 text-base">{item.name}</Text>
+                                    </TouchableOpacity>
+                                  )}
+                                  scrollEnabled={true}
+                                  nestedScrollEnabled={true}
+                                  showsVerticalScrollIndicator={false}
+                                  style={{ maxHeight: 300 }}
+                                />
+                                <TouchableOpacity onPress={() => setServiceModalVisible(false)} style={{ marginTop: 12, alignItems: 'center' }}>
+                                  <Text className="text-blue-500 font-semibold text-lg">Close</Text>
+                                </TouchableOpacity>
+                              </View>
+                            </View>
+                          </View>
+                        </Modal>
+                        {formData.reasonForVisit === 'Other' && (
+                          <View className="mt-4">
+                            <Text className="text-base font-semibold text-gray-700 mb-2">
+                              Please specify <Text className="text-red-500">*</Text>
                             </Text>
-                            <Text className="text-lg font-bold text-blue-900">
-                              {id}
-                            </Text>
+                            <TextInput
+                              className="bg-white border border-gray-200 rounded-lg px-4 py-4 text-lg"
+                              placeholder="Please specify your reason"
+                              value={formData.otherReason ?? ''}
+                              multiline={true}
+                              numberOfLines={4}
+                              textAlignVertical="top"
+                              onChangeText={(value) => setFormData(prev => ({ ...prev, otherReason: value ?? null }))}
+                            />
                           </View>
                         )}
-
-                        {/* Action Buttons */}
-                        <View className="gap-3">
-                          <TouchableOpacity
-                            onPress={handleBack}
-                            className="bg-gray-100 rounded-lg py-4 border border-gray-200"
-                          >
-                            <Text className="text-gray-700 text-lg font-medium text-center">
-                              Back
-                            </Text>
-                          </TouchableOpacity>
-
-                          <TouchableOpacity
-                            onPress={handleSignIn}
-                            disabled={!isFormValid || isSignInLoading || isUploadingImages}
-                            className={`rounded-lg py-4 ${isFormValid && !isSignInLoading && !isUploadingImages
-                              ? 'bg-blue-500'
-                              : 'bg-blue-300'
-                              }`}
-                          >
-                            <Text className="text-white text-lg font-semibold text-center">
-                              {isSignInLoading || isUploadingImages ? 'Signing In...' : 'Sign In'}
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                    )}
-                  </View>
-                </View>
-              </KeyboardAvoidingView>
-            </View>
-
-            {/* Sidebar - Show only when there's enough space */}
-            {shouldShowSidebar && (
-              <View className="w-80 px-6 py-6 bg-gray-50 border-l border-gray-200">
-                <View className="flex-1 justify-between">
-                  <View>
-                    <View className="mb-6">
-                      <Text className="text-sm font-medium text-gray-600 mb-3">Status</Text>
-                      <View className="gap-2">
-                        <View className="flex-row items-center gap-2">
-                          <View className={`w-3 h-3 rounded-full ${idSnapshotTaken ? 'bg-green-500' : 'bg-red-400'}`} />
-                          <Text className="text-sm text-gray-700">ID Snapshot</Text>
-                        </View>
-                        <View className="flex-row items-center gap-2">
-                          <View className={`w-3 h-3 rounded-full ${photoSnapshotTaken ? 'bg-green-500' : 'bg-yellow-400'}`} />
-                          <Text className="text-sm text-gray-700">Photo Snapshot</Text>
-                        </View>
-                        <View className="flex-row items-center gap-2">
-                          <View className={`w-3 h-3 rounded-full ${isFormValid ? 'bg-green-500' : 'bg-gray-400'}`} />
-                          <Text className="text-sm text-gray-700">Form Complete</Text>
-                        </View>
                       </View>
                     </View>
-
-                    {nextAvailableId && (
-                      <View className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                        <Text className="text-sm font-medium text-blue-800 mb-1">
-                          Generated ID
-                        </Text>
-                        <Text className="text-lg font-bold text-blue-900">
-                          {id}
-                        </Text>
-                      </View>
-                    )}
                   </View>
+                </ScrollView>
+              </KeyboardAvoidingView>
+            </View>
+            {/* Right: Status/Action Sidebar */}
 
-                  {/* Action Buttons */}
-                  <View className="gap-4">
-                    <TouchableOpacity
-                      onPress={handleBack}
-                      className="bg-gray-100 rounded-lg py-4 border border-gray-200"
-                    >
-                      <Text className="text-gray-700 text-lg font-medium text-center">
-                        Back
+            <View className="w-80 flex-col justify-between py-6 px-6 bg-gray-50 border-l border-gray-200">
+              <View className="gap-4">
+                {/* Status indicators */}
+                <View className="p-4 bg-gray-50 rounded-lg">
+                  <Text className="text-sm font-medium text-gray-600 mb-3">Status</Text>
+                  <View className="gap-2">
+                    <View className="flex-row items-center gap-2">
+                      <View className={`w-3 h-3 rounded-full ${enabledRequiredId ? (cardImageId ? 'bg-green-500' : 'bg-red-400') : 'bg-gray-400'}`} />
+                      <Text className="txt-sm text-gray-700">
+                        ID Snapshot {enabledRequiredId && <Text className="text-red-500">*</Text>}
                       </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={handleSignIn}
-                      disabled={!isFormValid || isSignInLoading || isUploadingImages}
-                      className={`rounded-lg py-4 ${isFormValid && !isSignInLoading && !isUploadingImages
-                        ? 'bg-blue-500'
-                        : 'bg-blue-300'
-                        }`}
-                    >
-                      <Text className="text-white text-lg font-semibold text-center">
-                        {isSignInLoading || isUploadingImages ? 'Signing In...' : 'Sign In'}
+                    </View>
+                    <View className="flex-row items-center gap-2">
+                      <View className={`w-3 h-3 rounded-full ${enabledRequiredFace ? (faceImageId ? 'bg-green-500' : 'bg-red-400') : 'bg-gray-400'}`} />
+                      <Text className="text-sm text-gray-700">
+                        Photo Snapshot {enabledRequiredFace && <Text className="text-red-500">*</Text>}
                       </Text>
-                    </TouchableOpacity>
+                    </View>
+                    <View className="flex-row items-center gap-2">
+                      <View className={`w-3 h-3 rounded-full ${isFormValid ? 'bg-green-500' : 'bg-gray-400'}`} />
+                      <Text className="text-sm text-gray-700">Form Complete</Text>
+                    </View>
                   </View>
                 </View>
+                {/* Generated ID */}
+                {nextAvailableId && (
+                  <View className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <Text className="text-sm font-medium text-blue-800 mb-1">
+                      Generated ID
+                    </Text>
+                    <Text className="text-lg font-bold text-blue-900">
+                      {id}
+                    </Text>
+                  </View>
+                )}
+                {/* Action Buttons */}
+                <View className="gap-3">
+                  <TouchableOpacity
+                    onPress={handleBack}
+                    className="bg-gray-100 rounded-lg py-4 border border-gray-200"
+                  >
+                    <Text className="text-gray-700 text-lg font-medium text-center">
+                      Back
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleSignIn}
+                    disabled={!isFormValid || isSignInLoading || isUploadingImages}
+                    className={`rounded-lg py-4 ${isFormValid && !isSignInLoading && !isUploadingImages
+                      ? 'bg-blue-500'
+                      : 'bg-blue-300'
+                      }`}
+                  >
+                    <Text className="text-white text-lg font-semibold text-center">
+                      {isSignInLoading || isUploadingImages ? 'Signing In...' : 'Sign In'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            )}
+            </View>
           </View>
         </View>
       </TouchableWithoutFeedback>

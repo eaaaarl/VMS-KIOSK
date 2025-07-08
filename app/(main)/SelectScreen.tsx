@@ -18,6 +18,10 @@ export default function SelectScreen() {
     router.push('/(setting)/SettingKiosk')
   }
 
+  const handlePrinterManagement = () => {
+    router.push('/(developer)/printer')
+  }
+
   return (
     <SafeAreaView className="flex-1 justify-center items-center bg-black/50">
       <View className="bg-white rounded-t-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl">
@@ -39,6 +43,13 @@ export default function SelectScreen() {
             className="bg-blue-50 border border-blue-200 rounded-full py-4 px-6 items-center"
           >
             <Text className="text-gray-800 text-lg font-medium">Set KIOSK Function</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handlePrinterManagement}
+            className="bg-green-50 border border-green-200 rounded-full py-4 px-6 items-center"
+          >
+            <Text className="text-gray-800 text-lg font-medium">Printer Management</Text>
           </TouchableOpacity>
 
           <View

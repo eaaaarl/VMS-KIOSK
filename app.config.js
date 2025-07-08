@@ -19,12 +19,19 @@ export default {
     android: {
       adaptiveIcon: {
         foregroundImage: './assets/icons/adaptive-icon.png',
-        // monochromeImage: './assets/icons/adaptive-icon.png',
-        // backgroundImage: './assets/icons/adaptive-icon.png',
         backgroundColor: '#ffffff',
       },
       edgeToEdgeEnabled: true,
       package: 'com.eaaaarl.vmskiosk',
+      permissions: [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.BLUETOOTH_ADVERTISE",
+      ],
     },
     web: {
       bundler: 'metro',
