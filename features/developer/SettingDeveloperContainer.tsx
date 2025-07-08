@@ -1,11 +1,11 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
-import ApiConfigForm from '../../features/developer/components/ApiConfigForm';
-import ConfigDisplay from '../../features/developer/components/ConfigDisplay';
-import DevelopmentTips from '../../features/developer/components/DevelopmentTips';
-import { useDeveloperSetting } from '../../features/developer/hooks/useDeveloperSetting';
+import ApiConfigForm from './components/ApiConfigForm';
+import ConfigDisplay from './components/ConfigDisplay';
+import DevelopmentTips from './components/DevelopmentTips';
+import { useDeveloperSetting } from './hooks/useDeveloperSetting';
 
-export default function SettingDeveloperScreen() {
+const SettingDeveloper: React.FC = () => {
   const {
     currentConfig,
     ipAddress,
@@ -39,3 +39,4 @@ export default function SettingDeveloperScreen() {
   );
 };
 
+export default SettingDeveloper; 
