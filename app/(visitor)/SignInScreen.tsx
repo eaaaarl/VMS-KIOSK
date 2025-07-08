@@ -248,15 +248,20 @@ export default function SignInScreen() {
     }
   };
 
+  // Validate required snapshots based on config
+  const isSnapshotValid =
+    (!enabledRequiredFace || faceImageId) &&
+    (!enabledRequiredId || cardImageId);
+
   const isFormValid = formData.visitorName.trim() !== '' &&
     formData.officeToVisitId !== 0 &&
     formData.reasonForVisit !== '' &&
-    (formData.reasonForVisit !== 'Other' || (formData.otherReason && formData.otherReason.trim() !== ''));
+    (formData.reasonForVisit !== 'Other' || (formData.otherReason && formData.otherReason.trim() !== '')) &&
+    isSnapshotValid;
 
   // Calculate available height for content
   const availableHeight = screenHeight - insets.top - insets.bottom - keyboardHeight;
   const shouldShowSidebar = availableHeight > 600 && keyboardHeight === 0;
-
 
   return (
     <View
@@ -488,12 +493,16 @@ export default function SignInScreen() {
                           <Text className="text-sm font-medium text-gray-600 mb-3">Status</Text>
                           <View className="gap-2">
                             <View className="flex-row items-center gap-2">
-                              <View className={`w-3 h-3 rounded-full ${!idSnapshotTaken ? 'bg-green-500' : 'bg-red-400'}`} />
-                              <Text className="text-sm text-gray-700">ID Snapshot</Text>
+                              <View className={`w-3 h-3 rounded-full ${enabledRequiredId ? (cardImageId ? 'bg-green-500' : 'bg-red-400') : 'bg-gray-400'}`} />
+                              <Text className="text-sm text-gray-700">
+                                ID Snapshot {enabledRequiredId && <Text className="text-red-500">*</Text>}
+                              </Text>
                             </View>
                             <View className="flex-row items-center gap-2">
-                              <View className={`w-3 h-3 rounded-full ${!photoSnapshotTaken ? 'bg-green-500' : 'bg-red-400'}`} />
-                              <Text className="text-sm text-gray-700">Photo Snapshot</Text>
+                              <View className={`w-3 h-3 rounded-full ${enabledRequiredFace ? (faceImageId ? 'bg-green-500' : 'bg-red-400') : 'bg-gray-400'}`} />
+                              <Text className="text-sm text-gray-700">
+                                Photo Snapshot {enabledRequiredFace && <Text className="text-red-500">*</Text>}
+                              </Text>
                             </View>
                             <View className="flex-row items-center gap-2">
                               <View className={`w-3 h-3 rounded-full ${isFormValid ? 'bg-green-500' : 'bg-gray-400'}`} />
@@ -554,12 +563,16 @@ export default function SignInScreen() {
                       <Text className="text-sm font-medium text-gray-600 mb-3">Status</Text>
                       <View className="gap-2">
                         <View className="flex-row items-center gap-2">
-                          <View className={`w-3 h-3 rounded-full ${!idSnapshotTaken ? 'bg-green-500' : 'bg-red-400'}`} />
-                          <Text className="text-sm text-gray-700">ID Snapshot</Text>
+                          <View className={`w-3 h-3 rounded-full ${enabledRequiredId ? (cardImageId ? 'bg-green-500' : 'bg-red-400') : 'bg-gray-400'}`} />
+                          <Text className="text-sm text-gray-700">
+                            ID Snapshot {enabledRequiredId && <Text className="text-red-500">*</Text>}
+                          </Text>
                         </View>
                         <View className="flex-row items-center gap-2">
-                          <View className={`w-3 h-3 rounded-full ${!photoSnapshotTaken ? 'bg-green-500' : 'bg-red-400'}`} />
-                          <Text className="text-sm text-gray-700">Photo Snapshot</Text>
+                          <View className={`w-3 h-3 rounded-full ${enabledRequiredFace ? (faceImageId ? 'bg-green-500' : 'bg-red-400') : 'bg-gray-400'}`} />
+                          <Text className="text-sm text-gray-700">
+                            Photo Snapshot {enabledRequiredFace && <Text className="text-red-500">*</Text>}
+                          </Text>
                         </View>
                         <View className="flex-row items-center gap-2">
                           <View className={`w-3 h-3 rounded-full ${isFormValid ? 'bg-green-500' : 'bg-gray-400'}`} />
