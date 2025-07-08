@@ -44,7 +44,7 @@ export const serviceApi = createApi({
   endpoints: builder => ({
     getServices: builder.query<IServiceResponse, void>({
       query: () => ({
-        url: `service/public/service?id=!0&type=0&order=name`,
+        url: `/service/public/service?id=!0&type=0&order=name`,
         method: 'GET',
       }),
       providesTags: ['AllServices'],

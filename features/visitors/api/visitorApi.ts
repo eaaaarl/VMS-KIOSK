@@ -58,7 +58,7 @@ export const visitorApi = createApi({
   endpoints: builder => ({
     getVisitorsTodays: builder.query<IVisitorLogResponse, { date: string }>({
       query: ({ date }) => ({
-        url: `visitors-log/public/visit-log/2?DATE(logIn)='${date}'&order=logIn`,
+        url: `/visitors-log/public/visit-log/2?DATE(logIn)='${date}'&order=logIn`,
         method: 'GET',
       }),
       providesTags: ['VisitorsTodays'],
@@ -66,7 +66,7 @@ export const visitorApi = createApi({
 
     getVisitorsReturned: builder.query<IVisitorLogResponse, { date: string }>({
       query: ({ date }) => ({
-        url: `visitors-log/public/visit-log/2?returned=!TRUE&DATE(logIn)=!'${date}'`,
+        url: `/visitors-log/public/visit-log/2?returned=!TRUE&DATE(logIn)=!'${date}'`,
         method: 'GET',
       }),
       providesTags: ['VisitorsReturned'],
@@ -74,7 +74,7 @@ export const visitorApi = createApi({
 
     getVisitorsLogByDay: builder.query<{ maxDailyLog: number }, void>({
       query: () => ({
-        url: `visitor/public/max-log-by-day`,
+        url: `/visitor/public/max-log-by-day`,
         method: 'GET',
       }),
       providesTags: ['VisitorsLogByDay'],
@@ -82,7 +82,7 @@ export const visitorApi = createApi({
 
     getAllAvailableVisitors: builder.query<IAvailableVisitorResponse, { dateNow: string }>({
       query: ({ dateNow }) => ({
-        url: `visitor/public/visitor/available?dateNow=${dateNow}`,
+        url: `/visitor/public/visitor/available?dateNow=${dateNow}`,
         method: 'GET',
       }),
       providesTags: ['AllAvailableVisitors'],
@@ -90,7 +90,7 @@ export const visitorApi = createApi({
 
     createVisitor: builder.mutation<ICreateVisitorResponse, ICreateVisitorPayload>({
       query: payload => ({
-        url: `visitor/public/visitor`,
+        url: `/visitor/public/visitor`,
         method: 'POST',
         body: payload,
       }),
@@ -100,7 +100,7 @@ export const visitorApi = createApi({
 
     SignInVisitorLog: builder.mutation<string, ICreateVisitorLogPayload>({
       query: payload => ({
-        url: `visitors-log/public/visit-log`,
+        url: `/visitors-log/public/visit-log`,
         method: 'POST',
         body: payload,
       }),
@@ -109,7 +109,7 @@ export const visitorApi = createApi({
 
     uploadVisitorImages: builder.mutation<string, FormData>({
       query: (payload: FormData) => ({
-        url: `visitors-log/public/visit-log/photo`,
+        url: `/visitors-log/public/visit-log/photo`,
         method: 'POST',
         body: payload,
       }),
@@ -118,7 +118,7 @@ export const visitorApi = createApi({
 
     checkIDNumber: builder.query<ICheckIDNumberResponse, { strId: string }>({
       query: ({ strId }) => ({
-        url: `visitors-log/public/visit-log/2?strId='${strId}'&logOut=IS NULL&returned=FALSE`,
+        url: `/visitors-log/public/visit-log/2?strId='${strId}'&logOut=IS NULL&returned=FALSE`,
         method: 'GET',
       }),
       providesTags: ['GetVisitorIdNumber'],
@@ -126,7 +126,7 @@ export const visitorApi = createApi({
 
     signOutVisitor: builder.mutation<string, { strId: string; dateNow: string; logOut: string }>({
       query: ({ strId, dateNow, logOut }) => ({
-        url: `visitors-log/public/visit-log/${strId}/${dateNow}`,
+        url: `/visitors-log/public/visit-log/${strId}/${dateNow}`,
         method: 'PUT',
         body: {
           logOut,

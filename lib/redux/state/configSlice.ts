@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface ConfigState {
   ipAddress: string;
@@ -14,15 +14,15 @@ export const configSlice = createSlice({
   name: 'config',
   initialState,
   reducers: {
-    setIpAddress: (state, action) => {
-      state.ipAddress = action.payload;
+    setIpAddressConfig: (state, action: PayloadAction<{ ipAddress: string }>) => {
+      state.ipAddress = action.payload.ipAddress;
     },
-    setPort: (state, action) => {
-      state.port = action.payload;
+    setPortConfig: (state, action: PayloadAction<{ port: number }>) => {
+      state.port = action.payload.port;
     },
     resetConfig: () => initialState,
   },
 });
 
-export const { setIpAddress, setPort, resetConfig } = configSlice.actions;
+export const { setIpAddressConfig, setPortConfig, resetConfig } = configSlice.actions;
 export const configReducer = configSlice.reducer;

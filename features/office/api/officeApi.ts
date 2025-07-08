@@ -44,7 +44,7 @@ export const officeApi = createApi({
   endpoints: builder => ({
     getOffices: builder.query<IOfficeResponse, void>({
       query: () => ({
-        url: `office/public/office?order=name`,
+        url: `/office/public/office?order=name`,
         method: 'GET',
       }),
       providesTags: ['AllOffices'],

@@ -44,7 +44,7 @@ export const configApi = createApi({
   endpoints: builder => ({
     getConfig: builder.query<ConfigResponse[], void>({
       query: () => ({
-        url: 'config/public/config',
+        url: '/config/public/config',
         method: 'GET',
       }),
       providesTags: ['Config'],

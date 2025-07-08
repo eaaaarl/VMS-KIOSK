@@ -1,4 +1,7 @@
+import { useAppDispatch } from '@/lib/redux/hook';
+import { setIpAddressConfig, setPortConfig } from '@/lib/redux/state/configSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 
@@ -10,6 +13,7 @@ interface DeveloperConfig {
 const STORAGE_KEY = 'developer_config';
 
 export function useDeveloperSetting() {
+  const dispatch = useAppDispatch();
   const [ipAddress, setIpAddress] = useState('');
   const [port, setPort] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -47,7 +51,8 @@ export function useDeveloperSetting() {
       }
 
       // Basic IP address validation
-      const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+      const ipRegex =
+        /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
       if (!ipRegex.test(ipAddress.trim())) {
         Alert.alert('Invalid IP Address', 'Please enter a valid IP address.');
         return;
@@ -65,13 +70,10 @@ export function useDeveloperSetting() {
         port: port.trim(),
       };
 
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(config));
-      
-      Alert.alert(
-        'Configuration Saved',
-        `API endpoint configured: http://${config.ipAddress}:${config.port}`,
-        [{ text: 'OK' }]
-      );
+      dispatch(setIpAddressConfig({ ipAddress: config.ipAddress }));
+      dispatch(setPortConfig({ port: parseInt(config.port, 10) }));
+
+      router.replace('/(main)');
     } catch (error) {
       console.error('Error saving developer config:', error);
       Alert.alert('Error', 'Failed to save configuration. Please try again.');
@@ -100,4 +102,4 @@ export function useDeveloperSetting() {
     handleSave,
     resetConfig,
   };
-} 
+}

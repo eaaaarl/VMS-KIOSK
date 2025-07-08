@@ -52,7 +52,7 @@ export default function SignInScreen() {
   const { data: services } = useGetServicesQuery();
   const { data: visitorsReturned } = useGetVisitorsReturnedQuery({ date: formattedDate(new Date()) });
   const { data: visitorsTodays } = useGetVisitorsTodaysQuery({ date: formattedDate(new Date()) });
-  const { getPrefixId, getSeparatorId, getIdLength, getIdTotalCount } = useConfig();
+  const { getPrefixId, getSeparatorId, getIdLength, getIdTotalCount, enabledRequiredFace, enabledRequiredId } = useConfig();
 
   const availableVisitors = visitors?.results || [];
   const availableOffices = offices?.results || [];
@@ -82,7 +82,6 @@ export default function SignInScreen() {
   const [idSnapshotTaken, setIdSnapshotTaken] = useState(false);
   const [photoSnapshotTaken, setPhotoSnapshotTaken] = useState(false);
 
-  // Keyboard event listeners
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (event) => {
       setKeyboardHeight(event.endCoordinates.height);
@@ -97,6 +96,23 @@ export default function SignInScreen() {
       keyboardDidHideListener.remove();
     };
   }, []);
+
+
+  useEffect(() => {
+    if (enabledRequiredId) {
+      setIdSnapshotTaken(true);
+    } else if (faceImageId) {
+      setIdSnapshotTaken(false);
+    }
+  }, [enabledRequiredId, faceImageId])
+
+  useEffect(() => {
+    if (enabledRequiredFace) {
+      setPhotoSnapshotTaken(true);
+    } else if (cardImageId) {
+      setPhotoSnapshotTaken(false);
+    }
+  }, [enabledRequiredFace, cardImageId])
 
   const handleInputChange = (field: keyof IFormData, value: string) => {
     setFormData(prev => ({
@@ -124,12 +140,11 @@ export default function SignInScreen() {
   };
 
   const handleIdSnapshot = () => {
-    setIdSnapshotTaken(true);
+
     router.push('/(camera)/IDCamera');
   };
 
   const handlePhotoSnapshot = () => {
-    setPhotoSnapshotTaken(true);
     router.push('/(camera)/FaceCamera');
   };
 
@@ -242,6 +257,7 @@ export default function SignInScreen() {
   const availableHeight = screenHeight - insets.top - insets.bottom - keyboardHeight;
   const shouldShowSidebar = availableHeight > 600 && keyboardHeight === 0;
 
+
   return (
     <View
       className="flex-1 bg-white"
@@ -265,7 +281,7 @@ export default function SignInScreen() {
                   <View className="flex-row gap-4 mb-8">
                     <TouchableOpacity
                       onPress={handleIdSnapshot}
-                      className={`flex-1 border-2 rounded-lg p-6 items-center justify-center h-32 ${idSnapshotTaken ? 'border-green-400 bg-green-50' : 'border-red-300 bg-red-50'
+                      className={`flex-1 border-2 rounded-lg p-6 items-center justify-center h-32 ${!idSnapshotTaken ? 'border-green-400 bg-green-50' : 'border-red-300 bg-red-50'
                         }`}
                     >
                       <View className="items-center">
@@ -280,7 +296,7 @@ export default function SignInScreen() {
 
                     <TouchableOpacity
                       onPress={handlePhotoSnapshot}
-                      className={`flex-1 border-2 rounded-lg p-6 items-center justify-center h-32 ${photoSnapshotTaken ? 'border-green-400 bg-green-50' : 'border-yellow-300 bg-yellow-50'
+                      className={`flex-1 border-2 rounded-lg p-6 items-center justify-center h-32 ${!photoSnapshotTaken ? 'border-green-400 bg-green-50' : 'border-red-300 bg-yellow-50'
                         }`}
                     >
                       <View className="items-center">
@@ -472,11 +488,11 @@ export default function SignInScreen() {
                           <Text className="text-sm font-medium text-gray-600 mb-3">Status</Text>
                           <View className="gap-2">
                             <View className="flex-row items-center gap-2">
-                              <View className={`w-3 h-3 rounded-full ${idSnapshotTaken ? 'bg-green-500' : 'bg-red-400'}`} />
+                              <View className={`w-3 h-3 rounded-full ${!idSnapshotTaken ? 'bg-green-500' : 'bg-red-400'}`} />
                               <Text className="text-sm text-gray-700">ID Snapshot</Text>
                             </View>
                             <View className="flex-row items-center gap-2">
-                              <View className={`w-3 h-3 rounded-full ${photoSnapshotTaken ? 'bg-green-500' : 'bg-yellow-400'}`} />
+                              <View className={`w-3 h-3 rounded-full ${!photoSnapshotTaken ? 'bg-green-500' : 'bg-red-400'}`} />
                               <Text className="text-sm text-gray-700">Photo Snapshot</Text>
                             </View>
                             <View className="flex-row items-center gap-2">
@@ -538,11 +554,11 @@ export default function SignInScreen() {
                       <Text className="text-sm font-medium text-gray-600 mb-3">Status</Text>
                       <View className="gap-2">
                         <View className="flex-row items-center gap-2">
-                          <View className={`w-3 h-3 rounded-full ${idSnapshotTaken ? 'bg-green-500' : 'bg-red-400'}`} />
+                          <View className={`w-3 h-3 rounded-full ${!idSnapshotTaken ? 'bg-green-500' : 'bg-red-400'}`} />
                           <Text className="text-sm text-gray-700">ID Snapshot</Text>
                         </View>
                         <View className="flex-row items-center gap-2">
-                          <View className={`w-3 h-3 rounded-full ${photoSnapshotTaken ? 'bg-green-500' : 'bg-yellow-400'}`} />
+                          <View className={`w-3 h-3 rounded-full ${!photoSnapshotTaken ? 'bg-green-500' : 'bg-red-400'}`} />
                           <Text className="text-sm text-gray-700">Photo Snapshot</Text>
                         </View>
                         <View className="flex-row items-center gap-2">

@@ -14,9 +14,9 @@ export const kioskApi = createApi({
     const port = state.config?.port;
     const baseUrl = `http://${ipAddress}:${port}`;
 
-    // console.log("Using IP:", ipAddress);
-    // console.log("Using Port:", port);
-    // console.log("Constructed baseUrl:", baseUrl);
+    console.log('Using IP:', ipAddress);
+    console.log('Using Port:', port);
+    console.log('Constructed baseUrl:', baseUrl);
 
     let url: string;
     let adjustedArgs: any;
@@ -43,14 +43,14 @@ export const kioskApi = createApi({
   endpoints: builder => ({
     getAllKioskSetting: builder.query<SettingKioskResponse, void>({
       query: () => ({
-        url: `kiosk-setting/public/kiosk-setting`,
+        url: `/kiosk-setting/public/kiosk-setting`,
         method: 'GET',
       }),
     }),
 
     getKioskSetting: builder.query<SettingKiosk, SettingKioskParam>({
       query: ({ id }) => ({
-        url: `kiosk-setting/public/kiosk-setting/${id}`,
+        url: `/kiosk-setting/public/kiosk-setting/${id}`,
         method: 'GET',
       }),
     }),
