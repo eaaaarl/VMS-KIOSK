@@ -1,3 +1,4 @@
+import { LoadingOverlay } from '@/features/main/components/LoadingOverlay';
 import { SignOutForm } from '@/features/visitors/components/SignOutForm';
 import { useSignOutVisitor } from '@/features/visitors/hooks/useSignOutVisitor';
 import { router } from 'expo-router';
@@ -11,6 +12,9 @@ export default function SignOutScreen() {
   };
 
   return (
-    <SignOutForm {...signOutProps} handleBack={handleBack} />
+    <>
+      <SignOutForm {...signOutProps} handleBack={handleBack} />
+      <LoadingOverlay isLoading={signOutProps.isSigningOut} />
+    </>
   );
 }
