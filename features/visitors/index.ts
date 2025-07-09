@@ -1,7 +1,13 @@
 // Components
+export { SignInCameraButtons } from './components/SignInCameraButtons';
 export { SignInDoneButton } from './components/SignInDoneButton';
+export { SignInFormFields } from './components/SignInFormFields';
+export { SignInOfficeModal } from './components/SignInOfficeModal';
+export { SignInServiceModal } from './components/SignInServiceModal';
 export { SignInStatusMessage } from './components/SignInStatusMessage';
+export { SignInStatusSidebar } from './components/SignInStatusSidebar';
 export { SignInSuccessHeader } from './components/SignInSuccessHeader';
+export { SignInVisitorModal } from './components/SignInVisitorModal';
 export { SignOutActionButtons } from './components/SignOutActionButtons';
 export { SignOutSuccessHeader } from './components/SignOutSuccessHeader';
 export { SignOutThankYouMessage } from './components/SignOutThankYouMessage';
@@ -14,6 +20,7 @@ export { default as VisitorRegistrationFormContent } from './components/VisitorR
 export { default as VisitorRegistrationLayout } from './components/VisitorRegistrationLayout';
 
 // Hooks
+export { useSignInScreen } from './hooks/useSignInScreen';
 export { useSignInSuccess } from './hooks/useSignInSuccess';
 export type { PrintStatus } from './hooks/useSignInSuccess';
 export { useSignOutSuccess } from './hooks/useSignOutSuccess';
