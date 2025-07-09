@@ -7,6 +7,7 @@ export default function SelectScreenUI({
   onClose,
   onSetKioskFunction,
   onPrinterManagement,
+  onIpPortConfiguration,
 }: SelectScreenProps) {
   return (
     <SafeAreaView className="flex-1 justify-center items-center bg-black/50">
@@ -34,6 +35,13 @@ export default function SelectScreenUI({
             className="bg-green-50 border border-green-200 rounded-full py-4 px-6 items-center"
           >
             <Text className="text-gray-800 text-lg font-medium">Printer Management</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={onIpPortConfiguration}
+            className="bg-purple-50 border border-purple-200 rounded-full py-4 px-6 items-center"
+          >
+            <Text className="text-gray-800 text-lg font-medium">IP Address & Port Configuration</Text>
           </TouchableOpacity>
 
           <View className="bg-pink-50 border border-pink-200 rounded-full py-4 px-6 items-center flex-row justify-center">

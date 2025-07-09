@@ -22,10 +22,15 @@ export const useSelectScreen = (): SelectScreenHookReturn => {
     router.push('/(developer)/printer');
   };
 
+  const handleIpPortConfiguration = () => {
+    router.push('/(developer)/setting');
+  };
+
   return {
     countReturned,
     handleClose,
     handleSetKioskFunction,
     handlePrinterManagement,
+    handleIpPortConfiguration,
   };
 }; 

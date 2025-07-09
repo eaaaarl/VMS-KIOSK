@@ -3,6 +3,7 @@ export interface SelectScreenProps {
   onClose: () => void;
   onSetKioskFunction: () => void;
   onPrinterManagement: () => void;
+  onIpPortConfiguration: () => void;
 }
 
 export interface SelectScreenHookReturn {
@@ -10,4 +11,5 @@ export interface SelectScreenHookReturn {
   handleClose: () => void;
   handleSetKioskFunction: () => void;
   handlePrinterManagement: () => void;
+  handleIpPortConfiguration: () => void;
 } 

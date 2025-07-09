@@ -29,6 +29,7 @@ export const KioskOptionsList: React.FC<KioskOptionsListProps> = ({
   selectedOptionId,
   onOptionSelect
 }) => {
+  
   if (options.length === 0) {
     return (
       <View className="py-4">

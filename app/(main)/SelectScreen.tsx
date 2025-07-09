@@ -8,6 +8,7 @@ export default function SelectScreen() {
     handleClose,
     handleSetKioskFunction,
     handlePrinterManagement,
+    handleIpPortConfiguration,
   } = useSelectScreen();
 
   return (
@@ -16,6 +17,7 @@ export default function SelectScreen() {
       onClose={handleClose}
       onSetKioskFunction={handleSetKioskFunction}
       onPrinterManagement={handlePrinterManagement}
+      onIpPortConfiguration={handleIpPortConfiguration}
     />
   );
 }
