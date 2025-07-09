@@ -1,3 +1,4 @@
+import { LoadingOverlay } from '@/features/main/components/LoadingOverlay';
 import VisitorRegistrationActionButtons from '@/features/visitors/components/VisitorRegistrationActionButtons';
 import VisitorRegistrationFormContent from '@/features/visitors/components/VisitorRegistrationFormContent';
 import VisitorRegistrationLayout from '@/features/visitors/components/VisitorRegistrationLayout';
@@ -14,7 +15,8 @@ export default function VisitorRegistration() {
     handleSkip,
     handleBack,
     isRegisterButtonDisabled,
-    registerButtonText
+    registerButtonText,
+    loading,
   } = useVisitorRegistrationScreen();
 
   return (
@@ -34,7 +36,9 @@ export default function VisitorRegistration() {
         onRegister={handleRegister}
         isRegisterButtonDisabled={isRegisterButtonDisabled}
         registerButtonText={registerButtonText}
+
       />
+      <LoadingOverlay isLoading={loading} />
     </VisitorRegistrationLayout>
   );
 }

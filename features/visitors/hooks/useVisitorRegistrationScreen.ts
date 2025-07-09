@@ -6,35 +6,30 @@ import { useMemo } from 'react';
 import Toast from 'react-native-toast-message';
 
 export function useVisitorRegistrationScreen() {
-  const {
-    formData,
-    handleInputChange,
-    handleBlur,
-    errors,
-    isFormValid
-  } = useVisitorRegistrationForm();
+  const { formData, handleInputChange, handleBlur, errors, isFormValid } =
+    useVisitorRegistrationForm();
 
   const [createVisitor, { isLoading }] = useCreateVisitorMutation();
 
   const handleRegister = async () => {
     if (!isFormValid) return;
-    
+
     try {
       const payload: ICreateVisitorPayload = {
         firstname: formData.firstName.toUpperCase(),
         lastname: formData.lastName.toUpperCase(),
         middlename: formData.middleName ? formData.middleName.toUpperCase() : '',
-        contactNo1: formData.mobileNumber
+        contactNo1: formData.mobileNumber,
       };
-      
+
       await createVisitor(payload);
-      
+
       Toast.show({
         type: 'success',
         text1: 'Visitor created successfully',
         text2: 'You can now proceed to the sign in screen',
       });
-      
+
       router.push('/(visitor)/SignInScreen');
     } catch (error) {
       console.log(error);
@@ -71,6 +66,7 @@ export function useVisitorRegistrationScreen() {
     handleSkip,
     handleBack,
     isRegisterButtonDisabled,
-    registerButtonText
+    registerButtonText,
+    loading: isLoading,
   };
-} 
+}
