@@ -9,9 +9,13 @@ export { SignOutTicketDisplay } from './components/SignOutTicketDisplay';
 export { SignOutVisitorNameDisplay } from './components/SignOutVisitorNameDisplay';
 export { TicketNumberDisplay } from './components/TicketNumberDisplay';
 export { VisitorNameDisplay } from './components/VisitorNameDisplay';
+export { default as VisitorRegistrationActionButtons } from './components/VisitorRegistrationActionButtons';
+export { default as VisitorRegistrationFormContent } from './components/VisitorRegistrationFormContent';
+export { default as VisitorRegistrationLayout } from './components/VisitorRegistrationLayout';
 
 // Hooks
 export { useSignInSuccess } from './hooks/useSignInSuccess';
 export type { PrintStatus } from './hooks/useSignInSuccess';
 export { useSignOutSuccess } from './hooks/useSignOutSuccess';
+export { useVisitorRegistrationScreen } from './hooks/useVisitorRegistrationScreen';
 
