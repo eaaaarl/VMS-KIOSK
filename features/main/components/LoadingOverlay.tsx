@@ -16,7 +16,6 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ isLoading }) => 
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.35)',
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 1000,
@@ -24,7 +23,7 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ isLoading }) => 
     >
       <View
         style={{
-          backgroundColor: 'rgba(30,30,30,0.85)',
+          backgroundColor: 'rgba(0,0,0,0.5)',
           borderRadius: 12,
           alignItems: 'center',
           justifyContent: 'center',

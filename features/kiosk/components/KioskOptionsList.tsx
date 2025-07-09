@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import { View } from 'react-native'
 import { KioskOptionItem } from './KioskOptionItem'
 
 type KioskOption = {
@@ -14,6 +14,16 @@ type KioskOptionsListProps = {
   onOptionSelect: (optionId: number) => void
 }
 
+const LoadingSkeletonItem: React.FC<{ isLast?: boolean }> = ({ isLast }) => (
+  <View className={`flex-row items-center p-4 ${!isLast ? 'border-b border-gray-200' : ''}`}>
+    <View className="flex-1">
+      <View className="h-4 bg-gray-300 rounded mb-2 w-3/4 animate-pulse" />
+      <View className="h-3 bg-gray-200 rounded w-1/2 animate-pulse" />
+    </View>
+    <View className="w-6 h-6 bg-gray-300 rounded-full animate-pulse" />
+  </View>
+)
+
 export const KioskOptionsList: React.FC<KioskOptionsListProps> = ({
   options,
   selectedOptionId,
@@ -21,8 +31,10 @@ export const KioskOptionsList: React.FC<KioskOptionsListProps> = ({
 }) => {
   if (options.length === 0) {
     return (
-      <View className="py-8 items-center">
-        <Text className="text-gray-500 text-lg">Loading kiosk settings...</Text>
+      <View className="py-4">
+        <LoadingSkeletonItem />
+        <LoadingSkeletonItem />
+        <LoadingSkeletonItem isLast />
       </View>
     )
   }

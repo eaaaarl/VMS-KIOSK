@@ -1,44 +1,32 @@
-import { useGetVisitorsReturnedQuery, useSignOutAllVisitorsMutation, visitorApi } from "@/features/visitors/api/visitorApi";
-import { formattedDate } from "@/features/visitors/utils/FormattedDate";
-import { useAppSelector } from "@/lib/redux/hook";
-import type { AppDispatch } from "@/lib/redux/store";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import {
+  useGetVisitorsReturnedQuery,
+  useSignOutAllVisitorsMutation,
+  visitorApi,
+} from '@/features/visitors/api/visitorApi';
+import { formattedDate } from '@/features/visitors/utils/FormattedDate';
+import { useAppSelector } from '@/lib/redux/hook';
+import type { AppDispatch } from '@/lib/redux/store';
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 export function useVisitorsReturnedModal() {
-  const router = useRouter();
-  const { kioskSettingId } = useAppSelector((state) => state.kiosk);
-  const { ipAddress, port } = useAppSelector((state) => state.config);
+  const { kioskSettingId } = useAppSelector(state => state.kiosk);
   const [componentMounted, setComponentMounted] = useState(false);
   const [isInformationModalOpen, setIsInformationModalOpen] = useState(false);
   const [hasShownVisitorInfo, setHasShownVisitorInfo] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    if (ipAddress === '' || port === 0) {
-      router.replace('/(developer)/setting');
-    }
-  }, [ipAddress, port, router]);
-
-  useEffect(() => {
     setComponentMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (componentMounted) {
-      const timeoutId = setTimeout(() => {
-        if (!kioskSettingId) {
-          router.replace('/(setting)/SettingKiosk');
-        }
-      }, 100);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [kioskSettingId, router, componentMounted]);
-
   const todaysDate = formattedDate(new Date());
 
-  const { data: visitorsReturned, isLoading, isSuccess } = useGetVisitorsReturnedQuery(
+  const {
+    data: visitorsReturned,
+    isLoading,
+    isSuccess,
+  } = useGetVisitorsReturnedQuery(
     { date: todaysDate },
     {
       skip: !kioskSettingId || !componentMounted,
@@ -69,7 +57,8 @@ export function useVisitorsReturnedModal() {
     strId.push(visitorsReturned?.results?.[i]?.strId as string);
   }
 
-  const [signOutAllVisitors, { isLoading: isSigningOutAllVisitors }] = useSignOutAllVisitorsMutation();
+  const [signOutAllVisitors, { isLoading: isSigningOutAllVisitors }] =
+    useSignOutAllVisitorsMutation();
 
   async function fetchAllVisitorLogs(strIds: string[]) {
     for (const strId of strIds) {
@@ -98,4 +87,4 @@ export function useVisitorsReturnedModal() {
     handleReturnAllVisitors,
     isSigningOutAllVisitors,
   };
-} 
+}

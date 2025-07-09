@@ -76,6 +76,7 @@ export const KioskSettingUI: React.FC<KioskSettingUIProps> = ({
             onSave={onSave}
             isSaveEnabled={selectedOptionId !== null}
           />
+
         </View>
       </View>
     </SafeAreaView>
