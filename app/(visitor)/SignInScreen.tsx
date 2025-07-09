@@ -1,4 +1,4 @@
-import { useAppInitialization } from '@/features/main/hooks/useAppInitialization';
+import { LoadingOverlay } from '@/features/main/components/LoadingOverlay';
 import {
   SignInCameraButtons,
   SignInFormFields,
@@ -22,8 +22,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function SignInScreen() {
   const insets = useSafeAreaInsets();
-  const { isInitialized } = useAppInitialization();
-  
+
   const {
     // State
     formData,
@@ -33,7 +32,6 @@ export default function SignInScreen() {
     visitorModalVisible,
     officeModalVisible,
     serviceModalVisible,
-    availableVisitors,
     availableOffices,
     availableServices,
     nextAvailableId,
@@ -71,15 +69,6 @@ export default function SignInScreen() {
       otherReason: serviceId === 0 ? prev.otherReason : null
     }));
   };
-
-  // Show loading state while app is initializing
-  if (!isInitialized) {
-    return (
-      <View className="flex-1 bg-white items-center justify-center">
-        <Text className="text-lg text-gray-600">Initializing...</Text>
-      </View>
-    );
-  }
 
   return (
     <View
@@ -138,6 +127,7 @@ export default function SignInScreen() {
               onBack={handleBack}
               onSignIn={handleSignIn}
             />
+
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -165,6 +155,8 @@ export default function SignInScreen() {
         onSelectService={handleServiceSelect}
         onClose={() => setServiceModalVisible(false)}
       />
+
+      <LoadingOverlay isLoading={isSignInLoading} />
     </View>
   );
 }
