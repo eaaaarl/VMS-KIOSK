@@ -26,7 +26,6 @@ export default function PrinterScreen() {
 
   return (
     <ScrollView className="flex-1 bg-gray-100 p-4">
-      {/* Header */}
       <View className="mb-6">
         <Text className="text-2xl font-bold text-gray-800 mb-2">Printer Management</Text>
         <Text className="text-sm text-gray-600">

@@ -4,7 +4,6 @@ import { Text, TouchableOpacity } from 'react-native'
 
 export default function LayoutDeveloper() {
   return (
-
     <Stack>
       <Stack.Screen
         name="setting"

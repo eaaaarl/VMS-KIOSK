@@ -1,3 +1,4 @@
+import { LoadingOverlay } from '@/features/main/components/LoadingOverlay';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import ApiConfigForm from '../../features/developer/components/ApiConfigForm';
@@ -14,28 +15,33 @@ export default function SettingDeveloperScreen() {
     setIpAddress,
     setPort,
     handleSave,
+    mockLoading,
   } = useDeveloperSetting();
 
   return (
-    <View className="flex-1 bg-gray-50">
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ padding: 16 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <ConfigDisplay currentConfig={currentConfig} className="mb-6" />
-        <ApiConfigForm
-          ipAddress={ipAddress}
-          port={port}
-          isLoading={isLoading}
-          onIpAddressChange={setIpAddress}
-          onPortChange={setPort}
-          onSave={handleSave}
-        />
-        <DevelopmentTips />
-        <View className="h-6" />
-      </ScrollView>
-    </View>
+    <>
+      <View className="flex-1 bg-gray-50">
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ padding: 16 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <ConfigDisplay currentConfig={currentConfig} className="mb-6" />
+          <ApiConfigForm
+            ipAddress={ipAddress}
+            port={port}
+            isLoading={isLoading}
+            onIpAddressChange={setIpAddress}
+            onPortChange={setPort}
+            onSave={handleSave}
+          />
+          <DevelopmentTips />
+          <View className="h-6" />
+        </ScrollView>
+
+      </View>
+      <LoadingOverlay isLoading={mockLoading} />
+    </>
   );
 };
 

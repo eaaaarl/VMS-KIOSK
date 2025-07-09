@@ -18,19 +18,19 @@ export default {
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: './assets/icons/adaptive-icon.png',
+        foregroundImage: './assets/icons/adaptive-icon-box.png',
         backgroundColor: '#ffffff',
       },
       edgeToEdgeEnabled: true,
       package: 'com.eaaaarl.vmskiosk',
       permissions: [
-        "android.permission.BLUETOOTH",
-        "android.permission.BLUETOOTH_ADMIN",
-        "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.BLUETOOTH_CONNECT",
-        "android.permission.BLUETOOTH_SCAN",
-        "android.permission.BLUETOOTH_ADVERTISE",
+        'android.permission.BLUETOOTH',
+        'android.permission.BLUETOOTH_ADMIN',
+        'android.permission.ACCESS_FINE_LOCATION',
+        'android.permission.ACCESS_COARSE_LOCATION',
+        'android.permission.BLUETOOTH_CONNECT',
+        'android.permission.BLUETOOTH_SCAN',
+        'android.permission.BLUETOOTH_ADVERTISE',
       ],
     },
     web: {
@@ -49,6 +49,8 @@ export default {
           backgroundColor: '#ffffff',
           dark: {
             image: './assets/icons/a-splash-icon-light.png',
+            imageWidth: 200,
+            resizeMode: 'contain',
             backgroundColor: '#000000',
           },
         },

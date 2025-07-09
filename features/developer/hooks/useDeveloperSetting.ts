@@ -79,6 +79,19 @@ export function useDeveloperSetting() {
       Alert.alert('Error', 'Failed to save configuration. Please try again.');
     }
   };
+  const [mockLoading, setMockLoading] = useState(false);
+  const mockSave = async () => {
+    try {
+      setMockLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      setMockLoading(false);
+    } catch (error) {
+      console.error('Error saving developer config:', error);
+      Alert.alert('Error', 'Failed to save configuration. Please try again.');
+    } finally {
+      setMockLoading(false);
+    }
+  };
 
   const resetConfig = async () => {
     try {
@@ -101,5 +114,9 @@ export function useDeveloperSetting() {
     setPort,
     handleSave,
     resetConfig,
+
+    // MOCK
+    mockLoading,
+    mockSave,
   };
 }
