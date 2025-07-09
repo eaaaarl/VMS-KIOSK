@@ -152,6 +152,7 @@ export default function SignInScreen() {
         onSelectService={handleServiceSelect}
         onClose={() => setServiceModalVisible(false)}
       />
+      
     </View>
   );
 }
