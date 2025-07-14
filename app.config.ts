@@ -63,6 +63,14 @@ export default {
           recordAudioAndroid: true,
         },
       ],
+      [
+        'expo-build-properties',
+        {
+          android: {
+            usesCleartextTraffic: true,
+          },
+        },
+      ],
     ],
     experiments: {
       typedRoutes: true,
