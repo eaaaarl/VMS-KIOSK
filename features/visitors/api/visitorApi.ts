@@ -95,7 +95,6 @@ export const visitorApi = createApi({
         method: 'POST',
         body: payload,
       }),
-
       invalidatesTags: ['AllAvailableVisitors'],
     }),
 
