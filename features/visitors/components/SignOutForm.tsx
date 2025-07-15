@@ -117,6 +117,7 @@ export const SignOutForm: React.FC<SignOutFormProps> = ({
                     onChangeText={handleTicketNumberChange}
                     keyboardType="default"
                   />
+                  <Text className="text-red-500 text-sm mt-2 text-center">{error}</Text>
                 </View>
                 <View className="items-center">
                   <TouchableOpacity
