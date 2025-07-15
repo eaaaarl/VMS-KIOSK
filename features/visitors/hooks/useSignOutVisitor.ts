@@ -1,11 +1,7 @@
-import { store as reduxStore } from '@/lib/redux/store';
 import { BarcodeScanningResult, useCameraPermissions } from 'expo-camera';
-import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Animated } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { visitorApi } from '../api/visitorApi';
-import { formattedDateTimeWithSpace } from '../utils/FormattedDate';
 
 export function useSignOutVisitor() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -62,22 +58,24 @@ export function useSignOutVisitor() {
 
   const handleSignOut = async (scannedTicketNumber?: string) => {
     const ticket = scannedTicketNumber || ticketNumber;
-    if (!ticket) {
+    console.log('ticket:', ticket);
+    /* if (!ticket) {
       setError('Please scan a QR code or enter ticket number');
       return;
     }
-    setIsSigningOut(true);
+    setIsSigningOut(true); */
     try {
-      const checkResult = await reduxStore
+      /*  const checkResult = await reduxStore
         .dispatch(visitorApi.endpoints.checkIDNumber.initiate({ strId: ticket }))
         .unwrap();
-
+      console.log('checkResult:', checkResult);
       if (!checkResult.results || checkResult.results.length === 0) {
         setError('Ticket number not found');
         setIsSigningOut(false);
         return;
       }
-      const visitorInfo = checkResult.results[0];
+      const visitorInfo = checkResult.results?.[0];
+
       await reduxStore
         .dispatch(
           visitorApi.endpoints.signOutVisitor.initiate({
@@ -92,10 +90,16 @@ export function useSignOutVisitor() {
       router.replace({
         pathname: '/(visitor)/SignOutSuccess',
         params: { ticketNumber: ticket, name: visitorInfo.name },
-      });
-    } catch (error) {
+      }); */
+    } catch (error: any) {
       setIsSigningOut(false);
-      console.log(error);
+      // Safely log error message and stack if available
+      if (error instanceof Error) {
+        console.log('Error:', error.message, error.stack);
+      } else {
+        // Fallback for non-Error objects, safely stringify
+        console.log('Error:', safeStringify(error));
+      }
       Toast.show({
         type: 'error',
         text1: 'Failed to sign out',
@@ -120,4 +124,16 @@ export function useSignOutVisitor() {
     handleTicketNumberChange,
     handleSignOut,
   };
+}
+
+// Helper for safe JSON.stringify to avoid circular structure errors
+function safeStringify(obj: any) {
+  const seen = new WeakSet();
+  return JSON.stringify(obj, function (key, value) {
+    if (typeof value === 'object' && value !== null) {
+      if (seen.has(value)) return;
+      seen.add(value);
+    }
+    return value;
+  });
 }

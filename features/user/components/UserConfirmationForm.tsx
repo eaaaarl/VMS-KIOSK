@@ -20,7 +20,7 @@ const UserConfirmationForm: React.FC<UserConfirmationFormProps> = ({
   onConfirm,
   onBack,
 }) => (
-  <SafeAreaView className="flex-1 bg-gray-100">
+  <SafeAreaView className="flex-1 bg-gray-100 mt-10">
     {/* Header */}
     <View className="bg-blue-500 px-4 py-3 flex-row justify-between items-center">
       <Text className="text-white text-base sm:text-lg font-semibold flex-1 mr-2" numberOfLines={2}>
