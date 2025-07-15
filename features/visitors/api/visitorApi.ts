@@ -3,6 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   IAvailableVisitorResponse,
   ICheckIDNumberResponse,
+  ICreatePublicReturnIdPayload,
   ICreateVisitorLogPayload,
   ICreateVisitorPayload,
   ICreateVisitorResponse,
@@ -55,6 +56,7 @@ export const visitorApi = createApi({
     'UploadVisitorImages',
     'GetVisitorIdNumber',
     'GetVisitorLogInfo',
+    'GetVisitorLogInfoSignOut',
   ],
   endpoints: builder => ({
     getVisitorsTodays: builder.query<IVisitorLogResponse, { date: string }>({
@@ -124,9 +126,17 @@ export const visitorApi = createApi({
       providesTags: ['GetVisitorIdNumber'],
     }),
 
+    getVisitorLogInfoForSignOut: builder.query<IVisitorLogResponse, { strId: string }>({
+      query: ({ strId }) => ({
+        url: `/visitors-log/public/visit-log/2?strId='${strId}'&logOut=IS NULL&returned=FALSE`,
+        method: 'GET',
+      }),
+      providesTags: ['GetVisitorLogInfoSignOut'],
+    }),
+
     getVisitorLogInfo: builder.query<IVisitorLogResponse, { strId: string }>({
       query: ({ strId }) => ({
-        url: `/visitors-log/public/visit-log/2?strId='${strId}'`,
+        url: `/visitors-log/public/visit-log/2?strId='${strId}'&logOut=IS NULL&returned=FALSE`,
         method: 'GET',
       }),
       providesTags: ['GetVisitorLogInfo'],
@@ -141,20 +151,30 @@ export const visitorApi = createApi({
           returned: true,
         },
       }),
+
       invalidatesTags: [
         'GetVisitorIdNumber',
         'VisitorsTodays',
         'VisitorsReturned',
         'VisitorsLogByDay',
         'AllAvailableVisitors',
+        'GetVisitorLogInfoSignOut'
       ],
     }),
 
-    signOutAllVisitors: builder.mutation<string, { strId: string; dateNow: string }>({
+    signOutAllVisitors: builder.mutation<[], { strId: string; dateNow: string }>({
       query: ({ strId, dateNow }) => ({
         url: `/visitors-log/public/visit-log/${strId}/${dateNow}`,
         method: 'PUT',
         body: { returned: true },
+      }),
+    }),
+
+    createPublicReturnId: builder.mutation<string, ICreatePublicReturnIdPayload>({
+      query: payload => ({
+        url: `/return-id/public/return-id`,
+        method: 'POST',
+        body: payload,
       }),
     }),
   }),
@@ -172,4 +192,6 @@ export const {
   useSignOutVisitorMutation,
   useGetVisitorLogInfoQuery,
   useSignOutAllVisitorsMutation,
+  useCreatePublicReturnIdMutation,
+  useGetVisitorLogInfoForSignOutQuery,
 } = visitorApi;

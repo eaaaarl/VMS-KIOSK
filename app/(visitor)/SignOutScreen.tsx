@@ -13,7 +13,20 @@ export default function SignOutScreen() {
 
   return (
     <>
-      <SignOutForm {...signOutProps} handleBack={handleBack} />
+      <SignOutForm
+        permission={signOutProps.permission}
+        requestPermission={signOutProps.requestPermission}
+        ticketNumber={signOutProps.ticketNumber}
+        cameraActive={signOutProps.cameraActive}
+        error={signOutProps.error}
+        animatedValue={signOutProps.animatedValue}
+        isSigningOut={signOutProps.isSigningOut}
+        handleBarCodeScanned={signOutProps.handleBarCodeScanned}
+        toggleCamera={signOutProps.toggleCamera}
+        handleTicketNumberChange={signOutProps.handleTicketNumberChange}
+        handleSignOut={signOutProps.handleSignOut}
+        handleBack={handleBack}
+      />
       <LoadingOverlay isLoading={signOutProps.isSigningOut} />
     </>
   );

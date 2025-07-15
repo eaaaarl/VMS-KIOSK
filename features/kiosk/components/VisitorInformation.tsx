@@ -101,7 +101,7 @@ export default function VisitorInformationModal({ isOpen, onClose, onConfirm }: 
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    onPress={() => onConfirm()}
+                    onPress={onConfirm}
                     className="bg-red-400 px-4 py-3 rounded-full"
                   >
                     <Text className="text-white text-center font-medium text-base">Return all {countReturned} numbers</Text>

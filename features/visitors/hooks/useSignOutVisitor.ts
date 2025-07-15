@@ -61,7 +61,8 @@ export function useSignOutVisitor() {
   };
 
   const handleSignOut = async (scannedTicketNumber?: string) => {
-    const ticket = scannedTicketNumber || ticketNumber;
+    const ticket = ticketNumber || scannedTicketNumber;
+    console.log('ticket:', ticket);
     if (!ticket) {
       setError('Please scan a QR code or enter ticket number');
       return;
@@ -69,7 +70,7 @@ export function useSignOutVisitor() {
     setIsSigningOut(true);
     try {
       const checkResult = await reduxStore
-        .dispatch(visitorApi.endpoints.checkIDNumber.initiate({ strId: ticket }))
+        .dispatch(visitorApi.endpoints.getVisitorLogInfoForSignOut.initiate({ strId: ticket }))
         .unwrap();
 
       if (!checkResult.results || checkResult.results.length === 0) {
@@ -77,7 +78,8 @@ export function useSignOutVisitor() {
         setIsSigningOut(false);
         return;
       }
-      const visitorInfo = checkResult.results[0];
+      const visitorInfo = checkResult.results?.[0];
+
       await reduxStore
         .dispatch(
           visitorApi.endpoints.signOutVisitor.initiate({
@@ -93,9 +95,9 @@ export function useSignOutVisitor() {
         pathname: '/(visitor)/SignOutSuccess',
         params: { ticketNumber: ticket, name: visitorInfo.name },
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.log('error:', error);
       setIsSigningOut(false);
-      console.log(error);
       Toast.show({
         type: 'error',
         text1: 'Failed to sign out',

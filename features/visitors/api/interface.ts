@@ -82,3 +82,11 @@ export interface IUploadVisitorImagesPayload {
 export interface ICheckIDNumberResponse {
   results: IVisitorLog[];
 }
+
+export interface ICreatePublicReturnIdPayload {
+  vlId: number;
+  vlStrId: string;
+  vlLogIn: string;
+  type: number;
+  remarks: string;
+}
