@@ -24,6 +24,7 @@ export default function SignInScreen() {
   const insets = useSafeAreaInsets();
 
   const {
+
     // State
     formData,
     filteredVisitors,
@@ -96,6 +97,8 @@ export default function SignInScreen() {
                       photoSnapshotTaken={photoSnapshotTaken}
                       onIdSnapshot={handleIdSnapshot}
                       onPhotoSnapshot={handlePhotoSnapshot}
+                      faceImageId={faceImageId}
+                      cardImageId={cardImageId}
                     />
 
                     {/* Form Fields */}

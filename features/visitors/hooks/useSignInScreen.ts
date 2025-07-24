@@ -1,11 +1,11 @@
 import { useConfig } from '@/features/config/hooks/useConfig';
-import { useGetOfficesQuery } from '@/features/office/api/officeApi';
-import { useGetServicesQuery } from '@/features/service/api/serviceApi';
+import { useLazyGetOfficesQuery } from '@/features/office/api/officeApi';
+import { useLazyGetServicesQuery } from '@/features/service/api/serviceApi';
 import { ICreateVisitorLogPayload } from '@/features/visitors/api/interface';
 import {
-  useGetAllAvailableVisitorsQuery,
-  useGetVisitorsReturnedQuery,
-  useGetVisitorsTodaysQuery,
+  useLazyGetAllAvailableVisitorsQuery,
+  useLazyGetVisitorsReturnedQuery,
+  useLazyGetVisitorsTodaysQuery,
   useSignInVisitorLogMutation,
   useUploadVisitorImagesMutation,
 } from '@/features/visitors/api/visitorApi';
@@ -19,11 +19,13 @@ import { useAppDispatch, useAppSelector } from '@/lib/redux/hook';
 import { setCardImageId, setFaceImageId } from '@/lib/redux/state/visitorSlice';
 import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 
 export const useSignInScreen = () => {
   const dispatch = useAppDispatch();
   const { faceImageId, cardImageId } = useAppSelector(state => state.visitor);
+  const { ipAddress, port } = useAppSelector(state => state.config);
   const [formData, setFormData] = useState<IFormData>({
     visitorName: '',
     visitorId: 0,
@@ -34,15 +36,20 @@ export const useSignInScreen = () => {
     otherReason: null,
   });
 
-  const { data: visitors } = useGetAllAvailableVisitorsQuery({
-    dateNow: formattedDate(new Date()),
-  });
-  const { data: offices } = useGetOfficesQuery();
-  const { data: services } = useGetServicesQuery();
-  const { data: visitorsReturned } = useGetVisitorsReturnedQuery({
-    date: formattedDate(new Date()),
-  });
-  const { data: visitorsTodays } = useGetVisitorsTodaysQuery({ date: formattedDate(new Date()) });
+  const [getOffices, { data: offices }] = useLazyGetOfficesQuery();
+  const [getServices, { data: services }] = useLazyGetServicesQuery();
+  const [getVisitorsReturned, { data: visitorsReturned }] = useLazyGetVisitorsReturnedQuery();
+  const [getVisitorsTodays, { data: visitorsTodays }] = useLazyGetVisitorsTodaysQuery();
+  const [getAllAvailableVisitors, { data: visitors }] = useLazyGetAllAvailableVisitorsQuery();
+
+  useEffect(() => {
+    getOffices();
+    getServices();
+    getVisitorsReturned({ date: formattedDate(new Date()) });
+    getVisitorsTodays({ date: formattedDate(new Date()) });
+    getAllAvailableVisitors({ dateNow: formattedDate(new Date()) });
+  }, [getOffices, getServices, getVisitorsReturned, getVisitorsTodays, getAllAvailableVisitors]);
+
   const {
     getPrefixId,
     getSeparatorId,
@@ -135,12 +142,13 @@ export const useSignInScreen = () => {
 
   const handleSignIn = async () => {
     try {
+      const signInTimestamp = new Date();
       const payload: ICreateVisitorLogPayload = {
         log: {
           id: idList[0],
           strId: id,
-          logIn: formattedDateTime(new Date()),
-          logInDate: formattedDate(new Date()),
+          logIn: formattedDateTime(signInTimestamp),
+          logInDate: formattedDate(signInTimestamp),
           visitorId: formData.visitorId,
           officeId: formData.officeToVisitId,
           serviceId: formData.serviceId === null ? 0 : formData.serviceId,
@@ -149,37 +157,61 @@ export const useSignInScreen = () => {
         },
       };
 
+      console.log('payload log', payload.log.logIn);
+
       await signInVisitorLog(payload).unwrap();
 
       const createImageFormData = async (imageId: string, imageType: string) => {
-        const imageUri = `${FileSystem.cacheDirectory}${imageId}`;
-        const fileInfo = await FileSystem.getInfoAsync(imageUri);
+        try {
+          const imageUri = `${FileSystem.cacheDirectory}${imageId}`;
+          const fileInfo = await FileSystem.getInfoAsync(imageUri);
 
-        if (!fileInfo.exists) {
-          throw new Error(`${imageType} image file not found`);
+          if (!fileInfo.exists) {
+            console.error(`${imageType} image file not found at path:`, imageUri);
+            throw new Error(`${imageType} image file not found`);
+          }
+
+          const fileName = `${imageType}_${formattedDateTimeWithDashes(signInTimestamp)}.png`;
+
+          console.log('fileInfo', fileName);
+
+          const formData = new FormData();
+
+          formData.append('photo', {
+            uri: Platform.OS === 'android' ? fileInfo.uri : fileInfo.uri.replace('file://', ''),
+            type: 'image/png',
+            name: fileName,
+          } as any);
+
+          return formData;
+        } catch (error) {
+          console.error(`Error creating FormData for ${imageType} image:`, error);
+          throw error;
         }
-
-        const fileName = `${imageType}_${formattedDateTimeWithDashes(new Date())}.png`;
-        const formData = new FormData();
-        formData.append('photo', {
-          uri: fileInfo.uri,
-          type: 'image/png',
-          name: fileName,
-        } as any);
-
-        return formData;
       };
 
       const imageUploadPromises: Promise<any>[] = [];
 
       if (faceImageId) {
-        const faceFormData = await createImageFormData(faceImageId, 'face');
-        imageUploadPromises.push(uploadVisitorImages(faceFormData).unwrap());
+        try {
+          const faceFormData = await createImageFormData(faceImageId, 'face');
+          console.log('Uploading face image...');
+          imageUploadPromises.push(uploadVisitorImages(faceFormData).unwrap());
+        } catch (error) {
+          console.error('Error preparing face image:', error);
+          alert('Error preparing face image for upload');
+        }
       }
 
       if (cardImageId) {
-        const cardFormData = await createImageFormData(cardImageId, 'id');
-        imageUploadPromises.push(uploadVisitorImages(cardFormData).unwrap());
+        try {
+          const cardFormData = await createImageFormData(cardImageId, 'id');
+          console.log('Uploading ID image...');
+          imageUploadPromises.push(uploadVisitorImages(cardFormData).unwrap());
+        } catch (error) {
+          console.error('Error preparing ID image:', error);
+          alert('Error preparing ID image for upload');
+        }
       }
 
       if (imageUploadPromises.length > 0) {
@@ -189,8 +221,28 @@ export const useSignInScreen = () => {
           if (result.status === 'fulfilled') {
             console.log(`Image upload ${index + 1} succeeded:`, result.value);
           } else {
-            console.error(`Image upload ${index + 1} failed:`, result.reason);
-            alert(`Image ${index + 1} could not be processed. Continuing without this image.`);
+            console.error(`Image upload ${index + 1} failed:`, {
+              error: result.reason,
+              status: result.reason?.status,
+              message: result.reason?.message,
+              data: result.reason?.data,
+              stack: result.reason?.stack,
+              response: result.reason?.response,
+            });
+
+            // More user-friendly error message
+            let errorMessage = 'Unknown error occurred during image upload.';
+            if (result.reason?.message?.includes('Network request failed')) {
+              errorMessage =
+                `Could not connect to the server at ${ipAddress}:${port}. Please check:\n` +
+                '1. Server is running\n' +
+                '2. IP and port are correct\n' +
+                '3. Device and server are on the same network';
+            } else if (result.reason?.data?.ghMessage) {
+              errorMessage = result.reason.data.ghMessage;
+            }
+
+            alert(`Image ${index + 1} upload failed: ${errorMessage}`);
           }
         });
 

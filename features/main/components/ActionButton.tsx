@@ -21,7 +21,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
 }) => {
   return (
     <TouchableOpacity
-      className={`flex-1 py-5 ${buttonBgColor} rounded-2xl items-center max-w-[320px] active:bg-white/80 active:scale-95 transition-transform`}
+      className={`flex-1 py-5 border border-gray-300 ${buttonBgColor} rounded-2xl items-center max-w-[320px] active:bg-white/80 active:scale-95 transition-transform`}
       onPress={onPress}
     >
       <View className={`${isLandscape ? 'w-16 h-16' : 'w-20 h-20'} ${iconBgColor} rounded-xl items-center justify-center ${isLandscape ? 'mb-3' : 'mb-6'}`}>

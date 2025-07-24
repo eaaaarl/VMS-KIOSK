@@ -1,10 +1,13 @@
-import { store as reduxStore } from '@/lib/redux/store';
+import { useConfig } from '@/features/config/hooks/useConfig';
 import { BarcodeScanningResult, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Animated } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { visitorApi } from '../api/visitorApi';
+import {
+  useLazyGetVisitorLogInfoForSignOutQuery,
+  useSignOutVisitorMutation,
+} from '../api/visitorApi';
 import { formattedDateTimeWithSpace } from '../utils/FormattedDate';
 
 export function useSignOutVisitor() {
@@ -14,6 +17,14 @@ export function useSignOutVisitor() {
   const [error, setError] = useState('');
   const animatedValue = useRef(new Animated.Value(0)).current;
   const [isSigningOut, setIsSigningOut] = useState(false);
+
+  // RTK Query
+  const [getVisitorLogInfoForSignOut] = useLazyGetVisitorLogInfoForSignOutQuery();
+
+  // RTK Mutation
+  const [signOutVisitor] = useSignOutVisitorMutation();
+
+  const { enabledRequireRating } = useConfig();
 
   useEffect(() => {
     if (cameraActive) {
@@ -69,9 +80,7 @@ export function useSignOutVisitor() {
     }
     setIsSigningOut(true);
     try {
-      const checkResult = await reduxStore
-        .dispatch(visitorApi.endpoints.getVisitorLogInfoForSignOut.initiate({ strId: ticket }))
-        .unwrap();
+      const checkResult = await getVisitorLogInfoForSignOut({ strId: ticket }).unwrap();
 
       if (!checkResult.results || checkResult.results.length === 0) {
         setError('Ticket number not found');
@@ -80,21 +89,26 @@ export function useSignOutVisitor() {
       }
       const visitorInfo = checkResult.results?.[0];
 
-      await reduxStore
-        .dispatch(
-          visitorApi.endpoints.signOutVisitor.initiate({
-            strId: ticket,
-            dateNow: visitorInfo.strLogIn,
-            logOut: formattedDateTimeWithSpace(new Date()),
-          })
-        )
-        .unwrap();
+      await signOutVisitor({
+        strId: ticket,
+        dateNow: visitorInfo.strLogIn,
+        logOut: formattedDateTimeWithSpace(new Date()),
+      }).unwrap();
+
       setTicketNumber('');
       setIsSigningOut(false);
-      router.replace({
-        pathname: '/(visitor)/SignOutSuccess',
-        params: { ticketNumber: ticket, name: visitorInfo.name },
-      });
+      if (enabledRequireRating) {
+        router.replace({
+          pathname: '/(rating)/RatingScreen',
+          params: {
+            ticketNumber: ticket,
+            name: visitorInfo.name,
+            logIn: visitorInfo.strLogIn,
+            visitorId: visitorInfo.visitorId,
+          },
+        });
+        return;
+      }
     } catch (error: any) {
       console.log('error:', error);
       setIsSigningOut(false);

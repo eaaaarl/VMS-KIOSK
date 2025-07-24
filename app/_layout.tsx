@@ -4,6 +4,7 @@ import * as ScreenOrientation from "expo-screen-orientation";
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
+import { configureReanimatedLogger, ReanimatedLogLevel } from "react-native-reanimated";
 import Toast from 'react-native-toast-message';
 import { Provider as ReduxProvider } from "react-redux";
 import { persistStore } from "redux-persist";
@@ -11,6 +12,11 @@ import { PersistGate } from "redux-persist/integration/react";
 import "../global.css";
 
 const persistor = persistStore(reduxStore);
+
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false, // Reanimated runs in strict mode by default
+});
 
 SplashScreen.preventAutoHideAsync();
 

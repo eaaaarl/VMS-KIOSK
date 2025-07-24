@@ -52,4 +52,4 @@ export const serviceApi = createApi({
   }),
 });
 
-export const { useGetServicesQuery } = serviceApi;
+export const { useGetServicesQuery, useLazyGetServicesQuery } = serviceApi;

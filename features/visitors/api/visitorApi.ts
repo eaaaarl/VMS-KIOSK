@@ -14,17 +14,16 @@ export const visitorApi = createApi({
   reducerPath: 'visitorApi',
   baseQuery: async (args, api, extraOptions) => {
     const state = api.getState() as RootState;
-
-    // console.log("State keys:", Object.keys(state));
-    // console.log("Config exists:", !!state.config);
-
     const ipAddress = state.config?.ipAddress;
     const port = state.config?.port;
     const baseUrl = `http://${ipAddress}:${port}`;
 
-    // console.log("Using IP:", ipAddress);
-    // console.log("Using Port:", port);
-    // console.log("Constructed baseUrl:", baseUrl);
+    console.log('API Request:', {
+      ipAddress,
+      port,
+      baseUrl,
+      args: typeof args === 'string' ? args : args.url,
+    });
 
     let url: string;
     let adjustedArgs: any;
@@ -37,16 +36,44 @@ export const visitorApi = createApi({
       adjustedArgs = { ...args, url };
     }
 
+    // Use a longer timeout for image uploads
+    const isImageUpload = args.url?.includes('/photo');
+    const timeout = isImageUpload ? 30000 : 10000;
+
     const baseQuery = fetchBaseQuery({
       baseUrl,
-      timeout: 10000,
+      timeout,
       prepareHeaders: (headers, { getState }) => {
-        headers.set('Content-Type', 'application/json');
+        // For image uploads, let the browser set the Content-Type
+        if (!isImageUpload) {
+          headers.set('Content-Type', 'application/json');
+        }
         headers.set('Accept', 'application/json');
         return headers;
       },
     });
-    return baseQuery(adjustedArgs, api, extraOptions);
+
+    try {
+      const result = await baseQuery(adjustedArgs, api, extraOptions);
+      console.log('API Response:', {
+        url: adjustedArgs.url,
+        status: result.meta?.response?.status,
+        error: result.error,
+      });
+      return result;
+    } catch (error) {
+      console.error('API Error:', {
+        url: adjustedArgs.url,
+        error,
+      });
+      return {
+        error: {
+          status: 'FETCH_ERROR',
+          error: error,
+          data: undefined,
+        },
+      };
+    }
   },
   tagTypes: [
     'VisitorsTodays',
@@ -114,6 +141,11 @@ export const visitorApi = createApi({
         url: `/visitors-log/public/visit-log/photo`,
         method: 'POST',
         body: payload,
+        // Override the default headers for this specific endpoint
+        headers: {
+          // Remove Content-Type header to let the browser set it with the boundary
+          Accept: 'application/json',
+        },
       }),
       invalidatesTags: ['VisitorsTodays', 'VisitorsReturned'],
     }),
@@ -158,7 +190,7 @@ export const visitorApi = createApi({
         'VisitorsReturned',
         'VisitorsLogByDay',
         'AllAvailableVisitors',
-        'GetVisitorLogInfoSignOut'
+        'GetVisitorLogInfoSignOut',
       ],
     }),
 
@@ -183,8 +215,11 @@ export const visitorApi = createApi({
 export const {
   useGetVisitorsTodaysQuery,
   useGetVisitorsReturnedQuery,
+  useLazyGetVisitorsTodaysQuery,
+  useLazyGetVisitorsReturnedQuery,
   useGetVisitorsLogByDayQuery,
   useGetAllAvailableVisitorsQuery,
+  useLazyGetAllAvailableVisitorsQuery,
   useCreateVisitorMutation,
   useSignInVisitorLogMutation,
   useUploadVisitorImagesMutation,
@@ -194,4 +229,5 @@ export const {
   useSignOutAllVisitorsMutation,
   useCreatePublicReturnIdMutation,
   useGetVisitorLogInfoForSignOutQuery,
+  useLazyGetVisitorLogInfoForSignOutQuery,
 } = visitorApi;
