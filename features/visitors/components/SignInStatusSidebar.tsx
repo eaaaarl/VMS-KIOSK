@@ -78,7 +78,7 @@ export const SignInStatusSidebar: React.FC<SignInStatusSidebarProps> = ({
           </TouchableOpacity>
           <TouchableOpacity
             onPress={onSignIn}
-            disabled={!isFormValid || isSignInLoading || isUploadingImages}
+            // disabled={!isFormValid || isSignInLoading || isUploadingImages}
             className={`rounded-lg py-4 ${isFormValid && !isSignInLoading && !isUploadingImages
               ? 'bg-blue-500'
               : 'bg-blue-300'

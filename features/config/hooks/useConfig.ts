@@ -39,6 +39,22 @@ export const useConfig = () => {
     item => item.SectionName === 'Kiosk' && item.KeyName === 'Return Id'
   )?.Value;
 
+  const getRatingType = data?.find(
+    item => item.SectionName === 'Rating' && item.KeyName === 'Rating Type'
+  )?.Value;
+
+  const getRatingRequireComment = data?.find(
+    item => item.SectionName === 'Rating' && item.KeyName === 'Require Comment'
+  )?.Value;
+
+  const getRequireRating = data?.find(
+    item => item.SectionName === 'Rating' && item.KeyName === 'Require Rating'
+  )?.Value;
+
+  const enabledRequireRating = getRequireRating === '1';
+  const enabledRequireComment = getRatingRequireComment === '1';
+  const enabledRatingType = getRatingType === '1';
+
   const enabledRequiredId = getRequredId === '1';
   const enabledRequiredFace = getRequiredFace === '1';
   const enabledRequiredName = getRequiredName === '1';
@@ -58,5 +74,9 @@ export const useConfig = () => {
 
     configLoading,
     configError,
+
+    enabledRequireRating,
+    enabledRequireComment,
+    enabledRatingType,
   };
 };
