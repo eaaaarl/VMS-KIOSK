@@ -1,3 +1,4 @@
+import { useConfig } from '@/features/config/hooks/useConfig';
 import { RatingSubmitPayload, useLazyGetRatingQuestionQuery, useSubmitRatingMutation } from '@/features/rating/api/ratingApi';
 import { format, parse } from 'date-fns';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -34,6 +35,17 @@ const getRatingTypeColor = (type: number): string => {
   return colorMap[type] || '#3B82F6'; // default to blue
 };
 
+const renderEmoji = (rating: number) => {
+  const emojiMap: { [key: number]: string } = {
+    1: '😡', // very unhappy
+    2: '🙁', // unhappy
+    3: '😐', // neutral
+    4: '🙂', // happy
+    5: '😄', // very happy
+  };
+  return emojiMap[rating] || '😐';
+};
+
 export default function DepartmentRating() {
   const { logIn, ticketNumber, visitorId } = useLocalSearchParams();
   const router = useRouter();
@@ -45,6 +57,9 @@ export default function DepartmentRating() {
 
   const loginDate = format(new Date(logIn as string), 'yyyy-MM-dd');
   const loginDateTime = format(parse(logIn as string, 'yyyy-MM-dd HH:mm:ss', new Date()), 'yyyy-MM-dd HH:mm:ss');
+
+  const { enabledRequireComment, enabledRatingType } = useConfig();
+
 
   useEffect(() => {
     getRatingQuestion({ logIn: loginDate, strId: ticketNumber as string, visitorId: visitorId as string });
@@ -90,6 +105,11 @@ export default function DepartmentRating() {
   };
 
   const handleNext = async () => {
+    if (enabledRequireComment && !currentAnswer.comment.trim()) {
+      alert('Please provide a comment before proceeding.');
+      return;
+    }
+
     if (currentQuestion < totalQuestions - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else {
@@ -115,6 +135,28 @@ export default function DepartmentRating() {
   };
 
   const renderStars = () => {
+    if (enabledRatingType) {
+      // Render emoji rating
+      return Array.from({ length: 5 }, (_, index) => {
+        const emojiRating = index + 1;
+        const isSelected = emojiRating <= currentAnswer.rating;
+
+        return (
+          <TouchableOpacity
+            key={emojiRating}
+            onPress={() => handleStarPress(emojiRating)}
+            className="p-2"
+            activeOpacity={0.7}
+          >
+            <Text className={`text-5xl ${isSelected ? 'opacity-100' : 'opacity-30'}`}>
+              {renderEmoji(emojiRating)}
+            </Text>
+          </TouchableOpacity>
+        );
+      });
+    }
+
+    // Original star rating
     return Array.from({ length: 5 }, (_, index) => {
       const starNumber = index + 1;
       const isSelected = starNumber <= currentAnswer.rating;
@@ -202,16 +244,21 @@ export default function DepartmentRating() {
             <TextInput
               value={currentAnswer.comment}
               onChangeText={handleCommentChange}
-              placeholder="Optional Comment"
+              placeholder={enabledRequireComment ? "Comment Required" : "Optional Comment"}
               placeholderTextColor="#9CA3AF"
               multiline
               textAlignVertical="top"
-              className="flex-1 bg-white rounded-2xl p-6 text-lg text-gray-700 border border-gray-200 shadow-sm"
+              className={`flex-1 bg-white rounded-2xl p-6 text-lg text-gray-700 border ${enabledRequireComment && !currentAnswer.comment.trim() ? 'border-red-400' : 'border-gray-200'} shadow-sm`}
               style={{
                 minHeight: 100,
                 maxHeight: 150,
               }}
             />
+            {enabledRequireComment && !currentAnswer.comment.trim() && (
+              <Text className="text-red-500 mt-2 ml-2">
+                Please provide a comment
+              </Text>
+            )}
           </View>
 
           {/* Action Buttons */}

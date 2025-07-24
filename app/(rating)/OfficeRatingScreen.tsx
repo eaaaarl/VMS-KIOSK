@@ -1,3 +1,4 @@
+import { useConfig } from '@/features/config/hooks/useConfig';
 import { RatingSubmitPayload, useLazyGetRatingQuestionQuery, useSubmitRatingMutation } from '@/features/rating/api/ratingApi';
 import { format, parse } from 'date-fns';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -35,6 +36,9 @@ export default function OfficeRating() {
 
   const loginDate = format(new Date(logIn as string), 'yyyy-MM-dd');
   const loginDateTime = format(parse(logIn as string, 'yyyy-MM-dd HH:mm:ss', new Date()), 'yyyy-MM-dd HH:mm:ss');
+
+  const { enabledRequireComment, enabledRatingType } = useConfig();
+
 
   useEffect(() => {
     getRatingQuestion({ logIn: loginDate, strId: ticketNumber as string, visitorId: visitorId as string });
@@ -75,6 +79,11 @@ export default function OfficeRating() {
   };
 
   const handleNext = async () => {
+    if (enabledRequireComment && !currentAnswer.comment.trim()) {
+      alert('Please provide a comment before proceeding.');
+      return;
+    }
+
     if (currentQuestion < totalQuestions - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else {
@@ -100,6 +109,35 @@ export default function OfficeRating() {
   };
 
   const renderStars = () => {
+    if (enabledRatingType) {
+      // Render smileys
+      return Array.from({ length: 5 }, (_, index) => {
+        const rating = index + 1;
+        const isSelected = rating <= currentAnswer.rating;
+        let smiley = '😐'; // neutral
+
+        if (rating === 1) smiley = '😡'; // very angry
+        else if (rating === 2) smiley = '😕'; // sad
+        else if (rating === 3) smiley = '😐'; // neutral
+        else if (rating === 4) smiley = '🙂'; // happy
+        else if (rating === 5) smiley = '😄'; // very happy
+
+        return (
+          <TouchableOpacity
+            key={rating}
+            onPress={() => handleStarPress(rating)}
+            className="p-2"
+            activeOpacity={0.7}
+          >
+            <Text className={`text-6xl ${isSelected ? 'opacity-100' : 'opacity-40'}`}>
+              {smiley}
+            </Text>
+          </TouchableOpacity>
+        );
+      });
+    }
+
+    // Default star rating
     return Array.from({ length: 5 }, (_, index) => {
       const starNumber = index + 1;
       const isSelected = starNumber <= currentAnswer.rating;
@@ -186,16 +224,21 @@ export default function OfficeRating() {
             <TextInput
               value={currentAnswer.comment}
               onChangeText={handleCommentChange}
-              placeholder="Optional Comment"
+              placeholder={enabledRequireComment ? "Comment (Required)" : "Optional Comment"}
               placeholderTextColor="#9CA3AF"
               multiline
               textAlignVertical="top"
-              className="flex-1 bg-white rounded-2xl p-6 text-lg text-gray-700 border border-gray-200 shadow-sm"
+              className={`flex-1 bg-white rounded-2xl p-6 text-lg text-gray-700 border ${enabledRequireComment && !currentAnswer.comment.trim() ? 'border-red-400' : 'border-gray-200'} shadow-sm`}
               style={{
                 minHeight: 100,
                 maxHeight: 150,
               }}
             />
+            {enabledRequireComment && !currentAnswer.comment.trim() && (
+              <Text className="text-red-500 mt-2 ml-2">
+                Please provide a comment before proceeding
+              </Text>
+            )}
           </View>
 
           {/* Action Buttons */}
