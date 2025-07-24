@@ -52,4 +52,4 @@ export const officeApi = createApi({
   }),
 });
 
-export const { useGetOfficesQuery } = officeApi;
+export const { useGetOfficesQuery, useLazyGetOfficesQuery } = officeApi;

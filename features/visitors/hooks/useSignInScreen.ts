@@ -1,11 +1,11 @@
 import { useConfig } from '@/features/config/hooks/useConfig';
-import { useGetOfficesQuery } from '@/features/office/api/officeApi';
-import { useGetServicesQuery } from '@/features/service/api/serviceApi';
+import { useLazyGetOfficesQuery } from '@/features/office/api/officeApi';
+import { useLazyGetServicesQuery } from '@/features/service/api/serviceApi';
 import { ICreateVisitorLogPayload } from '@/features/visitors/api/interface';
 import {
-  useGetAllAvailableVisitorsQuery,
-  useGetVisitorsReturnedQuery,
-  useGetVisitorsTodaysQuery,
+  useLazyGetAllAvailableVisitorsQuery,
+  useLazyGetVisitorsReturnedQuery,
+  useLazyGetVisitorsTodaysQuery,
   useSignInVisitorLogMutation,
   useUploadVisitorImagesMutation,
 } from '@/features/visitors/api/visitorApi';
@@ -19,7 +19,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/redux/hook';
 import { setCardImageId, setFaceImageId } from '@/lib/redux/state/visitorSlice';
 import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 
 export const useSignInScreen = () => {
@@ -36,15 +36,20 @@ export const useSignInScreen = () => {
     otherReason: null,
   });
 
-  const { data: visitors } = useGetAllAvailableVisitorsQuery({
-    dateNow: formattedDate(new Date()),
-  });
-  const { data: offices } = useGetOfficesQuery();
-  const { data: services } = useGetServicesQuery();
-  const { data: visitorsReturned } = useGetVisitorsReturnedQuery({
-    date: formattedDate(new Date()),
-  });
-  const { data: visitorsTodays } = useGetVisitorsTodaysQuery({ date: formattedDate(new Date()) });
+  const [getOffices, { data: offices }] = useLazyGetOfficesQuery();
+  const [getServices, { data: services }] = useLazyGetServicesQuery();
+  const [getVisitorsReturned, { data: visitorsReturned }] = useLazyGetVisitorsReturnedQuery();
+  const [getVisitorsTodays, { data: visitorsTodays }] = useLazyGetVisitorsTodaysQuery();
+  const [getAllAvailableVisitors, { data: visitors }] = useLazyGetAllAvailableVisitorsQuery();
+
+  useEffect(() => {
+    getOffices();
+    getServices();
+    getVisitorsReturned({ date: formattedDate(new Date()) });
+    getVisitorsTodays({ date: formattedDate(new Date()) });
+    getAllAvailableVisitors({ dateNow: formattedDate(new Date()) });
+  }, [getOffices, getServices, getVisitorsReturned, getVisitorsTodays, getAllAvailableVisitors]);
+
   const {
     getPrefixId,
     getSeparatorId,

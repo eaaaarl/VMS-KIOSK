@@ -97,6 +97,8 @@ export default function SignInScreen() {
                       photoSnapshotTaken={photoSnapshotTaken}
                       onIdSnapshot={handleIdSnapshot}
                       onPhotoSnapshot={handlePhotoSnapshot}
+                      faceImageId={faceImageId}
+                      cardImageId={cardImageId}
                     />
 
                     {/* Form Fields */}

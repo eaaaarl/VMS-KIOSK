@@ -215,8 +215,11 @@ export const visitorApi = createApi({
 export const {
   useGetVisitorsTodaysQuery,
   useGetVisitorsReturnedQuery,
+  useLazyGetVisitorsTodaysQuery,
+  useLazyGetVisitorsReturnedQuery,
   useGetVisitorsLogByDayQuery,
   useGetAllAvailableVisitorsQuery,
+  useLazyGetAllAvailableVisitorsQuery,
   useCreateVisitorMutation,
   useSignInVisitorLogMutation,
   useUploadVisitorImagesMutation,
