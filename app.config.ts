@@ -33,6 +33,7 @@ export default {
         'android.permission.BLUETOOTH_SCAN',
         'android.permission.BLUETOOTH_ADVERTISE',
       ],
+      jsEngine: 'hermes',
     },
     plugins: [
       'expo-router',
