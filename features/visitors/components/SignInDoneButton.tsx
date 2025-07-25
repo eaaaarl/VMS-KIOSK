@@ -8,11 +8,11 @@ interface SignInDoneButtonProps {
   textClassName?: string;
 }
 
-export const SignInDoneButton: React.FC<SignInDoneButtonProps> = ({ 
-  onPress, 
-  isPrinting, 
-  className = "bg-blue-500 px-12 py-4 rounded-full shadow-lg",
-  textClassName = "text-white text-lg font-semibold"
+export const SignInDoneButton: React.FC<SignInDoneButtonProps> = ({
+  onPress,
+  isPrinting,
+  className = 'bg-blue-500 px-12 py-4 rounded-full shadow-lg',
+  textClassName = 'text-white text-lg font-semibold',
 }) => {
   return (
     <TouchableOpacity
@@ -21,9 +21,7 @@ export const SignInDoneButton: React.FC<SignInDoneButtonProps> = ({
       activeOpacity={0.8}
       disabled={isPrinting}
     >
-      <Text className={textClassName}>
-        {isPrinting ? "Printing..." : "Done"}
-      </Text>
+      <Text className={textClassName}>{isPrinting ? 'Printing...' : 'Done'}</Text>
     </TouchableOpacity>
   );
-}; 
+};

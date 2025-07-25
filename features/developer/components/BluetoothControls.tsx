@@ -1,15 +1,15 @@
-import React from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
-import type { BluetoothDevice } from 'react-native-bluetooth-classic'
+import React from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
+import type { BluetoothDevice } from 'react-native-bluetooth-classic';
 
 interface BluetoothControlsProps {
-  isBluetoothEnabled: boolean
-  isScanning: boolean
-  isConnecting: boolean
-  connectedDevice: BluetoothDevice | null
-  onEnableBluetooth: () => void
-  onStartDiscovery: () => void
-  onDisconnect: () => void
+  isBluetoothEnabled: boolean;
+  isScanning: boolean;
+  isConnecting: boolean;
+  connectedDevice: BluetoothDevice | null;
+  onEnableBluetooth: () => void;
+  onStartDiscovery: () => void;
+  onDisconnect: () => void;
 }
 
 export const BluetoothControls: React.FC<BluetoothControlsProps> = ({
@@ -21,22 +21,19 @@ export const BluetoothControls: React.FC<BluetoothControlsProps> = ({
   onStartDiscovery,
   onDisconnect,
 }) => (
-  <View className="bg-white rounded-lg p-4 mb-4 shadow-sm">
-    <Text className="text-lg font-semibold mb-3">Bluetooth Controls</Text>
+  <View className="mb-4 rounded-lg bg-white p-4 shadow-sm">
+    <Text className="mb-3 text-lg font-semibold">Bluetooth Controls</Text>
     {!isBluetoothEnabled && (
-      <TouchableOpacity
-        onPress={onEnableBluetooth}
-        className="bg-blue-500 p-3 rounded-lg mb-2"
-      >
-        <Text className="text-white text-center font-semibold">Enable Bluetooth</Text>
+      <TouchableOpacity onPress={onEnableBluetooth} className="mb-2 rounded-lg bg-blue-500 p-3">
+        <Text className="text-center font-semibold text-white">Enable Bluetooth</Text>
       </TouchableOpacity>
     )}
     <TouchableOpacity
       onPress={onStartDiscovery}
       disabled={!isBluetoothEnabled || isScanning}
-      className={`p-3 rounded-lg mb-2 ${!isBluetoothEnabled || isScanning ? 'bg-gray-300' : 'bg-green-500'}`}
+      className={`mb-2 rounded-lg p-3 ${!isBluetoothEnabled || isScanning ? 'bg-gray-300' : 'bg-green-500'}`}
     >
-      <Text className="text-white text-center font-semibold">
+      <Text className="text-center font-semibold text-white">
         {isScanning ? 'Scanning...' : 'Discover Devices'}
       </Text>
     </TouchableOpacity>
@@ -44,10 +41,10 @@ export const BluetoothControls: React.FC<BluetoothControlsProps> = ({
       <TouchableOpacity
         onPress={onDisconnect}
         disabled={isConnecting}
-        className="bg-red-500 p-3 rounded-lg"
+        className="rounded-lg bg-red-500 p-3"
       >
-        <Text className="text-white text-center font-semibold">Disconnect</Text>
+        <Text className="text-center font-semibold text-white">Disconnect</Text>
       </TouchableOpacity>
     )}
   </View>
-) 
+);

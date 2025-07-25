@@ -1,4 +1,5 @@
 import { useConfig } from '@/features/config/hooks/useConfig';
+import { useLazyGetLabelConfigQuery } from '@/features/label/api/labelApi';
 import EscPosEncoder from '@manhnd/esc-pos-encoder';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -12,12 +13,22 @@ export const useSignInSuccess = () => {
   const [isPrinting, setIsPrinting] = useState(false);
   const [printStatus, setPrintStatus] = useState<PrintStatus>('idle');
 
+  const [getLabelConfig, { data: labelConfig }] = useLazyGetLabelConfigQuery();
+
+  useEffect(() => {
+    getLabelConfig();
+  }, [getLabelConfig]);
+
+  const message = labelConfig?.find(
+    config => config.SectionName === 'Kiosk' && config.KeyName === 'Signed In Subtitle'
+  )?.Value;
+
   const getConnectedDevice = async () => {
     try {
       const devices = await RNBluetoothClassic.getConnectedDevices();
       return devices.length > 0 ? devices[0] : null;
     } catch (error) {
-      console.error("Error getting connected device:", error);
+      console.error('Error getting connected device:', error);
       return null;
     }
   };
@@ -30,7 +41,7 @@ export const useSignInSuccess = () => {
 
     const printTicket = async () => {
       if (!ticketNumber) {
-        console.warn("No ticket number provided");
+        console.warn('No ticket number provided');
         return;
       }
 
@@ -56,22 +67,15 @@ export const useSignInSuccess = () => {
           .line('Thank you for visiting!')
           .newline()
           .line('- - - - - - - - - - - - - - - - - - - - - - - - -')
-          .newline()
           .encode();
 
-        const base64Data = btoa(
-          String.fromCharCode(...new Uint8Array(result))
-        );
+        const base64Data = btoa(String.fromCharCode(...new Uint8Array(result)));
 
-        await RNBluetoothClassic.writeToDevice(
-          connectedDevice.address,
-          base64Data,
-          "base64"
-        );
+        await RNBluetoothClassic.writeToDevice(connectedDevice.address, base64Data, 'base64');
 
         setPrintStatus('success');
       } catch (error) {
-        console.log("Error printing ticket:", error);
+        console.log('Error printing ticket:', error);
         setPrintStatus('error');
       } finally {
         setIsPrinting(false);
@@ -86,17 +90,17 @@ export const useSignInSuccess = () => {
   };
 
   const getStatusMessage = () => {
-    if (isPrinting) return "Printing ticket...";
-    if (printStatus === 'success') return "Ticket printed successfully!";
-    if (printStatus === 'error') return "Printing failed";
-    return "Please claim your ticket!";
+    if (isPrinting) return 'Printing ticket...';
+    if (printStatus === 'success') return message;
+    if (printStatus === 'error') return 'Printing failed';
+    return 'Please claim your ticket!';
   };
 
   const getStatusColor = () => {
-    if (isPrinting) return "text-blue-500";
-    if (printStatus === 'success') return "text-green-500";
-    if (printStatus === 'error') return "text-red-500";
-    return "text-gray-600";
+    if (isPrinting) return 'text-blue-500';
+    if (printStatus === 'success') return 'text-green-500';
+    if (printStatus === 'error') return 'text-red-500';
+    return 'text-gray-600';
   };
 
   return {
@@ -108,4 +112,4 @@ export const useSignInSuccess = () => {
     getStatusMessage,
     getStatusColor,
   };
-}; 
+};

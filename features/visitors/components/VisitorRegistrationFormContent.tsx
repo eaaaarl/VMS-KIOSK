@@ -18,15 +18,17 @@ export default function VisitorRegistrationFormContent({
   formData,
   errors,
   handleInputChange,
-  handleBlur
+  handleBlur,
 }: VisitorRegistrationFormContentProps) {
   return (
     <View className="flex-1">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
         <View className="flex-1 px-8 py-6">
-          <Text className="text-3xl font-bold text-gray-800 mb-8">
-            Visitors Registration
-          </Text>
+          <Text className="mb-8 text-3xl font-bold text-gray-800">Visitors Registration</Text>
           <VisitorRegistrationForm
             formData={formData}
             errors={errors}
@@ -37,4 +39,4 @@ export default function VisitorRegistrationFormContent({
       </ScrollView>
     </View>
   );
-} 
+}

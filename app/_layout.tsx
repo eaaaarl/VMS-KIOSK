@@ -1,15 +1,15 @@
-import { store as reduxStore } from "@/lib/redux/store";
-import { Stack } from "expo-router";
-import * as ScreenOrientation from "expo-screen-orientation";
+import { store as reduxStore } from '@/lib/redux/store';
+import { Stack } from 'expo-router';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import * as SplashScreen from 'expo-splash-screen';
-import { useCallback, useEffect, useState } from "react";
-import { View } from "react-native";
-import { configureReanimatedLogger, ReanimatedLogLevel } from "react-native-reanimated";
+import { useCallback, useEffect, useState } from 'react';
+import { View } from 'react-native';
+import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
-import { Provider as ReduxProvider } from "react-redux";
-import { persistStore } from "redux-persist";
-import { PersistGate } from "redux-persist/integration/react";
-import "../global.css";
+import { Provider as ReduxProvider } from 'react-redux';
+import { persistStore } from 'redux-persist';
+import { PersistGate } from 'redux-persist/integration/react';
+import '../global.css';
 
 const persistor = persistStore(reduxStore);
 
@@ -26,14 +26,11 @@ SplashScreen.setOptions({
 });
 
 export default function RootLayout() {
-
   const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
     async function setOrientation() {
-      await ScreenOrientation.lockAsync(
-        ScreenOrientation.OrientationLock.ALL
-      );
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.ALL);
     }
     setOrientation();
 
@@ -75,7 +72,6 @@ export default function RootLayout() {
   if (!appIsReady) {
     return null;
   }
-
 
   return (
     <ReduxProvider store={reduxStore}>

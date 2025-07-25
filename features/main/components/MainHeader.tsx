@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { Text, View } from 'react-native';
 
 export interface MainHeaderProps {
   isLandscape: boolean;
@@ -7,12 +7,10 @@ export interface MainHeaderProps {
 export const MainHeader: React.FC<MainHeaderProps> = ({ isLandscape }) => {
   return (
     <View className={`mb-12 items-center`}>
-      <Text className={`text-gray-700 text-2xl font-light mb-1 tracking-wide`}>
-        Welcome to
-      </Text>
-      <Text className={`text-gray-700 text-3xl font-bold text-center tracking-wide`}>
+      <Text className={`mb-1 text-2xl font-light tracking-wide text-gray-700`}>Welcome to</Text>
+      <Text className={`text-center text-3xl font-bold tracking-wide text-gray-700`}>
         Visitors Management System
       </Text>
     </View>
   );
-}; 
+};

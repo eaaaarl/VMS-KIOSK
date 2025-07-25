@@ -7,34 +7,30 @@ interface SignOutActionButtonsProps {
   className?: string;
 }
 
-export const SignOutActionButtons: React.FC<SignOutActionButtonsProps> = ({ 
+export const SignOutActionButtons: React.FC<SignOutActionButtonsProps> = ({
   onDone,
   onRateUs,
-  className = "flex-row gap-4 w-full max-w-xs" 
+  className = 'flex-row gap-4 w-full max-w-xs',
 }) => {
   return (
     <View className={className}>
       {/* Done Button */}
       <TouchableOpacity
-        className="flex-1 bg-blue-500 py-4 px-6 rounded-full shadow-lg"
+        className="flex-1 rounded-full bg-blue-500 px-6 py-4 shadow-lg"
         onPress={onDone}
         activeOpacity={0.8}
       >
-        <Text className="text-white text-lg font-semibold text-center">
-          Done
-        </Text>
+        <Text className="text-center text-lg font-semibold text-white">Done</Text>
       </TouchableOpacity>
 
       {/* Rate Us Button */}
       <TouchableOpacity
-        className="flex-1 bg-yellow-400 py-4 px-6 rounded-full shadow-lg"
+        className="flex-1 rounded-full bg-yellow-400 px-6 py-4 shadow-lg"
         onPress={onRateUs}
         activeOpacity={0.8}
       >
-        <Text className="text-gray-800 text-lg font-semibold text-center">
-          Rate Us
-        </Text>
+        <Text className="text-center text-lg font-semibold text-gray-800">Rate Us</Text>
       </TouchableOpacity>
     </View>
   );
-}; 
+};

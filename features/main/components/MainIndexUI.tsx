@@ -1,9 +1,9 @@
-import VisitorInformationModal from "@/features/kiosk/components/VisitorInformation";
-import { SafeAreaView, View } from "react-native";
-import { ActionButtonsContainer } from "./ActionButtonsContainer";
-import { LoadingOverlay } from "./LoadingOverlay";
-import { MainHeader } from "./MainHeader";
-import { SettingsButton } from "./SettingsButton";
+import VisitorInformationModal from '@/features/kiosk/components/VisitorInformation';
+import { SafeAreaView, View } from 'react-native';
+import { ActionButtonsContainer } from './ActionButtonsContainer';
+import { LoadingOverlay } from './LoadingOverlay';
+import { MainHeader } from './MainHeader';
+import { SettingsButton } from './SettingsButton';
 
 export interface MainIndexUIProps {
   isLandscape: boolean;
@@ -52,4 +52,4 @@ export const MainIndexUI: React.FC<MainIndexUIProps> = ({
       <LoadingOverlay isLoading={isSigningOutAllVisitors} />
     </SafeAreaView>
   );
-}; 
+};

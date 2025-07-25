@@ -39,4 +39,4 @@ export interface CameraCaptureResult {
   uri: string;
   filename: string;
   timestamp: string;
-} 
+}

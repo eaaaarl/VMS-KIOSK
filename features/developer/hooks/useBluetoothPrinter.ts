@@ -1,37 +1,37 @@
-import EscPosEncoder from '@manhnd/esc-pos-encoder'
-import { useCallback, useEffect, useState } from 'react'
-import { Alert, PermissionsAndroid, Platform } from 'react-native'
-import BluetoothClassic, { BluetoothDevice } from 'react-native-bluetooth-classic'
+import EscPosEncoder from '@manhnd/esc-pos-encoder';
+import { useCallback, useEffect, useState } from 'react';
+import { Alert, PermissionsAndroid, Platform } from 'react-native';
+import BluetoothClassic, { BluetoothDevice } from 'react-native-bluetooth-classic';
 
 export interface UseBluetoothPrinter {
-  isBluetoothEnabled: boolean
-  devices: BluetoothDevice[]
-  connectedDevice: BluetoothDevice | null
-  isScanning: boolean
-  isConnecting: boolean
-  debugInfo: string
-  enableBluetooth: () => Promise<void>
-  startDiscovery: () => Promise<void>
-  connectToDevice: (device: BluetoothDevice) => Promise<void>
-  disconnectDevice: () => Promise<void>
-  printVisitorPass: () => Promise<void>
-  printVisitorBarcode: () => Promise<void>
-  printVisitorQR: () => Promise<void>
-  clearDebugInfo: () => void
+  isBluetoothEnabled: boolean;
+  devices: BluetoothDevice[];
+  connectedDevice: BluetoothDevice | null;
+  isScanning: boolean;
+  isConnecting: boolean;
+  debugInfo: string;
+  enableBluetooth: () => Promise<void>;
+  startDiscovery: () => Promise<void>;
+  connectToDevice: (device: BluetoothDevice) => Promise<void>;
+  disconnectDevice: () => Promise<void>;
+  printVisitorPass: () => Promise<void>;
+  printVisitorBarcode: () => Promise<void>;
+  printVisitorQR: () => Promise<void>;
+  clearDebugInfo: () => void;
 }
 
 export function useBluetoothPrinter(): UseBluetoothPrinter {
-  const [isBluetoothEnabled, setIsBluetoothEnabled] = useState(false)
-  const [devices, setDevices] = useState<BluetoothDevice[]>([])
-  const [connectedDevice, setConnectedDevice] = useState<BluetoothDevice | null>(null)
-  const [isScanning, setIsScanning] = useState(false)
-  const [isConnecting, setIsConnecting] = useState(false)
-  const [debugInfo, setDebugInfo] = useState('')
+  const [isBluetoothEnabled, setIsBluetoothEnabled] = useState(false);
+  const [devices, setDevices] = useState<BluetoothDevice[]>([]);
+  const [connectedDevice, setConnectedDevice] = useState<BluetoothDevice | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [debugInfo, setDebugInfo] = useState('');
 
   const addDebugInfo = useCallback((info: string) => {
-    const timestamp = new Date().toLocaleTimeString()
-    setDebugInfo(prev => `${prev}[${timestamp}] ${info}\n`)
-  }, [])
+    const timestamp = new Date().toLocaleTimeString();
+    setDebugInfo(prev => `${prev}[${timestamp}] ${info}\n`);
+  }, []);
 
   const requestPermissions = useCallback(async () => {
     if (Platform.OS === 'android') {
@@ -42,107 +42,113 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
           PermissionsAndroid.PERMISSIONS.BLUETOOTH_ADVERTISE,
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-        ])
+        ]);
 
         const allPermissionsGranted = Object.values(granted).every(
           permission => permission === PermissionsAndroid.RESULTS.GRANTED
-        )
+        );
 
         if (!allPermissionsGranted) {
-          Alert.alert('Permissions Required', 'Please grant all permissions to use Bluetooth functionality')
-          return false
+          Alert.alert(
+            'Permissions Required',
+            'Please grant all permissions to use Bluetooth functionality'
+          );
+          return false;
         }
-        return true
+        return true;
       } catch (err) {
-        console.warn(err)
-        return false
+        console.warn(err);
+        return false;
       }
     }
-    return true
-  }, [])
+    return true;
+  }, []);
 
   useEffect(() => {
     const initializeBluetooth = async () => {
       try {
-        const hasPermissions = await requestPermissions()
-        if (!hasPermissions) return
+        const hasPermissions = await requestPermissions();
+        if (!hasPermissions) return;
 
-        const enabled = await BluetoothClassic.isBluetoothEnabled()
-        setIsBluetoothEnabled(enabled)
+        const enabled = await BluetoothClassic.isBluetoothEnabled();
+        setIsBluetoothEnabled(enabled);
 
         if (enabled) {
-          const pairedDevices = await BluetoothClassic.getBondedDevices()
-          setDevices(pairedDevices)
-          addDebugInfo('Bluetooth initialized successfully')
+          const pairedDevices = await BluetoothClassic.getBondedDevices();
+          setDevices(pairedDevices);
+          addDebugInfo('Bluetooth initialized successfully');
         } else {
-          addDebugInfo('Bluetooth is disabled')
+          addDebugInfo('Bluetooth is disabled');
         }
       } catch (error: any) {
-        addDebugInfo(`Initialization error: ${error.message}`)
+        addDebugInfo(`Initialization error: ${error.message}`);
       }
-    }
-    initializeBluetooth()
-  }, [requestPermissions, addDebugInfo])
+    };
+    initializeBluetooth();
+  }, [requestPermissions, addDebugInfo]);
 
   const enableBluetooth = useCallback(async () => {
     try {
-      await BluetoothClassic.requestBluetoothEnabled()
-      setIsBluetoothEnabled(true)
-      addDebugInfo('Bluetooth enabled')
+      await BluetoothClassic.requestBluetoothEnabled();
+      setIsBluetoothEnabled(true);
+      addDebugInfo('Bluetooth enabled');
     } catch (error: any) {
-      addDebugInfo(`Error enabling Bluetooth: ${error.message}`)
+      addDebugInfo(`Error enabling Bluetooth: ${error.message}`);
     }
-  }, [addDebugInfo])
+  }, [addDebugInfo]);
 
   const startDiscovery = useCallback(async () => {
     try {
-      setIsScanning(true)
-      addDebugInfo('Starting device discovery...')
-      setDevices([])
-      const discoveredDevices = await BluetoothClassic.startDiscovery()
-      setDevices(discoveredDevices)
-      addDebugInfo(`Found ${discoveredDevices.length} devices`)
-      setIsScanning(false)
+      setIsScanning(true);
+      addDebugInfo('Starting device discovery...');
+      setDevices([]);
+      const discoveredDevices = await BluetoothClassic.startDiscovery();
+      setDevices(discoveredDevices);
+      addDebugInfo(`Found ${discoveredDevices.length} devices`);
+      setIsScanning(false);
     } catch (error: any) {
-      setIsScanning(false)
-      addDebugInfo(`Discovery error: ${error.message}`)
+      setIsScanning(false);
+      addDebugInfo(`Discovery error: ${error.message}`);
     }
-  }, [addDebugInfo])
+  }, [addDebugInfo]);
 
-  const connectToDevice = useCallback(async (device: BluetoothDevice) => {
-    try {
-      setIsConnecting(true)
-      addDebugInfo(`Connecting to ${device.name}...`)
-      const connection = await BluetoothClassic.connectToDevice(device.id)
-      setConnectedDevice(connection)
-      addDebugInfo(`Successfully connected to ${device.name}`)
-      setIsConnecting(false)
-    } catch (error: any) {
-      setIsConnecting(false)
-      addDebugInfo(`Connection error: ${error.message}`)
-      Alert.alert('Connection Error', error.message)
-    }
-  }, [addDebugInfo])
+  const connectToDevice = useCallback(
+    async (device: BluetoothDevice) => {
+      try {
+        setIsConnecting(true);
+        addDebugInfo(`Connecting to ${device.name}...`);
+        const connection = await BluetoothClassic.connectToDevice(device.id);
+        setConnectedDevice(connection);
+        addDebugInfo(`Successfully connected to ${device.name}`);
+        setIsConnecting(false);
+      } catch (error: any) {
+        setIsConnecting(false);
+        addDebugInfo(`Connection error: ${error.message}`);
+        Alert.alert('Connection Error', error.message);
+      }
+    },
+    [addDebugInfo]
+  );
 
   const disconnectDevice = useCallback(async () => {
     try {
       if (connectedDevice) {
-        await connectedDevice.disconnect()
-        setConnectedDevice(null)
-        addDebugInfo('Device disconnected')
+        await connectedDevice.disconnect();
+        setConnectedDevice(null);
+        addDebugInfo('Device disconnected');
       }
     } catch (error: any) {
-      addDebugInfo(`Disconnect error: ${error.message}`)
+      addDebugInfo(`Disconnect error: ${error.message}`);
     }
-  }, [connectedDevice, addDebugInfo])
+  }, [connectedDevice, addDebugInfo]);
 
   const printVisitorPass = useCallback(async () => {
     if (!connectedDevice) {
-      Alert.alert('No Connection', 'Please connect to a printer first')
-      return
+      Alert.alert('No Connection', 'Please connect to a printer first');
+      return;
     }
     try {
-      const encoder = new EscPosEncoder()
+      const encoder = new EscPosEncoder();
       const result = encoder
         .initialize()
         .codepage('cp437')
@@ -165,26 +171,26 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
         .newline()
         .newline()
         .newline()
-        .encode()
-      const base64Data = btoa(String.fromCharCode(...new Uint8Array(result)))
-      addDebugInfo(`Sending simple test (${result.length} bytes)...`)
-      await BluetoothClassic.writeToDevice(connectedDevice.address, base64Data, 'base64')
-      addDebugInfo('Visitor pass printed')
-      Alert.alert('Success', 'Visitor pass printed successfully!')
+        .encode();
+      const base64Data = btoa(String.fromCharCode(...new Uint8Array(result)));
+      addDebugInfo(`Sending simple test (${result.length} bytes)...`);
+      await BluetoothClassic.writeToDevice(connectedDevice.address, base64Data, 'base64');
+      addDebugInfo('Visitor pass printed');
+      Alert.alert('Success', 'Visitor pass printed successfully!');
     } catch (error: any) {
-      addDebugInfo(`Print error: ${error.message}`)
-      Alert.alert('Print Error', error.message)
+      addDebugInfo(`Print error: ${error.message}`);
+      Alert.alert('Print Error', error.message);
     }
-  }, [connectedDevice, addDebugInfo])
+  }, [connectedDevice, addDebugInfo]);
 
   const printVisitorBarcode = useCallback(async () => {
     if (!connectedDevice) {
-      Alert.alert('No Connection', 'Please connect to a printer first')
-      return
+      Alert.alert('No Connection', 'Please connect to a printer first');
+      return;
     }
     try {
-      const visitorId = 'VIS' + Date.now().toString().slice(-6)
-      const encoder = new EscPosEncoder()
+      const visitorId = 'VIS' + Date.now().toString().slice(-6);
+      const encoder = new EscPosEncoder();
       const result = encoder
         .initialize()
         .align('center')
@@ -195,25 +201,25 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
         .line('Date: ' + new Date().toLocaleDateString())
         .newline()
         .newline()
-        .encode()
-      const base64Data = btoa(String.fromCharCode(...new Uint8Array(result)))
-      addDebugInfo(`Sending simple test (${result.length} bytes)...`)
-      await BluetoothClassic.writeToDevice(connectedDevice.address, base64Data, 'base64')
-      addDebugInfo('Visitor barcode printed')
-      Alert.alert('Success', 'Visitor barcode printed successfully!')
+        .encode();
+      const base64Data = btoa(String.fromCharCode(...new Uint8Array(result)));
+      addDebugInfo(`Sending simple test (${result.length} bytes)...`);
+      await BluetoothClassic.writeToDevice(connectedDevice.address, base64Data, 'base64');
+      addDebugInfo('Visitor barcode printed');
+      Alert.alert('Success', 'Visitor barcode printed successfully!');
     } catch (error: any) {
-      addDebugInfo(`Barcode print error: ${error.message}`)
-      Alert.alert('Print Error', error.message)
+      addDebugInfo(`Barcode print error: ${error.message}`);
+      Alert.alert('Print Error', error.message);
     }
-  }, [connectedDevice, addDebugInfo])
+  }, [connectedDevice, addDebugInfo]);
 
   const printVisitorQR = useCallback(async () => {
     if (!connectedDevice) {
-      Alert.alert('No Connection', 'Please connect to a printer first')
-      return
+      Alert.alert('No Connection', 'Please connect to a printer first');
+      return;
     }
     try {
-      const visitorId = 'VIS' + Date.now().toString().slice(-6)
+      const visitorId = 'VIS' + Date.now().toString().slice(-6);
       const qrData = JSON.stringify({
         id: visitorId,
         name: 'John Doe',
@@ -221,8 +227,8 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
         host: 'Jane Smith',
         date: new Date().toISOString().split('T')[0],
         timeIn: new Date().toLocaleTimeString(),
-      })
-      const encoder = new EscPosEncoder()
+      });
+      const encoder = new EscPosEncoder();
       const result = encoder
         .initialize()
         .align('center')
@@ -233,21 +239,21 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
         .line('Scan for details')
         .newline()
         .newline()
-        .encode()
-      const base64Data = btoa(String.fromCharCode(...new Uint8Array(result)))
-      addDebugInfo(`Sending simple test (${result.length} bytes)...`)
-      await BluetoothClassic.writeToDevice(connectedDevice.address, base64Data, 'base64')
-      addDebugInfo('Visitor QR code printed')
-      Alert.alert('Success', 'Visitor QR code printed successfully!')
+        .encode();
+      const base64Data = btoa(String.fromCharCode(...new Uint8Array(result)));
+      addDebugInfo(`Sending simple test (${result.length} bytes)...`);
+      await BluetoothClassic.writeToDevice(connectedDevice.address, base64Data, 'base64');
+      addDebugInfo('Visitor QR code printed');
+      Alert.alert('Success', 'Visitor QR code printed successfully!');
     } catch (error: any) {
-      addDebugInfo(`QR code print error: ${error.message}`)
-      Alert.alert('Print Error', error.message)
+      addDebugInfo(`QR code print error: ${error.message}`);
+      Alert.alert('Print Error', error.message);
     }
-  }, [connectedDevice, addDebugInfo])
+  }, [connectedDevice, addDebugInfo]);
 
   const clearDebugInfo = useCallback(() => {
-    setDebugInfo('')
-  }, [])
+    setDebugInfo('');
+  }, []);
 
   return {
     isBluetoothEnabled,
@@ -264,5 +270,5 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
     printVisitorBarcode,
     printVisitorQR,
     clearDebugInfo,
-  }
-} 
+  };
+}

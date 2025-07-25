@@ -1,9 +1,20 @@
 import { useConfig } from '@/features/config/hooks/useConfig';
-import { RatingSubmitPayload, useLazyGetRatingQuestionQuery, useSubmitRatingMutation } from '@/features/rating/api/ratingApi';
+import {
+  RatingSubmitPayload,
+  useLazyGetRatingQuestionQuery,
+  useSubmitRatingMutation,
+} from '@/features/rating/api/ratingApi';
 import { format, parse } from 'date-fns';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Keyboard, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import {
+  Keyboard,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type AnswerType = {
@@ -35,13 +46,19 @@ export default function OfficeRating() {
   const [answers, setAnswers] = useState<AnswersType>({});
 
   const loginDate = format(new Date(logIn as string), 'yyyy-MM-dd');
-  const loginDateTime = format(parse(logIn as string, 'yyyy-MM-dd HH:mm:ss', new Date()), 'yyyy-MM-dd HH:mm:ss');
+  const loginDateTime = format(
+    parse(logIn as string, 'yyyy-MM-dd HH:mm:ss', new Date()),
+    'yyyy-MM-dd HH:mm:ss'
+  );
 
   const { enabledRequireComment, enabledRatingType } = useConfig();
 
-
   useEffect(() => {
-    getRatingQuestion({ logIn: loginDate, strId: ticketNumber as string, visitorId: visitorId as string });
+    getRatingQuestion({
+      logIn: loginDate,
+      strId: ticketNumber as string,
+      visitorId: visitorId as string,
+    });
   }, [loginDate, ticketNumber, visitorId, getRatingQuestion]);
 
   useEffect(() => {
@@ -61,14 +78,14 @@ export default function OfficeRating() {
   const handleStarPress = (rating: number) => {
     setAnswers(prev => ({
       ...prev,
-      [currentQuestion]: { ...prev[currentQuestion], rating }
+      [currentQuestion]: { ...prev[currentQuestion], rating },
     }));
   };
 
   const handleCommentChange = (comment: string) => {
     setAnswers(prev => ({
       ...prev,
-      [currentQuestion]: { ...prev[currentQuestion], comment }
+      [currentQuestion]: { ...prev[currentQuestion], comment },
     }));
   };
 
@@ -95,8 +112,8 @@ export default function OfficeRating() {
             type: q.type,
             name: q.name,
             rating: answers[index].rating,
-            comment: answers[index].comment
-          }))
+            comment: answers[index].comment,
+          })),
         };
 
         await submitRating(submissionData).unwrap();
@@ -116,10 +133,14 @@ export default function OfficeRating() {
         const isSelected = rating <= currentAnswer.rating;
         let smiley = '😐'; // neutral
 
-        if (rating === 1) smiley = '😡'; // very angry
-        else if (rating === 2) smiley = '😕'; // sad
-        else if (rating === 3) smiley = '😐'; // neutral
-        else if (rating === 4) smiley = '🙂'; // happy
+        if (rating === 1)
+          smiley = '😡'; // very angry
+        else if (rating === 2)
+          smiley = '😕'; // sad
+        else if (rating === 3)
+          smiley = '😐'; // neutral
+        else if (rating === 4)
+          smiley = '🙂'; // happy
         else if (rating === 5) smiley = '😄'; // very happy
 
         return (
@@ -149,9 +170,7 @@ export default function OfficeRating() {
           className="p-2"
           activeOpacity={0.7}
         >
-          <Text className={`text-6xl ${isSelected ? 'text-yellow-400' : 'text-gray-300'}`}>
-            ★
-          </Text>
+          <Text className={`text-6xl ${isSelected ? 'text-yellow-400' : 'text-gray-300'}`}>★</Text>
         </TouchableOpacity>
       );
     });
@@ -168,7 +187,7 @@ export default function OfficeRating() {
 
   if (isLoading || !ratingQuestion?.results) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50 justify-center items-center">
+      <SafeAreaView className="flex-1 items-center justify-center bg-gray-50">
         <Text className="text-xl text-gray-600">Loading questions...</Text>
       </SafeAreaView>
     );
@@ -180,17 +199,15 @@ export default function OfficeRating() {
         <View className="flex-1 px-8 py-6">
           {/* Progress Bar */}
           <View className="mb-6">
-            <View className="flex-row justify-between items-center mb-3">
+            <View className="mb-3 flex-row items-center justify-between">
               <Text className="text-lg font-semibold text-gray-600">
                 Question {currentQuestion + 1} of {totalQuestions}
               </Text>
-              <Text className="text-base text-gray-500">
-                {getProgressPercentage()}% Complete
-              </Text>
+              <Text className="text-base text-gray-500">{getProgressPercentage()}% Complete</Text>
             </View>
-            <View className="w-full bg-gray-200 rounded-full h-2">
+            <View className="h-2 w-full rounded-full bg-gray-200">
               <View
-                className="bg-blue-500 h-full rounded-full"
+                className="h-full rounded-full bg-blue-500"
                 style={{ width: getProgressWidth() as any }}
               />
             </View>
@@ -198,59 +215,55 @@ export default function OfficeRating() {
 
           {/* Rating Card */}
           <View
-            className="rounded-2xl p-8 mb-8 shadow-lg"
+            className="mb-8 rounded-2xl p-8 shadow-lg"
             style={{ backgroundColor: currentQ ? getRatingTypeColor(currentQ.type) : '#3B82F6' }}
           >
-            <View className="flex-row justify-between items-center">
+            <View className="flex-row items-center justify-between">
               {/* Left Side - Office Info */}
               <View className="flex-1">
-                <Text className="text-white text-3xl font-bold mb-2">
-                  {currentQ?.name}
-                </Text>
-                <Text className="text-white text-xl opacity-80">
-                  Question {currentQ?.type}
-                </Text>
+                <Text className="mb-2 text-3xl font-bold text-white">{currentQ?.name}</Text>
+                <Text className="text-xl text-white opacity-80">Question {currentQ?.type}</Text>
               </View>
 
               {/* Right Side - Star Rating */}
-              <View className="flex-row items-center">
-                {renderStars()}
-              </View>
+              <View className="flex-row items-center">{renderStars()}</View>
             </View>
           </View>
 
           {/* Comment Section */}
-          <View className="flex-1 mb-8">
+          <View className="mb-8 flex-1">
             <TextInput
               value={currentAnswer.comment}
               onChangeText={handleCommentChange}
-              placeholder={enabledRequireComment ? "Comment (Required)" : "Optional Comment"}
+              placeholder={enabledRequireComment ? 'Comment (Required)' : 'Optional Comment'}
               placeholderTextColor="#9CA3AF"
               multiline
               textAlignVertical="top"
-              className={`flex-1 bg-white rounded-2xl p-6 text-lg text-gray-700 border ${enabledRequireComment && !currentAnswer.comment.trim() ? 'border-red-400' : 'border-gray-200'} shadow-sm`}
+              className={`flex-1 rounded-2xl border bg-white p-6 text-lg text-gray-700 ${enabledRequireComment && !currentAnswer.comment.trim() ? 'border-red-400' : 'border-gray-200'} shadow-sm`}
               style={{
                 minHeight: 100,
                 maxHeight: 150,
               }}
             />
             {enabledRequireComment && !currentAnswer.comment.trim() && (
-              <Text className="text-red-500 mt-2 ml-2">
+              <Text className="ml-2 mt-2 text-red-500">
                 Please provide a comment before proceeding
               </Text>
             )}
           </View>
 
           {/* Action Buttons */}
-          <View className="flex-row justify-between items-center mb-6">
+          <View className="mb-6 flex-row items-center justify-between">
             {/* Back Button */}
             <TouchableOpacity
               onPress={handleBack}
               disabled={currentQuestion === 0 || isSubmitting}
-              className={`rounded-full px-8 py-4 shadow-sm ${currentQuestion === 0 ? 'bg-gray-200' : 'bg-white border-2 border-gray-300'}`}
+              className={`rounded-full px-8 py-4 shadow-sm ${currentQuestion === 0 ? 'bg-gray-200' : 'border-2 border-gray-300 bg-white'}`}
               activeOpacity={currentQuestion === 0 ? 1 : 0.8}
             >
-              <Text className={`text-xl font-semibold ${currentQuestion === 0 ? 'text-gray-400' : 'text-gray-700'}`}>
+              <Text
+                className={`text-xl font-semibold ${currentQuestion === 0 ? 'text-gray-400' : 'text-gray-700'}`}
+              >
                 Back
               </Text>
             </TouchableOpacity>
@@ -262,8 +275,12 @@ export default function OfficeRating() {
               className={`rounded-full px-12 py-4 shadow-lg ${isSubmitting ? 'bg-gray-400' : 'bg-blue-500 active:bg-blue-600'}`}
               activeOpacity={0.8}
             >
-              <Text className="text-white text-xl font-semibold">
-                {isSubmitting ? 'Submitting...' : currentQuestion === totalQuestions - 1 ? 'Submit' : 'Next'}
+              <Text className="text-xl font-semibold text-white">
+                {isSubmitting
+                  ? 'Submitting...'
+                  : currentQuestion === totalQuestions - 1
+                    ? 'Submit'
+                    : 'Next'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -278,9 +295,9 @@ export default function OfficeRating() {
                 activeOpacity={0.7}
               >
                 <View
-                  className={`w-3 h-3 rounded-full ${index === currentQuestion ? 'bg-blue-500' : index < currentQuestion ? 'bg-green-500' : 'bg-gray-300'}`}
+                  className={`h-3 w-3 rounded-full ${index === currentQuestion ? 'bg-blue-500' : index < currentQuestion ? 'bg-green-500' : 'bg-gray-300'}`}
                   style={{
-                    transform: index === currentQuestion ? [{ scale: 1.3 }] : [{ scale: 1 }]
+                    transform: index === currentQuestion ? [{ scale: 1.3 }] : [{ scale: 1 }],
                   }}
                 />
               </TouchableOpacity>

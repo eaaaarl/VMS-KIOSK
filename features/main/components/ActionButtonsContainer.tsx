@@ -1,5 +1,5 @@
-import { View } from "react-native";
-import { ActionButton } from "./ActionButton";
+import { View } from 'react-native';
+import { ActionButton } from './ActionButton';
 
 export interface ActionButtonsContainerProps {
   isLandscape: boolean;
@@ -15,7 +15,7 @@ export const ActionButtonsContainer: React.FC<ActionButtonsContainerProps> = ({
   onSignOutPress,
 }) => {
   return (
-    <View className={`flex-row gap-6 w-full justify-center`}>
+    <View className={`w-full flex-row justify-center gap-6`}>
       {kioskSettingId === 3 ? (
         <></>
       ) : (
@@ -45,4 +45,4 @@ export const ActionButtonsContainer: React.FC<ActionButtonsContainerProps> = ({
       )}
     </View>
   );
-}; 
+};

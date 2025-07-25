@@ -10,48 +10,50 @@ export default function SelectScreenUI({
   onIpPortConfiguration,
 }: SelectScreenProps) {
   return (
-    <SafeAreaView className="flex-1 justify-center items-center bg-black/50">
-      <View className="bg-white rounded-t-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl">
-        <View className="bg-blue-500 px-6 py-4 flex-row justify-between items-center">
-          <Text className="text-white text-xl font-semibold">SELECT</Text>
+    <SafeAreaView className="flex-1 items-center justify-center bg-black/50">
+      <View className="mx-4 w-full max-w-md overflow-hidden rounded-t-2xl bg-white shadow-2xl">
+        <View className="flex-row items-center justify-between bg-blue-500 px-6 py-4">
+          <Text className="text-xl font-semibold text-white">SELECT</Text>
           <TouchableOpacity
             onPress={onClose}
-            className="w-8 h-8 rounded-full bg-white/20 items-center justify-center"
+            className="h-8 w-8 items-center justify-center rounded-full bg-white/20"
           >
-            <Text className="text-white text-lg font-bold">x</Text>
+            <Text className="text-lg font-bold text-white">x</Text>
           </TouchableOpacity>
         </View>
 
-        <View className="p-6 gap-4">
+        <View className="gap-4 p-6">
           <TouchableOpacity
             onPress={onSetKioskFunction}
-            className="bg-blue-50 border border-blue-200 rounded-full py-4 px-6 items-center"
+            className="items-center rounded-full border border-blue-200 bg-blue-50 px-6 py-4"
           >
-            <Text className="text-gray-800 text-lg font-medium">Set KIOSK Function</Text>
+            <Text className="text-lg font-medium text-gray-800">Set KIOSK Function</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={onPrinterManagement}
-            className="bg-green-50 border border-green-200 rounded-full py-4 px-6 items-center"
+            className="items-center rounded-full border border-green-200 bg-green-50 px-6 py-4"
           >
-            <Text className="text-gray-800 text-lg font-medium">Printer Management</Text>
+            <Text className="text-lg font-medium text-gray-800">Printer Management</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={onIpPortConfiguration}
-            className="bg-purple-50 border border-purple-200 rounded-full py-4 px-6 items-center"
+            className="items-center rounded-full border border-purple-200 bg-purple-50 px-6 py-4"
           >
-            <Text className="text-gray-800 text-lg font-medium">IP Address & Port Configuration</Text>
+            <Text className="text-lg font-medium text-gray-800">
+              IP Address & Port Configuration
+            </Text>
           </TouchableOpacity>
 
-          <View className="bg-pink-50 border border-pink-200 rounded-full py-4 px-6 items-center flex-row justify-center">
-            <Text className="text-gray-600 text-lg font-medium mr-2">Return IDs</Text>
-            <View className="bg-pink-500 rounded-full w-6 h-6 items-center justify-center">
-              <Text className="text-white text-sm font-bold">{countReturned}</Text>
+          <View className="flex-row items-center justify-center rounded-full border border-pink-200 bg-pink-50 px-6 py-4">
+            <Text className="mr-2 text-lg font-medium text-gray-600">Return IDs</Text>
+            <View className="h-6 w-6 items-center justify-center rounded-full bg-pink-500">
+              <Text className="text-sm font-bold text-white">{countReturned}</Text>
             </View>
           </View>
         </View>
       </View>
     </SafeAreaView>
   );
-} 
+}

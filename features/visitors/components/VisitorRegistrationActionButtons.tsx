@@ -14,26 +14,24 @@ export default function VisitorRegistrationActionButtons({
   onSkip,
   onRegister,
   isRegisterButtonDisabled,
-  registerButtonText
+  registerButtonText,
 }: VisitorRegistrationActionButtonsProps) {
   return (
-    <View className="w-80 px-6 py-6 bg-gray-50 border-l border-gray-200">
+    <View className="w-80 border-l border-gray-200 bg-gray-50 px-6 py-6">
       <View className="flex-1 justify-center">
         <View className="gap-4">
           <TouchableOpacity
             onPress={onBack}
-            className="bg-gray-100 rounded-lg py-4 border border-gray-200"
+            className="rounded-lg border border-gray-200 bg-gray-100 py-4"
           >
-            <Text className="text-gray-700 text-lg font-medium text-center">
-              Back
-            </Text>
+            <Text className="text-center text-lg font-medium text-gray-700">Back</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={onSkip}
-            className="bg-gray-200 rounded-lg py-4 border border-gray-200"
+            className="rounded-lg border border-gray-200 bg-gray-200 py-4"
           >
-            <Text className="text-gray-700 text-lg font-medium text-center">
+            <Text className="text-center text-lg font-medium text-gray-700">
               Skip, I&apos;m already registered
             </Text>
           </TouchableOpacity>
@@ -43,7 +41,7 @@ export default function VisitorRegistrationActionButtons({
             disabled={isRegisterButtonDisabled}
             className={`rounded-lg py-4 ${isRegisterButtonDisabled ? 'bg-blue-300' : 'bg-blue-500'}`}
           >
-            <Text className="text-white text-lg font-semibold text-center">
+            <Text className="text-center text-lg font-semibold text-white">
               {registerButtonText}
             </Text>
           </TouchableOpacity>
@@ -51,14 +49,12 @@ export default function VisitorRegistrationActionButtons({
       </View>
 
       {/* Optional: Status or Info Section */}
-      <View className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-        <Text className="text-blue-800 text-sm font-medium mb-1">
-          Registration Info
-        </Text>
-        <Text className="text-blue-600 text-xs">
+      <View className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+        <Text className="mb-1 text-sm font-medium text-blue-800">Registration Info</Text>
+        <Text className="text-xs text-blue-600">
           Fill out all required fields to complete your visitor registration.
         </Text>
       </View>
     </View>
   );
-} 
+}

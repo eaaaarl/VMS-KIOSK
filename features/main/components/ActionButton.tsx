@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from 'react-native';
 
 export interface ActionButtonProps {
   title: string;
@@ -21,21 +21,25 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
 }) => {
   return (
     <TouchableOpacity
-      className={`flex-1 py-5 border border-gray-300 ${buttonBgColor} rounded-2xl items-center max-w-[320px] active:bg-white/80 active:scale-95 transition-transform`}
+      className={`flex-1 border border-gray-300 py-5 ${buttonBgColor} max-w-[320px] items-center rounded-2xl transition-transform active:scale-95 active:bg-white/80`}
       onPress={onPress}
     >
-      <View className={`${isLandscape ? 'w-16 h-16' : 'w-20 h-20'} ${iconBgColor} rounded-xl items-center justify-center ${isLandscape ? 'mb-3' : 'mb-6'}`}>
-        <View className={`w-8 h-8 ${iconBgColor.replace('100', '500')} rounded items-center justify-center`}>
-          <Text className="text-white text-lg">{icon}</Text>
+      <View
+        className={`${isLandscape ? 'h-16 w-16' : 'h-20 w-20'} ${iconBgColor} items-center justify-center rounded-xl ${isLandscape ? 'mb-3' : 'mb-6'}`}
+      >
+        <View
+          className={`h-8 w-8 ${iconBgColor.replace('100', '500')} items-center justify-center rounded`}
+        >
+          <Text className="text-lg text-white">{icon}</Text>
         </View>
       </View>
 
-      <Text className={`text-gray-800 ${isLandscape ? 'text-2xl' : 'text-2xl'} font-bold mb-2 tracking-wide`}>
+      <Text
+        className={`text-gray-800 ${isLandscape ? 'text-2xl' : 'text-2xl'} mb-2 font-bold tracking-wide`}
+      >
         {title}
       </Text>
-      <Text className={`text-gray-600 text-center text-base`}>
-        {subtitle}
-      </Text>
+      <Text className={`text-center text-base text-gray-600`}>{subtitle}</Text>
     </TouchableOpacity>
   );
-}; 
+};

@@ -18,13 +18,6 @@ export const visitorApi = createApi({
     const port = state.config?.port;
     const baseUrl = `http://${ipAddress}:${port}`;
 
-    console.log('API Request:', {
-      ipAddress,
-      port,
-      baseUrl,
-      args: typeof args === 'string' ? args : args.url,
-    });
-
     let url: string;
     let adjustedArgs: any;
 
@@ -55,17 +48,8 @@ export const visitorApi = createApi({
 
     try {
       const result = await baseQuery(adjustedArgs, api, extraOptions);
-      console.log('API Response:', {
-        url: adjustedArgs.url,
-        status: result.meta?.response?.status,
-        error: result.error,
-      });
       return result;
     } catch (error) {
-      console.error('API Error:', {
-        url: adjustedArgs.url,
-        error,
-      });
       return {
         error: {
           status: 'FETCH_ERROR',

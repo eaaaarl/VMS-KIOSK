@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity } from 'react-native';
 
 export interface SettingsButtonProps {
   onPress: () => void;
@@ -7,10 +7,10 @@ export interface SettingsButtonProps {
 export const SettingsButton: React.FC<SettingsButtonProps> = ({ onPress }) => {
   return (
     <TouchableOpacity
-      className={`absolute bottom-16 right-10 w-14 h-14 bg-white/30 rounded-full items-center justify-center backdrop-blur-sm active:bg-white/40`}
+      className={`absolute bottom-16 right-10 h-14 w-14 items-center justify-center rounded-full bg-white/30 backdrop-blur-sm active:bg-white/40`}
       onPress={onPress}
     >
-      <Text className={`text-white text-4xl`}>⚙️</Text>
+      <Text className={`text-4xl text-white`}>⚙️</Text>
     </TouchableOpacity>
   );
-}; 
+};

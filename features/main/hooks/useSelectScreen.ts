@@ -7,7 +7,7 @@ export const useSelectScreen = (): SelectScreenHookReturn => {
   const router = useRouter();
   const todaysDate = formattedDate(new Date());
   const { data: visitorsReturned } = useGetVisitorsReturnedQuery({ date: todaysDate });
-  
+
   const countReturned = visitorsReturned?.results?.length || 0;
 
   const handleClose = () => {
@@ -33,4 +33,4 @@ export const useSelectScreen = (): SelectScreenHookReturn => {
     handlePrinterManagement,
     handleIpPortConfiguration,
   };
-}; 
+};

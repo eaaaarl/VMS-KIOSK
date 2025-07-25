@@ -28,59 +28,51 @@ export const SignInCameraButtons: React.FC<SignInCameraButtonsProps> = ({
   const cardUri = getImageUri(cardImageId);
 
   return (
-    <View className="flex-row gap-4 mb-8">
+    <View className="mb-8 flex-row gap-4">
       <TouchableOpacity
         onPress={onIdSnapshot}
-        className={`flex-1 border-2 rounded-lg p-4 items-center justify-center h-48 ${!idSnapshotTaken ? 'border-green-400 bg-green-50' : 'border-red-300 bg-red-50'}`}
+        className={`h-48 flex-1 items-center justify-center rounded-lg border-2 p-4 ${!idSnapshotTaken ? 'border-green-400 bg-green-50' : 'border-red-300 bg-red-50'}`}
       >
         {cardUri ? (
           <View className="items-center">
             <Image
               source={{ uri: cardUri }}
-              className="w-40 h-28 rounded mb-2"
+              className="mb-2 h-28 w-40 rounded"
               resizeMode="cover"
             />
-            <Text className="text-base font-medium text-gray-700 text-center">
-              ID Snapshot
-            </Text>
+            <Text className="text-center text-base font-medium text-gray-700">ID Snapshot</Text>
           </View>
         ) : (
           <View className="items-center">
-            <View className="w-16 h-12 border-2 border-gray-400 rounded mb-2 items-center justify-center">
-              <View className="w-6 h-6 bg-gray-600 rounded-full" />
+            <View className="mb-2 h-12 w-16 items-center justify-center rounded border-2 border-gray-400">
+              <View className="h-6 w-6 rounded-full bg-gray-600" />
             </View>
-            <Text className="text-base font-medium text-gray-700 text-center">
-              ID Snapshot
-            </Text>
+            <Text className="text-center text-base font-medium text-gray-700">ID Snapshot</Text>
           </View>
         )}
       </TouchableOpacity>
       <TouchableOpacity
         onPress={onPhotoSnapshot}
-        className={`flex-1 border-2 rounded-lg p-4 items-center justify-center h-48 ${!photoSnapshotTaken ? 'border-green-400 bg-green-50' : 'border-red-300 bg-yellow-50'}`}
+        className={`h-48 flex-1 items-center justify-center rounded-lg border-2 p-4 ${!photoSnapshotTaken ? 'border-green-400 bg-green-50' : 'border-red-300 bg-yellow-50'}`}
       >
         {faceUri ? (
           <View className="items-center">
             <Image
               source={{ uri: faceUri }}
-              className="w-32 h-32 rounded-full mb-2"
+              className="mb-2 h-32 w-32 rounded-full"
               resizeMode="cover"
             />
-            <Text className="text-base font-medium text-gray-700 text-center">
-              Photo Snapshot
-            </Text>
+            <Text className="text-center text-base font-medium text-gray-700">Photo Snapshot</Text>
           </View>
         ) : (
           <View className="items-center">
-            <View className="w-14 h-14 border-2 border-gray-400 rounded-full mb-2 items-center justify-center">
-              <View className="w-8 h-8 bg-gray-300 rounded-full" />
+            <View className="mb-2 h-14 w-14 items-center justify-center rounded-full border-2 border-gray-400">
+              <View className="h-8 w-8 rounded-full bg-gray-300" />
             </View>
-            <Text className="text-base font-medium text-gray-700 text-center">
-              Photo Snapshot
-            </Text>
+            <Text className="text-center text-base font-medium text-gray-700">Photo Snapshot</Text>
           </View>
         )}
       </TouchableOpacity>
     </View>
   );
-}; 
+};

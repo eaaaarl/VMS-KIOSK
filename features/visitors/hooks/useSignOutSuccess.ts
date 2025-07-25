@@ -18,4 +18,4 @@ export const useSignOutSuccess = () => {
     handleDone,
     handleRateUs,
   };
-}; 
+};

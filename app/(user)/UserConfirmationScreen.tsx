@@ -1,17 +1,10 @@
-import UserConfirmationForm from '@/features/user/components/UserConfirmationForm'
-import { useUserConfirmation } from '@/features/user/hooks/useUserConfirmation'
-import React from 'react'
+import UserConfirmationForm from '@/features/user/components/UserConfirmationForm';
+import { useUserConfirmation } from '@/features/user/hooks/useUserConfirmation';
+import React from 'react';
 
 export default function UserConfirmationScreen() {
-  const {
-    username,
-    password,
-    isLoading,
-    setUsername,
-    setPassword,
-    handleConfirm,
-    handleBack,
-  } = useUserConfirmation()
+  const { username, password, isLoading, setUsername, setPassword, handleConfirm, handleBack } =
+    useUserConfirmation();
 
   return (
     <UserConfirmationForm
@@ -23,5 +16,5 @@ export default function UserConfirmationScreen() {
       onConfirm={handleConfirm}
       onBack={handleBack}
     />
-  )
+  );
 }

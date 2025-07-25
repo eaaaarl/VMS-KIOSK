@@ -30,17 +30,19 @@ export const SignInVisitorModal: React.FC<SignInVisitorModalProps> = ({
   onClose,
 }) => {
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent={true}
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
       <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.3)' }}>
-        <View style={{ backgroundColor: 'white', borderTopLeftRadius: 16, borderTopRightRadius: 16, maxHeight: '70%' }}>
+        <View
+          style={{
+            backgroundColor: 'white',
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
+            maxHeight: '70%',
+          }}
+        >
           <View style={{ padding: 16 }}>
             <TextInput
-              className="bg-white border border-blue-300 rounded-lg px-4 py-4 text-lg mb-2"
+              className="mb-2 rounded-lg border border-blue-300 bg-white px-4 py-4 text-lg"
               placeholder="Search visitor"
               placeholderTextColor="gray"
               value={visitorName}
@@ -49,18 +51,20 @@ export const SignInVisitorModal: React.FC<SignInVisitorModalProps> = ({
             />
             <FlatList
               data={filteredVisitors.slice(0, 20)}
-              keyExtractor={(item) => item.id.toString()}
+              keyExtractor={item => item.id.toString()}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  className="px-4 py-3 border-b border-gray-100"
+                  className="border-b border-gray-100 px-4 py-3"
                   onPress={() => {
                     onSelectVisitor(item);
                     onClose();
                   }}
                 >
-                  <Text className="text-gray-800 text-base">{item.name}</Text>
-                  <Text className="text-gray-500 text-sm">
-                    {item.contactNo1?.toString() || item.contactNo2?.toString() || item.contactNo3?.toString()}
+                  <Text className="text-base text-gray-800">{item.name}</Text>
+                  <Text className="text-sm text-gray-500">
+                    {item.contactNo1?.toString() ||
+                      item.contactNo2?.toString() ||
+                      item.contactNo3?.toString()}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -70,11 +74,11 @@ export const SignInVisitorModal: React.FC<SignInVisitorModalProps> = ({
               style={{ maxHeight: 300 }}
             />
             <TouchableOpacity onPress={onClose} style={{ marginTop: 12, alignItems: 'center' }}>
-              <Text className="text-blue-500 font-semibold text-lg">Close</Text>
+              <Text className="text-lg font-semibold text-blue-500">Close</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
     </Modal>
   );
-}; 
+};

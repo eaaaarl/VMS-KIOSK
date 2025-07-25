@@ -30,17 +30,25 @@ export default function FaceCameraScreen() {
 
   if (!permission.granted) {
     return (
-      <View className="flex-1 bg-black items-center justify-center px-6">
-        <FaceCameraHeader isTablet={isTablet} headerHeight={headerHeight} onClose={() => router.back()} />
-        <View className="flex-1 justify-center items-center">
+      <View className="flex-1 items-center justify-center bg-black px-6">
+        <FaceCameraHeader
+          isTablet={isTablet}
+          headerHeight={headerHeight}
+          onClose={() => router.back()}
+        />
+        <View className="flex-1 items-center justify-center">
           <View className="mb-6">
-            <Text className={`text-white text-center ${isTablet ? 'text-2xl' : 'text-lg'}`}>We need your permission to show the camera</Text>
+            <Text className={`text-center text-white ${isTablet ? 'text-2xl' : 'text-lg'}`}>
+              We need your permission to show the camera
+            </Text>
           </View>
           <TouchableOpacity
             onPress={requestPermission}
-            className={`bg-yellow-400 rounded-full ${isTablet ? 'py-4 px-12' : 'py-3 px-6'}`}
+            className={`rounded-full bg-yellow-400 ${isTablet ? 'px-12 py-4' : 'px-6 py-3'}`}
           >
-            <Text className={`text-black font-semibold ${isTablet ? 'text-xl' : 'text-base'}`}>Grant Permission</Text>
+            <Text className={`font-semibold text-black ${isTablet ? 'text-xl' : 'text-base'}`}>
+              Grant Permission
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -49,7 +57,11 @@ export default function FaceCameraScreen() {
 
   return (
     <View className="flex-1 bg-black">
-      <FaceCameraHeader isTablet={isTablet} headerHeight={headerHeight} onClose={() => router.back()} />
+      <FaceCameraHeader
+        isTablet={isTablet}
+        headerHeight={headerHeight}
+        onClose={() => router.back()}
+      />
       <View className="flex-1" style={{ marginTop: headerHeight }}>
         <CameraView
           ref={cameraRef}
@@ -77,4 +89,4 @@ export default function FaceCameraScreen() {
       />
     </View>
   );
-} 
+}

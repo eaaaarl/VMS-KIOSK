@@ -14,18 +14,24 @@ export default function ConfigDisplay({ currentConfig, className = '' }: ConfigD
   const isConfigured = ipAddress && port;
 
   return (
-    <View className={`rounded-lg border p-4 ${isConfigured ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'} ${className}`}>
-      <View className="flex-row items-center mb-2">
-        <View className={`mr-2 h-2 w-2 rounded-full ${isConfigured ? 'bg-green-500' : 'bg-gray-400'}`} />
-        <Text className={`text-sm font-medium ${isConfigured ? 'text-green-800' : 'text-gray-600'}`}>
+    <View
+      className={`rounded-lg border p-4 ${isConfigured ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'} ${className}`}
+    >
+      <View className="mb-2 flex-row items-center">
+        <View
+          className={`mr-2 h-2 w-2 rounded-full ${isConfigured ? 'bg-green-500' : 'bg-gray-400'}`}
+        />
+        <Text
+          className={`text-sm font-medium ${isConfigured ? 'text-green-800' : 'text-gray-600'}`}
+        >
           {isConfigured ? 'Configuration Active' : 'No Configuration'}
         </Text>
       </View>
-      
+
       {isConfigured ? (
         <View>
-          <Text className="text-xs text-green-700 mb-1">Current API Endpoint:</Text>
-          <Text className="text-sm font-mono text-green-800">
+          <Text className="mb-1 text-xs text-green-700">Current API Endpoint:</Text>
+          <Text className="font-mono text-sm text-green-800">
             http://{ipAddress}:{port}
           </Text>
         </View>
@@ -36,4 +42,4 @@ export default function ConfigDisplay({ currentConfig, className = '' }: ConfigD
       )}
     </View>
   );
-} 
+}

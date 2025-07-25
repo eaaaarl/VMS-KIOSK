@@ -38,10 +38,8 @@ export default function SettingDeveloperScreen() {
           <DevelopmentTips />
           <View className="h-6" />
         </ScrollView>
-
       </View>
       <LoadingOverlay isLoading={mockLoading} />
     </>
   );
-};
-
+}

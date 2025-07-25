@@ -1,5 +1,6 @@
 import { configApi } from '@/features/config/api/configApi';
 import { kioskApi } from '@/features/kiosk/api/kioskApi';
+import { labelApi } from '@/features/label/api/labelApi';
 import { officeApi } from '@/features/office/api/officeApi';
 import { ratingApi } from '@/features/rating/api/ratingApi';
 import { serviceApi } from '@/features/service/api/serviceApi';
@@ -22,9 +23,19 @@ const rootReducer = combineReducers({
   [officeApi.reducerPath]: officeApi.reducer,
   [serviceApi.reducerPath]: serviceApi.reducer,
   [ratingApi.reducerPath]: ratingApi.reducer,
+  [labelApi.reducerPath]: labelApi.reducer,
 });
 
-export const apis = [kioskApi, visitorApi, userApi, configApi, officeApi, serviceApi, ratingApi];
+export const apis = [
+  kioskApi,
+  visitorApi,
+  userApi,
+  configApi,
+  officeApi,
+  serviceApi,
+  ratingApi,
+  labelApi,
+];
 
 export const apisReducerPath = apis.map(api => api.reducerPath);
 

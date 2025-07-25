@@ -10,16 +10,16 @@ export default function VisitorRegistrationLayout({ children }: VisitorRegistrat
   const insets = useSafeAreaInsets();
 
   return (
-    <View className="flex-1 bg-gradient-to-br bg-white from-blue-400 to-blue-600">
+    <View className="flex-1 bg-white bg-gradient-to-br from-blue-400 to-blue-600">
       <View
         className="flex-1 flex-row"
         style={{
           paddingTop: insets.top,
-          paddingBottom: Math.max(insets.bottom, 20) // Ensure minimum bottom padding
+          paddingBottom: Math.max(insets.bottom, 20), // Ensure minimum bottom padding
         }}
       >
         {children}
       </View>
     </View>
   );
-} 
+}

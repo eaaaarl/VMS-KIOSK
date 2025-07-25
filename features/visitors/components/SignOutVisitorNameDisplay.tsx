@@ -6,13 +6,9 @@ interface SignOutVisitorNameDisplayProps {
   className?: string;
 }
 
-export const SignOutVisitorNameDisplay: React.FC<SignOutVisitorNameDisplayProps> = ({ 
+export const SignOutVisitorNameDisplay: React.FC<SignOutVisitorNameDisplayProps> = ({
   name,
-  className = "text-xl font-semibold text-gray-800 mb-16 text-center" 
+  className = 'text-xl font-semibold text-gray-800 mb-16 text-center',
 }) => {
-  return (
-    <Text className={className}>
-      {name}
-    </Text>
-  );
-}; 
+  return <Text className={className}>{name}</Text>;
+};

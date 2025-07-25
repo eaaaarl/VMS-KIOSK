@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface VisitorState {
   faceImageId: string;
@@ -6,12 +6,12 @@ interface VisitorState {
 }
 
 const initialState: VisitorState = {
-  faceImageId: "",
-  cardImageId: "",
+  faceImageId: '',
+  cardImageId: '',
 };
 
 export const visitorSlice = createSlice({
-  name: "visitor",
+  name: 'visitor',
   initialState,
   reducers: {
     setFaceImageId: (state, action: PayloadAction<{ faceImageId: string }>) => {
@@ -21,13 +21,12 @@ export const visitorSlice = createSlice({
       state.cardImageId = action.payload.cardImageId;
     },
 
-    resetVisitor: (state) => {
-      state.faceImageId = "";
-      state.cardImageId = "";
+    resetVisitor: state => {
+      state.faceImageId = '';
+      state.cardImageId = '';
     },
   },
 });
 
-export const { setFaceImageId, setCardImageId, resetVisitor } =
-  visitorSlice.actions;
+export const { setFaceImageId, setCardImageId, resetVisitor } = visitorSlice.actions;
 export const visitorReducer = visitorSlice.reducer;
