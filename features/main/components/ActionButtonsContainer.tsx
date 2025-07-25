@@ -25,8 +25,12 @@ export const ActionButtonsContainer: React.FC<ActionButtonsContainerProps> = ({
           icon="👤"
           iconBgColor="bg-blue-100"
           buttonBgColor="bg-white/90"
+          buttonBgHelpColor="bg-blue-500"
+          labelBgHelpColor="bg-blue-500"
+          labelTextBgHelpColor="text-blue-500"
           onPress={onSignInPress}
           isLandscape={isLandscape}
+          helpVideoUrl="https://www.youtube.com/watch?v=dTrBa2hqWoU" // Replace with actual help video URL
         />
       )}
 
@@ -39,8 +43,12 @@ export const ActionButtonsContainer: React.FC<ActionButtonsContainerProps> = ({
           icon="🚪"
           iconBgColor="bg-green-100"
           buttonBgColor="bg-white/90"
+          buttonBgHelpColor="bg-green-500"
+          labelBgHelpColor="bg-green-500"
+          labelTextBgHelpColor="text-green-500"
           onPress={onSignOutPress}
           isLandscape={isLandscape}
+          helpVideoUrl="https://www.youtube.com/watch?v=cqVaD4RFEVk" // Replace with actual help video URL
         />
       )}
     </View>

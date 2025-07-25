@@ -37,6 +37,12 @@ export default {
     plugins: [
       'expo-router',
       [
+        'expo-web-browser',
+        {
+          experimentalLauncherActivity: false,
+        },
+      ],
+      [
         'expo-splash-screen',
         {
           image: './assets/icons/a-splash-icon-dark.png',

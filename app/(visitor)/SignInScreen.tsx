@@ -90,7 +90,9 @@ export default function SignInScreen() {
                   contentContainerStyle={{ flexGrow: 1 }}
                 >
                   <View className="flex-1 px-8 py-6">
-                    <Text className="mb-8 text-3xl font-bold text-gray-800">Sign In</Text>
+                    <View className="flex-row items-center justify-between mb-8">
+                      <Text className="text-3xl font-bold text-gray-800">Sign In</Text>
+                    </View>
 
                     {/* Camera Buttons */}
                     <SignInCameraButtons

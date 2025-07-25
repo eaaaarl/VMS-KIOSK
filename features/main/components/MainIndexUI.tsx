@@ -15,6 +15,7 @@ export interface MainIndexUIProps {
   onSettingsPress: () => void;
   onCloseModal: () => void;
   onConfirmModal: () => Promise<void>;
+  helpVideoUrl?: string;
 }
 
 export const MainIndexUI: React.FC<MainIndexUIProps> = ({
@@ -27,6 +28,7 @@ export const MainIndexUI: React.FC<MainIndexUIProps> = ({
   onSettingsPress,
   onCloseModal,
   onConfirmModal,
+  helpVideoUrl,
 }) => {
   return (
     <SafeAreaView className="flex-1 bg-gradient-to-br from-blue-400 to-blue-600">

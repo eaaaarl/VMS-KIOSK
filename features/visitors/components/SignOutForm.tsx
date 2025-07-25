@@ -70,8 +70,8 @@ export const SignOutForm: React.FC<SignOutFormProps> = ({
           showsVerticalScrollIndicator={false}
         >
           <View className="flex-1 px-8 pt-6">
-            <View className="mb-6">
-              <Text className="text-center text-3xl font-bold text-gray-800">Sign Out</Text>
+            <View className="mb-6 flex-row items-center justify-between">
+              <Text className="text-3xl font-bold text-gray-800">Sign Out</Text>
             </View>
             <View className="mb-6 flex-row gap-8">
               <View className="flex-1">
