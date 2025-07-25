@@ -5,26 +5,26 @@ export function useVisitorRegistrationForm() {
     lastName: '',
     firstName: '',
     middleName: '',
-    mobileNumber: ''
+    mobileNumber: '',
   });
 
   const [touched, setTouched] = useState({
     lastName: false,
     firstName: false,
-    mobileNumber: false
+    mobileNumber: false,
   });
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handleBlur = (field: string) => {
     setTouched(prev => ({
       ...prev,
-      [field]: true
+      [field]: true,
     }));
   };
 
@@ -61,6 +61,6 @@ export function useVisitorRegistrationForm() {
     handleInputChange,
     handleBlur,
     errors,
-    isFormValid
+    isFormValid,
   };
-} 
+}

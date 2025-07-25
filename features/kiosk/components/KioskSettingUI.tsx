@@ -1,22 +1,22 @@
-import React from 'react'
-import { Platform, SafeAreaView, StyleSheet, Text, View } from 'react-native'
-import { KioskOptionsList } from './KioskOptionsList'
-import { KioskSettingActions } from './KioskSettingActions'
-import { KioskSettingHeader } from './KioskSettingHeader'
+import React from 'react';
+import { Platform, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { KioskOptionsList } from './KioskOptionsList';
+import { KioskSettingActions } from './KioskSettingActions';
+import { KioskSettingHeader } from './KioskSettingHeader';
 
 type KioskOption = {
-  id: number
-  name: string
-  strTransactionType: string
-}
+  id: number;
+  name: string;
+  strTransactionType: string;
+};
 
 type KioskSettingUIProps = {
-  options: KioskOption[]
-  selectedOptionId: number | null
-  onClose: () => void
-  onSave: () => void
-  onOptionSelect: (optionId: number) => void
-}
+  options: KioskOption[];
+  selectedOptionId: number | null;
+  onClose: () => void;
+  onSave: () => void;
+  onOptionSelect: (optionId: number) => void;
+};
 
 const styles = StyleSheet.create({
   shadowContainer: {
@@ -35,32 +35,32 @@ const styles = StyleSheet.create({
       },
     }),
   },
-})
+});
 
 export const KioskSettingUI: React.FC<KioskSettingUIProps> = ({
   options,
   selectedOptionId,
   onClose,
   onSave,
-  onOptionSelect
+  onOptionSelect,
 }) => {
   return (
-    <SafeAreaView className="flex-1 justify-center items-center bg-black/50">
+    <SafeAreaView className="flex-1 items-center justify-center bg-black/50">
       <View
-        className="bg-white rounded-2xl w-full max-w-4xl mx-4 overflow-hidden"
+        className="mx-4 w-full max-w-4xl overflow-hidden rounded-2xl bg-white"
         style={styles.shadowContainer}
       >
         <KioskSettingHeader onClose={onClose} />
 
         <View className="p-6">
-          <View className="border border-gray-300 rounded-lg overflow-hidden">
-            <View className="bg-gray-100 flex-row py-3 px-4 border-b border-gray-300">
+          <View className="overflow-hidden rounded-lg border border-gray-300">
+            <View className="flex-row border-b border-gray-300 bg-gray-100 px-4 py-3">
               <View className="w-12"></View>
               <View className="flex-1">
-                <Text className="text-gray-800 font-bold text-lg">Name</Text>
+                <Text className="text-lg font-bold text-gray-800">Name</Text>
               </View>
               <View className="flex-1">
-                <Text className="text-gray-800 font-bold text-lg">Transaction Type</Text>
+                <Text className="text-lg font-bold text-gray-800">Transaction Type</Text>
               </View>
             </View>
 
@@ -76,9 +76,8 @@ export const KioskSettingUI: React.FC<KioskSettingUIProps> = ({
             onSave={onSave}
             isSaveEnabled={selectedOptionId !== null}
           />
-
         </View>
       </View>
     </SafeAreaView>
-  )
-} 
+  );
+};

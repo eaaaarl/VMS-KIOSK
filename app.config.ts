@@ -8,6 +8,7 @@ export default {
     scheme: 'vmskiosk',
     userInterfaceStyle: 'automatic',
     newArchEnabled: true,
+    jsEngine: 'hermes',
     ios: {
       supportsTablet: true,
       icon: {
@@ -32,14 +33,16 @@ export default {
         'android.permission.BLUETOOTH_SCAN',
         'android.permission.BLUETOOTH_ADVERTISE',
       ],
-    },
-    web: {
-      bundler: 'metro',
-      output: 'static',
-      favicon: './assets/images/favicon.png',
+      jsEngine: 'hermes',
     },
     plugins: [
       'expo-router',
+      [
+        'expo-web-browser',
+        {
+          experimentalLauncherActivity: false,
+        },
+      ],
       [
         'expo-splash-screen',
         {

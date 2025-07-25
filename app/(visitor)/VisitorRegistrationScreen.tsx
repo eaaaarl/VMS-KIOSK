@@ -36,7 +36,6 @@ export default function VisitorRegistration() {
         onRegister={handleRegister}
         isRegisterButtonDisabled={isRegisterButtonDisabled}
         registerButtonText={registerButtonText}
-
       />
       <LoadingOverlay isLoading={loading} />
     </VisitorRegistrationLayout>

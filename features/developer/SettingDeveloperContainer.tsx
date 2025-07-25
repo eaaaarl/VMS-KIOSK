@@ -6,15 +6,8 @@ import DevelopmentTips from './components/DevelopmentTips';
 import { useDeveloperSetting } from './hooks/useDeveloperSetting';
 
 const SettingDeveloper: React.FC = () => {
-  const {
-    currentConfig,
-    ipAddress,
-    port,
-    isLoading,
-    setIpAddress,
-    setPort,
-    handleSave,
-  } = useDeveloperSetting();
+  const { currentConfig, ipAddress, port, isLoading, setIpAddress, setPort, handleSave } =
+    useDeveloperSetting();
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -39,4 +32,4 @@ const SettingDeveloper: React.FC = () => {
   );
 };
 
-export default SettingDeveloper; 
+export default SettingDeveloper;

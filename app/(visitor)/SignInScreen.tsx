@@ -6,7 +6,7 @@ import {
   SignInServiceModal,
   SignInStatusSidebar,
   SignInVisitorModal,
-  useSignInScreen
+  useSignInScreen,
 } from '@/features/visitors';
 import React from 'react';
 import {
@@ -16,7 +16,7 @@ import {
   ScrollView,
   Text,
   TouchableWithoutFeedback,
-  View
+  View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -24,7 +24,6 @@ export default function SignInScreen() {
   const insets = useSafeAreaInsets();
 
   const {
-
     // State
     formData,
     filteredVisitors,
@@ -67,7 +66,7 @@ export default function SignInScreen() {
       ...prev,
       reasonForVisit: serviceName,
       serviceId: serviceId === 0 ? null : serviceId,
-      otherReason: serviceId === 0 ? prev.otherReason : null
+      otherReason: serviceId === 0 ? prev.otherReason : null,
     }));
   };
 
@@ -78,18 +77,22 @@ export default function SignInScreen() {
     >
       <TouchableWithoutFeedback onPress={dismissKeyboard}>
         <View className="flex-1">
-          <View className="flex-row flex-1">
+          <View className="flex-1 flex-row">
             <View className="flex-1 px-8 py-6">
               <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 className="flex-1"
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
               >
-                <ScrollView showsVerticalScrollIndicator={false} className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  className="flex-1"
+                  contentContainerStyle={{ flexGrow: 1 }}
+                >
                   <View className="flex-1 px-8 py-6">
-                    <Text className="text-3xl font-bold text-gray-800 mb-8">
-                      Sign In
-                    </Text>
+                    <View className="flex-row items-center justify-between mb-8">
+                      <Text className="text-3xl font-bold text-gray-800">Sign In</Text>
+                    </View>
 
                     {/* Camera Buttons */}
                     <SignInCameraButtons
@@ -106,10 +109,12 @@ export default function SignInScreen() {
                       formData={formData}
                       availableOffices={availableOffices}
                       onVisitorNamePress={() => setVisitorModalVisible(true)}
-                      onMobileNumberChange={(value) => handleInputChange('mobileNumber', value)}
+                      onMobileNumberChange={value => handleInputChange('mobileNumber', value)}
                       onOfficePress={() => setOfficeModalVisible(true)}
                       onServicePress={() => setServiceModalVisible(true)}
-                      onOtherReasonChange={(value) => setFormData(prev => ({ ...prev, otherReason: value }))}
+                      onOtherReasonChange={value =>
+                        setFormData(prev => ({ ...prev, otherReason: value }))
+                      }
                     />
                   </View>
                 </ScrollView>
@@ -130,7 +135,6 @@ export default function SignInScreen() {
               onBack={handleBack}
               onSignIn={handleSignIn}
             />
-
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -140,7 +144,7 @@ export default function SignInScreen() {
         visible={visitorModalVisible}
         visitorName={formData.visitorName}
         filteredVisitors={filteredVisitors}
-        onVisitorNameChange={(value) => handleInputChange('visitorName', value)}
+        onVisitorNameChange={value => handleInputChange('visitorName', value)}
         onSelectVisitor={handleSelectVisitor}
         onClose={() => setVisitorModalVisible(false)}
       />
@@ -148,7 +152,7 @@ export default function SignInScreen() {
       <SignInOfficeModal
         visible={officeModalVisible}
         availableOffices={availableOffices}
-        onSelectOffice={(officeId) => setFormData(prev => ({ ...prev, officeToVisitId: officeId }))}
+        onSelectOffice={officeId => setFormData(prev => ({ ...prev, officeToVisitId: officeId }))}
         onClose={() => setOfficeModalVisible(false)}
       />
 

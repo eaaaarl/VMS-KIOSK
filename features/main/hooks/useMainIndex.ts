@@ -1,7 +1,7 @@
-import { useVisitorsReturnedModal } from "@/features/visitors/hooks/useVisitorsReturned";
-import { useAppSelector } from "@/lib/redux/hook";
-import { useRouter } from "expo-router";
-import { useWindowDimensions } from "react-native";
+import { useVisitorsReturnedModal } from '@/features/visitors/hooks/useVisitorsReturned';
+import { useAppSelector } from '@/lib/redux/hook';
+import { useRouter } from 'expo-router';
+import { useWindowDimensions } from 'react-native';
 
 export interface UseMainIndexReturn {
   router: ReturnType<typeof useRouter>;
@@ -20,8 +20,8 @@ export const useMainIndex = (): UseMainIndexReturn => {
   const router = useRouter();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
-  const { kioskSettingId } = useAppSelector((state) => state.kiosk);
-  
+  const { kioskSettingId } = useAppSelector(state => state.kiosk);
+
   const {
     isInformationModalOpen,
     setIsInformationModalOpen,
@@ -53,4 +53,4 @@ export const useMainIndex = (): UseMainIndexReturn => {
     handleSignOutPress,
     handleSettingsPress,
   };
-}; 
+};

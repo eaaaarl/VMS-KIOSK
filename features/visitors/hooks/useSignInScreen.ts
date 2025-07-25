@@ -134,6 +134,8 @@ export const useSignInScreen = () => {
   };
 
   const handleBack = () => {
+    dispatch(setFaceImageId({ faceImageId: '' }));
+    dispatch(setCardImageId({ cardImageId: '' }));
     router.push('/(visitor)/VisitorRegistrationScreen');
   };
 

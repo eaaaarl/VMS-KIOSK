@@ -25,4 +25,3 @@ export { useSignInSuccess } from './hooks/useSignInSuccess';
 export type { PrintStatus } from './hooks/useSignInSuccess';
 export { useSignOutSuccess } from './hooks/useSignOutSuccess';
 export { useVisitorRegistrationScreen } from './hooks/useVisitorRegistrationScreen';
-

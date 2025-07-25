@@ -1,5 +1,5 @@
-import { View } from "react-native";
-import { UIActivityIndicator } from "react-native-indicators";
+import { View } from 'react-native';
+import { UIActivityIndicator } from 'react-native-indicators';
 
 export interface LoadingOverlayProps {
   isLoading: boolean;
@@ -36,4 +36,4 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ isLoading }) => 
       </View>
     </View>
   );
-}; 
+};

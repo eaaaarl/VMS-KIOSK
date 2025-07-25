@@ -1,9 +1,9 @@
-import VisitorInformationModal from "@/features/kiosk/components/VisitorInformation";
-import { SafeAreaView, View } from "react-native";
-import { ActionButtonsContainer } from "./ActionButtonsContainer";
-import { LoadingOverlay } from "./LoadingOverlay";
-import { MainHeader } from "./MainHeader";
-import { SettingsButton } from "./SettingsButton";
+import VisitorInformationModal from '@/features/kiosk/components/VisitorInformation';
+import { SafeAreaView, View } from 'react-native';
+import { ActionButtonsContainer } from './ActionButtonsContainer';
+import { LoadingOverlay } from './LoadingOverlay';
+import { MainHeader } from './MainHeader';
+import { SettingsButton } from './SettingsButton';
 
 export interface MainIndexUIProps {
   isLandscape: boolean;
@@ -15,6 +15,7 @@ export interface MainIndexUIProps {
   onSettingsPress: () => void;
   onCloseModal: () => void;
   onConfirmModal: () => Promise<void>;
+  helpVideoUrl?: string;
 }
 
 export const MainIndexUI: React.FC<MainIndexUIProps> = ({
@@ -27,6 +28,7 @@ export const MainIndexUI: React.FC<MainIndexUIProps> = ({
   onSettingsPress,
   onCloseModal,
   onConfirmModal,
+  helpVideoUrl,
 }) => {
   return (
     <SafeAreaView className="flex-1 bg-gradient-to-br from-blue-400 to-blue-600">
@@ -52,4 +54,4 @@ export const MainIndexUI: React.FC<MainIndexUIProps> = ({
       <LoadingOverlay isLoading={isSigningOutAllVisitors} />
     </SafeAreaView>
   );
-}; 
+};

@@ -29,26 +29,32 @@ export const SignInStatusSidebar: React.FC<SignInStatusSidebarProps> = ({
   onSignIn,
 }) => {
   return (
-    <View className="w-80 flex-col justify-between py-6 px-6 bg-gray-50 border-l border-gray-200">
+    <View className="w-80 flex-col justify-between border-l border-gray-200 bg-gray-50 px-6 py-6">
       <View className="gap-4">
         {/* Status indicators */}
-        <View className="p-4 bg-gray-50 rounded-lg">
-          <Text className="text-sm font-medium text-gray-600 mb-3">Status</Text>
+        <View className="rounded-lg bg-gray-50 p-4">
+          <Text className="mb-3 text-sm font-medium text-gray-600">Status</Text>
           <View className="gap-2">
             <View className="flex-row items-center gap-2">
-              <View className={`w-3 h-3 rounded-full ${enabledRequiredId ? (cardImageId ? 'bg-green-500' : 'bg-red-400') : 'bg-gray-400'}`} />
+              <View
+                className={`h-3 w-3 rounded-full ${enabledRequiredId ? (cardImageId ? 'bg-green-500' : 'bg-red-400') : cardImageId ? 'bg-green-500' : 'bg-gray-400'}`}
+              />
               <Text className="txt-sm text-gray-700">
                 ID Snapshot {enabledRequiredId && <Text className="text-red-500">*</Text>}
               </Text>
             </View>
             <View className="flex-row items-center gap-2">
-              <View className={`w-3 h-3 rounded-full ${enabledRequiredFace ? (faceImageId ? 'bg-green-500' : 'bg-red-400') : 'bg-gray-400'}`} />
+              <View
+                className={`h-3 w-3 rounded-full ${enabledRequiredFace ? (faceImageId ? 'bg-green-500' : 'bg-red-400') : faceImageId ? 'bg-green-500' : 'bg-gray-400'}`}
+              />
               <Text className="text-sm text-gray-700">
                 Photo Snapshot {enabledRequiredFace && <Text className="text-red-500">*</Text>}
               </Text>
             </View>
             <View className="flex-row items-center gap-2">
-              <View className={`w-3 h-3 rounded-full ${isFormValid ? 'bg-green-500' : 'bg-gray-400'}`} />
+              <View
+                className={`h-3 w-3 rounded-full ${isFormValid ? 'bg-green-500' : 'bg-gray-400'}`}
+              />
               <Text className="text-sm text-gray-700">Form Complete</Text>
             </View>
           </View>
@@ -56,13 +62,9 @@ export const SignInStatusSidebar: React.FC<SignInStatusSidebarProps> = ({
 
         {/* Generated ID */}
         {nextAvailableId && (
-          <View className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <Text className="text-sm font-medium text-blue-800 mb-1">
-              Generated ID
-            </Text>
-            <Text className="text-lg font-bold text-blue-900">
-              {id}
-            </Text>
+          <View className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+            <Text className="mb-1 text-sm font-medium text-blue-800">Generated ID</Text>
+            <Text className="text-lg font-bold text-blue-900">{id}</Text>
           </View>
         )}
 
@@ -70,21 +72,18 @@ export const SignInStatusSidebar: React.FC<SignInStatusSidebarProps> = ({
         <View className="gap-3">
           <TouchableOpacity
             onPress={onBack}
-            className="bg-gray-100 rounded-lg py-4 border border-gray-200"
+            className="rounded-lg border border-gray-200 bg-gray-100 py-4"
           >
-            <Text className="text-gray-700 text-lg font-medium text-center">
-              Back
-            </Text>
+            <Text className="text-center text-lg font-medium text-gray-700">Back</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={onSignIn}
             disabled={!isFormValid || isSignInLoading || isUploadingImages}
-            className={`rounded-lg py-4 ${isFormValid && !isSignInLoading && !isUploadingImages
-              ? 'bg-blue-500'
-              : 'bg-blue-300'
-              }`}
+            className={`rounded-lg py-4 ${
+              isFormValid && !isSignInLoading && !isUploadingImages ? 'bg-blue-500' : 'bg-blue-300'
+            }`}
           >
-            <Text className="text-white text-lg font-semibold text-center">
+            <Text className="text-center text-lg font-semibold text-white">
               {isSignInLoading || isUploadingImages ? 'Signing In...' : 'Sign In'}
             </Text>
           </TouchableOpacity>
@@ -92,4 +91,4 @@ export const SignInStatusSidebar: React.FC<SignInStatusSidebarProps> = ({
       </View>
     </View>
   );
-}; 
+};

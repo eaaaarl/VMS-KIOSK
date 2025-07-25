@@ -1,6 +1,6 @@
-import { router, Stack } from 'expo-router'
-import React from 'react'
-import { Text, TouchableOpacity } from 'react-native'
+import { router, Stack } from 'expo-router';
+import React from 'react';
+import { Text, TouchableOpacity } from 'react-native';
 
 export default function LayoutDeveloper() {
   return (
@@ -31,11 +31,7 @@ export default function LayoutDeveloper() {
               }}
               activeOpacity={0.7}
             >
-              <Text
-                style={{ color: '#2563eb', fontWeight: '500', fontSize: 16 }}
-              >
-                Done
-              </Text>
+              <Text style={{ color: '#2563eb', fontWeight: '500', fontSize: 16 }}>Done</Text>
             </TouchableOpacity>
           ),
           animationTypeForReplace: 'push',
@@ -68,15 +64,11 @@ export default function LayoutDeveloper() {
               }}
               activeOpacity={0.7}
             >
-              <Text
-                style={{ color: '#2563eb', fontWeight: '500', fontSize: 16 }}
-              >
-                Done
-              </Text>
+              <Text style={{ color: '#2563eb', fontWeight: '500', fontSize: 16 }}>Done</Text>
             </TouchableOpacity>
           ),
         }}
       />
     </Stack>
-  )
+  );
 }

@@ -1,6 +1,7 @@
-import { MainIndexUI, useMainIndex } from "@/features/main";
-import { useAppInitialization } from "@/features/main/hooks/useAppInitialization";
-import { Image, View } from "react-native";
+import { MainIndexUI, useMainIndex } from '@/features/main';
+import { useAppInitialization } from '@/features/main/hooks/useAppInitialization';
+import { Image, View } from 'react-native';
+
 
 export default function Index() {
   const { isInitialized } = useAppInitialization();
@@ -20,8 +21,11 @@ export default function Index() {
   // Show loading state while app is initializing
   if (!isInitialized) {
     return (
-      <View className="flex-1 bg-white items-center justify-center">
-        <Image source={require('@/assets/icons/adaptive-icon-box.png')} style={{ width: 200, height: 200 }} />
+      <View className="flex-1 items-center justify-center bg-white">
+        <Image
+          source={require('@/assets/icons/adaptive-icon-box.png')}
+          style={{ width: 200, height: 200 }}
+        />
       </View>
     );
   }

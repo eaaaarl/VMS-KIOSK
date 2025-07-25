@@ -20,27 +20,29 @@ export const SignInOfficeModal: React.FC<SignInOfficeModalProps> = ({
   onClose,
 }) => {
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent={true}
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
       <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.3)' }}>
-        <View style={{ backgroundColor: 'white', borderTopLeftRadius: 16, borderTopRightRadius: 16, maxHeight: '70%' }}>
+        <View
+          style={{
+            backgroundColor: 'white',
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
+            maxHeight: '70%',
+          }}
+        >
           <View style={{ padding: 16 }}>
             <FlatList
               data={availableOffices}
-              keyExtractor={(item) => item.id.toString()}
+              keyExtractor={item => item.id.toString()}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  className="px-4 py-3 border-b border-gray-100"
+                  className="border-b border-gray-100 px-4 py-3"
                   onPress={() => {
                     onSelectOffice(item.id);
                     onClose();
                   }}
                 >
-                  <Text className="text-gray-800 text-base">{item.name}</Text>
+                  <Text className="text-base text-gray-800">{item.name}</Text>
                 </TouchableOpacity>
               )}
               scrollEnabled={true}
@@ -49,11 +51,11 @@ export const SignInOfficeModal: React.FC<SignInOfficeModalProps> = ({
               style={{ maxHeight: 300 }}
             />
             <TouchableOpacity onPress={onClose} style={{ marginTop: 12, alignItems: 'center' }}>
-              <Text className="text-blue-500 font-semibold text-lg">Close</Text>
+              <Text className="text-lg font-semibold text-blue-500">Close</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
     </Modal>
   );
-}; 
+};

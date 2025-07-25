@@ -15,7 +15,6 @@ export function useVisitorRegistrationScreen() {
     if (!isFormValid) return;
 
     try {
-      
       const payload: ICreateVisitorPayload = {
         firstname: formData.firstName.toUpperCase(),
         lastname: formData.lastName.toUpperCase(),

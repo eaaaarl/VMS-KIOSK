@@ -30,7 +30,7 @@ export const FaceCameraControls: React.FC<FaceCameraControlsProps> = ({
       {countdown !== null ? (
         <TouchableOpacity
           onPress={onCancelCountdown}
-          className={`rounded-full ${isTablet ? 'py-5 px-12' : 'py-4 px-8'} bg-red-500`}
+          className={`rounded-full ${isTablet ? 'px-12 py-5' : 'px-8 py-4'} bg-red-500`}
           style={{
             minWidth: isTablet ? 200 : 150,
             minHeight: isTablet ? 60 : 50,
@@ -47,7 +47,7 @@ export const FaceCameraControls: React.FC<FaceCameraControlsProps> = ({
           <TouchableOpacity
             onPress={onTakePicture}
             disabled={!cameraReady || isCapturing}
-            className={`rounded-full ${isTablet ? 'py-4 px-8' : 'py-3 px-6'} ${cameraReady && !isCapturing ? 'bg-yellow-400' : 'bg-gray-600'}`}
+            className={`rounded-full ${isTablet ? 'px-8 py-4' : 'px-6 py-3'} ${cameraReady && !isCapturing ? 'bg-yellow-400' : 'bg-gray-600'}`}
             style={{
               minWidth: isTablet ? 120 : 100,
               justifyContent: 'center',
@@ -63,7 +63,7 @@ export const FaceCameraControls: React.FC<FaceCameraControlsProps> = ({
           <TouchableOpacity
             onPress={onStartCountdown}
             disabled={!cameraReady || isCapturing}
-            className={`rounded-full ${isTablet ? 'py-4 px-8' : 'py-3 px-6'} ${cameraReady && !isCapturing ? 'bg-blue-500' : 'bg-gray-600'}`}
+            className={`rounded-full ${isTablet ? 'px-8 py-4' : 'px-6 py-3'} ${cameraReady && !isCapturing ? 'bg-blue-500' : 'bg-gray-600'}`}
             style={{
               minWidth: isTablet ? 120 : 100,
               justifyContent: 'center',
@@ -80,4 +80,4 @@ export const FaceCameraControls: React.FC<FaceCameraControlsProps> = ({
       )}
     </View>
   </View>
-); 
+);

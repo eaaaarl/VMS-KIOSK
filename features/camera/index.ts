@@ -5,4 +5,3 @@ export * from './hooks/useCamera';
 export * from './hooks/useIDCameraScreen';
 export * from './types/cameraTypes';
 export * from './utils/cameraUtils';
-

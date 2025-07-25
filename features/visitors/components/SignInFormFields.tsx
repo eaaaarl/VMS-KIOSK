@@ -31,18 +31,18 @@ export const SignInFormFields: React.FC<SignInFormFieldsProps> = ({
   onServicePress,
   onOtherReasonChange,
 }) => {
-  const selectedOffice = availableOffices.find((office) => office.id === formData.officeToVisitId);
+  const selectedOffice = availableOffices.find(office => office.id === formData.officeToVisitId);
 
   return (
     <View className="gap-6">
       {/* Visitor Name with Modal */}
       <View className="relative z-40">
-        <Text className="text-base font-semibold text-gray-700 mb-2">
+        <Text className="mb-2 text-base font-semibold text-gray-700">
           Visitor&apos;s Name <Text className="text-red-500">*</Text>
         </Text>
         <TouchableOpacity
           onPress={onVisitorNamePress}
-          className="bg-white border border-blue-300 rounded-lg px-4 py-4 text-lg"
+          className="rounded-lg border border-blue-300 bg-white px-4 py-4 text-lg"
         >
           <Text className={`text-lg ${formData.visitorName ? 'text-gray-900' : 'text-gray-400'}`}>
             {formData.visitorName || 'Search visitor'}
@@ -52,11 +52,9 @@ export const SignInFormFields: React.FC<SignInFormFieldsProps> = ({
 
       {/* Mobile Number */}
       <View>
-        <Text className="text-base font-semibold text-gray-700 mb-2">
-          Mobile Number
-        </Text>
+        <Text className="mb-2 text-base font-semibold text-gray-700">Mobile Number</Text>
         <TextInput
-          className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-4 text-lg"
+          className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-4 text-lg"
           placeholder="Mobile Number"
           placeholderTextColor="gray"
           value={formData.mobileNumber}
@@ -68,42 +66,46 @@ export const SignInFormFields: React.FC<SignInFormFieldsProps> = ({
 
       {/* Office to Visit with Modal */}
       <View className="relative z-30">
-        <Text className="text-base font-semibold text-gray-700 mb-2">
+        <Text className="mb-2 text-base font-semibold text-gray-700">
           Office to visit <Text className="text-red-500">*</Text>
         </Text>
         <TouchableOpacity
           onPress={onOfficePress}
-          className="bg-white border border-gray-200 rounded-lg px-4 py-4 flex-row justify-between items-center"
+          className="flex-row items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-4"
         >
-          <Text className={`text-lg ${formData.officeToVisitId ? 'text-gray-900' : 'text-gray-400'}`}>
+          <Text
+            className={`text-lg ${formData.officeToVisitId ? 'text-gray-900' : 'text-gray-400'}`}
+          >
             {formData.officeToVisitId ? selectedOffice?.name : 'Select office'}
           </Text>
-          <View className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-blue-500" />
+          <View className="h-0 w-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-blue-500" />
         </TouchableOpacity>
       </View>
 
       {/* Reason for Visit with Modal */}
       <View className="relative z-20">
-        <Text className="text-base font-semibold text-gray-700 mb-2">
+        <Text className="mb-2 text-base font-semibold text-gray-700">
           Reason for visit <Text className="text-red-500">*</Text>
         </Text>
         <TouchableOpacity
           onPress={onServicePress}
-          className="bg-white border border-gray-200 rounded-lg px-4 py-4 flex-row justify-between items-center"
+          className="flex-row items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-4"
         >
-          <Text className={`text-lg ${formData.reasonForVisit ? 'text-gray-900' : 'text-gray-400'}`}>
+          <Text
+            className={`text-lg ${formData.reasonForVisit ? 'text-gray-900' : 'text-gray-400'}`}
+          >
             {formData.reasonForVisit || 'Select reason'}
           </Text>
-          <View className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-blue-500" />
+          <View className="h-0 w-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-blue-500" />
         </TouchableOpacity>
 
         {formData.reasonForVisit === 'Other' && (
           <View className="mt-4">
-            <Text className="text-base font-semibold text-gray-700 mb-2">
+            <Text className="mb-2 text-base font-semibold text-gray-700">
               Please specify <Text className="text-red-500">*</Text>
             </Text>
             <TextInput
-              className="bg-white border border-gray-200 rounded-lg px-4 py-4 text-lg"
+              className="rounded-lg border border-gray-200 bg-white px-4 py-4 text-lg"
               placeholder="Please specify your reason"
               value={formData.otherReason ?? ''}
               multiline={true}
@@ -116,4 +118,4 @@ export const SignInFormFields: React.FC<SignInFormFieldsProps> = ({
       </View>
     </View>
   );
-}; 
+};

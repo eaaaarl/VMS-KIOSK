@@ -31,4 +31,4 @@ export const useFaceCameraScreen = () => {
     cancelCountdown,
     takePicture,
   };
-}; 
+};

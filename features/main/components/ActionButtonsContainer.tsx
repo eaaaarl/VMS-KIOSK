@@ -1,5 +1,6 @@
-import { View } from "react-native";
-import { ActionButton } from "./ActionButton";
+import { View } from 'react-native';
+import { BUTTON_CONFIGS } from '../constants/buttonConstants';
+import { ActionButton } from './ActionButton';
 
 export interface ActionButtonsContainerProps {
   isLandscape: boolean;
@@ -15,16 +16,12 @@ export const ActionButtonsContainer: React.FC<ActionButtonsContainerProps> = ({
   onSignOutPress,
 }) => {
   return (
-    <View className={`flex-row gap-6 w-full justify-center`}>
+    <View className={`w-full flex-row justify-center gap-6`}>
       {kioskSettingId === 3 ? (
         <></>
       ) : (
         <ActionButton
-          title="SIGN IN"
-          subtitle="Register and Sign In"
-          icon="👤"
-          iconBgColor="bg-blue-100"
-          buttonBgColor="bg-white/90"
+          {...BUTTON_CONFIGS.SIGN_IN}
           onPress={onSignInPress}
           isLandscape={isLandscape}
         />
@@ -34,15 +31,11 @@ export const ActionButtonsContainer: React.FC<ActionButtonsContainerProps> = ({
         <></>
       ) : (
         <ActionButton
-          title="SIGN OUT"
-          subtitle="Sign Out Properly"
-          icon="🚪"
-          iconBgColor="bg-green-100"
-          buttonBgColor="bg-white/90"
+          {...BUTTON_CONFIGS.SIGN_OUT}
           onPress={onSignOutPress}
           isLandscape={isLandscape}
         />
       )}
     </View>
   );
-}; 
+};

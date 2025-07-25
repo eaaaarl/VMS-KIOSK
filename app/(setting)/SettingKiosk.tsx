@@ -1,15 +1,10 @@
-import { KioskSettingUI } from '@/features/kiosk/components/KioskSettingUI'
-import { useKioskSettingScreen } from '@/features/kiosk/hooks/useKioskSettingScreen'
-import React from 'react'
+import { KioskSettingUI } from '@/features/kiosk/components/KioskSettingUI';
+import { useKioskSettingScreen } from '@/features/kiosk/hooks/useKioskSettingScreen';
+import React from 'react';
 
 export default function SettingKiosk() {
-  const {
-    kioskOptions,
-    selectedKioskId,
-    handleClose,
-    handleSave,
-    handleOptionSelect,
-  } = useKioskSettingScreen()
+  const { kioskOptions, selectedKioskId, handleClose, handleSave, handleOptionSelect } =
+    useKioskSettingScreen();
 
   return (
     <KioskSettingUI
@@ -19,5 +14,5 @@ export default function SettingKiosk() {
       onSave={handleSave}
       onOptionSelect={handleOptionSelect}
     />
-  )
+  );
 }

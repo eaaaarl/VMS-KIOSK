@@ -12,4 +12,4 @@ export interface SelectScreenHookReturn {
   handleSetKioskFunction: () => void;
   handlePrinterManagement: () => void;
   handleIpPortConfiguration: () => void;
-} 
+}
