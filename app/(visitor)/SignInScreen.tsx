@@ -1,4 +1,3 @@
-import { LoadingOverlay } from '@/features/main/components/LoadingOverlay';
 import {
   SignInCameraButtons,
   SignInFormFields,
@@ -163,7 +162,6 @@ export default function SignInScreen() {
         onClose={() => setServiceModalVisible(false)}
       />
 
-      <LoadingOverlay isLoading={isSignInLoading} />
     </View>
   );
 }

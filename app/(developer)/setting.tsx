@@ -1,4 +1,3 @@
-import { LoadingOverlay } from '@/features/main/components/LoadingOverlay';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import ApiConfigForm from '../../features/developer/components/ApiConfigForm';
@@ -14,8 +13,7 @@ export default function SettingDeveloperScreen() {
     isLoading,
     setIpAddress,
     setPort,
-    handleSave,
-    mockLoading,
+    handleSave
   } = useDeveloperSetting();
 
   return (
@@ -39,7 +37,6 @@ export default function SettingDeveloperScreen() {
           <View className="h-6" />
         </ScrollView>
       </View>
-      <LoadingOverlay isLoading={mockLoading} />
     </>
   );
 }

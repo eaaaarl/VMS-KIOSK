@@ -1,7 +1,6 @@
 import VisitorInformationModal from '@/features/kiosk/components/VisitorInformation';
 import { SafeAreaView, View } from 'react-native';
 import { ActionButtonsContainer } from './ActionButtonsContainer';
-import { LoadingOverlay } from './LoadingOverlay';
 import { MainHeader } from './MainHeader';
 import { SettingsButton } from './SettingsButton';
 
@@ -51,7 +50,6 @@ export const MainIndexUI: React.FC<MainIndexUIProps> = ({
         onConfirm={onConfirmModal}
       />
 
-      <LoadingOverlay isLoading={isSigningOutAllVisitors} />
     </SafeAreaView>
   );
 };

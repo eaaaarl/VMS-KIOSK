@@ -214,21 +214,32 @@ export default function OfficeRating() {
           </View>
 
           {/* Rating Card */}
-          <View
-            className="mb-8 rounded-2xl p-8 shadow-lg"
-            style={{ backgroundColor: currentQ ? getRatingTypeColor(currentQ.type) : '#3B82F6' }}
-          >
-            <View className="flex-row items-center justify-between">
-              {/* Left Side - Office Info */}
-              <View className="flex-1">
-                <Text className="mb-2 text-3xl font-bold text-white">{currentQ?.name}</Text>
-                <Text className="text-xl text-white opacity-80">Question {currentQ?.type}</Text>
-              </View>
+          {currentQ?.type === 0 ? (
+            <View
+              className="mb-8 rounded-2xl p-8 shadow-lg"
+              style={{ backgroundColor: currentQ ? getRatingTypeColor(currentQ.type) : '#3B82F6' }}
+            >
+              <View className="flex-row items-center justify-between">
+                {/* Left Side - Office Info */}
+                <View className="flex-1">
+                  <Text className="mb-2 text-3xl font-bold text-white">{currentQ?.name}</Text>
+                  <Text className="text-xl text-white opacity-80">{currentQ?.type === 0 ? 'Office' : ''}</Text>
+                </View>
 
-              {/* Right Side - Star Rating */}
-              <View className="flex-row items-center">{renderStars()}</View>
+                {/* Right Side - Star Rating */}
+                <View className="flex-row items-center">{renderStars()}</View>
+              </View>
             </View>
-          </View>
+          ) : (
+            <View className="mb-8 rounded-2xl bg-white p-8 shadow-lg">
+              <View className="items-center">
+                <Text className="mb-4 text-2xl font-bold text-gray-800">{currentQ?.name}</Text>
+                <View className="flex-row items-center justify-center">
+                  {renderStars()}
+                </View>
+              </View>
+            </View>
+          )}
 
           {/* Comment Section */}
           <View className="mb-8 flex-1">

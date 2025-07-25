@@ -32,7 +32,7 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ isLoading }) => 
           minHeight: 50,
         }}
       >
-        <UIActivityIndicator key="loading-indicator" color="#fff" size={30} />
+        <UIActivityIndicator color="#fff" size={30} />
       </View>
     </View>
   );
