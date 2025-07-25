@@ -1,7 +1,7 @@
 export default {
   expo: {
     name: 'VMS-KIOSK',
-    slug: 'VMS-KIOSK',
+    slug: 'vms-kiosk',
     version: '1.0.2',
     orientation: 'portrait',
     icon: './assets/images/icon.png',
@@ -80,7 +80,7 @@ export default {
     },
     extra: {
       eas: {
-        projectId: '4289b1c8-97a0-4118-92fd-6bdf7ce065c1',
+        projectId: 'fead2e95-8b65-4bc2-be42-97f9c66dc08f',
       },
     },
   },

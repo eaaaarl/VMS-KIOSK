@@ -50,12 +50,12 @@ export const HelpButton: React.FC<HelpButtonProps> = ({
     <View className={`absolute ${getPositionClasses()} ${className}`}>
       <View className="flex-col items-center">
         {showLabel && (
-          <View className={`mb-1 absolute -top-8 w-20`}>
+          <View className={`mb-1 absolute -top-8 w-24`}>
             <View
               className={`bg-white px-2 py-1 rounded-md shadow-sm border border-gray-300 ${labelBgHelpColor}`}
               style={{ elevation: 2 }}
             >
-              <Text className={`${labelTextBgColor} font-medium text-xs`}>Need Help?</Text>
+              <Text className={`${labelTextBgColor} font-medium text-xs text-center`}>Need Help?</Text>
             </View>
           </View>
         )}

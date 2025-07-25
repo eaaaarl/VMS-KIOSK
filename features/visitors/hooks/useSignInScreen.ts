@@ -10,13 +10,9 @@ import {
   useUploadVisitorImagesMutation,
 } from '@/features/visitors/api/visitorApi';
 import { IFormData } from '@/features/visitors/types/visitorTypes';
-import {
-  formattedDate,
-  formattedDateTime,
-  formattedDateTimeWithDashes,
-} from '@/features/visitors/utils/FormattedDate';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hook';
 import { setCardImageId, setFaceImageId } from '@/lib/redux/state/visitorSlice';
+import { format } from 'date-fns';
 import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -45,9 +41,9 @@ export const useSignInScreen = () => {
   useEffect(() => {
     getOffices();
     getServices();
-    getVisitorsReturned({ date: formattedDate(new Date()) });
-    getVisitorsTodays({ date: formattedDate(new Date()) });
-    getAllAvailableVisitors({ dateNow: formattedDate(new Date()) });
+    getVisitorsReturned({ date: format(new Date(), 'yyyy-MM-dd') });
+    getVisitorsTodays({ date: format(new Date(), 'yyyy-MM-dd') });
+    getAllAvailableVisitors({ dateNow: format(new Date(), 'yyyy-MM-dd') });
   }, [getOffices, getServices, getVisitorsReturned, getVisitorsTodays, getAllAvailableVisitors]);
 
   const {
@@ -144,13 +140,13 @@ export const useSignInScreen = () => {
 
   const handleSignIn = async () => {
     try {
-      const signInTimestamp = new Date();
+      const timeStamp = new Date();
       const payload: ICreateVisitorLogPayload = {
         log: {
           id: idList[0],
           strId: id,
-          logIn: formattedDateTime(signInTimestamp),
-          logInDate: formattedDate(signInTimestamp),
+          logIn: format(timeStamp, 'yyyy-MM-dd HH:mm:ss'),
+          logInDate: format(timeStamp, 'yyyy-MM-dd'),
           visitorId: formData.visitorId,
           officeId: formData.officeToVisitId,
           serviceId: formData.serviceId === null ? 0 : formData.serviceId,
@@ -158,8 +154,6 @@ export const useSignInScreen = () => {
           specService: formData.serviceId === null ? (formData.otherReason ?? '') : '',
         },
       };
-
-      console.log('payload log', payload.log.logIn);
 
       await signInVisitorLog(payload).unwrap();
 
@@ -173,10 +167,8 @@ export const useSignInScreen = () => {
             throw new Error(`${imageType} image file not found`);
           }
 
-          const fileName = `${imageType}_${formattedDateTimeWithDashes(signInTimestamp)}.png`;
-
-          console.log('fileInfo', fileName);
-
+          const fileName = `${imageType}_${format(timeStamp, 'yyyy-MM-dd_HH-mm-ss')}.png`;
+          console.log('fileName', fileName);
           const formData = new FormData();
 
           formData.append('photo', {
@@ -197,7 +189,6 @@ export const useSignInScreen = () => {
       if (faceImageId) {
         try {
           const faceFormData = await createImageFormData(faceImageId, 'face');
-          console.log('Uploading face image...');
           imageUploadPromises.push(uploadVisitorImages(faceFormData).unwrap());
         } catch (error) {
           console.error('Error preparing face image:', error);
@@ -208,7 +199,6 @@ export const useSignInScreen = () => {
       if (cardImageId) {
         try {
           const cardFormData = await createImageFormData(cardImageId, 'id');
-          console.log('Uploading ID image...');
           imageUploadPromises.push(uploadVisitorImages(cardFormData).unwrap());
         } catch (error) {
           console.error('Error preparing ID image:', error);
