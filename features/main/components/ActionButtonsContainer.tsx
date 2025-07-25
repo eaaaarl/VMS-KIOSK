@@ -1,4 +1,5 @@
 import { View } from 'react-native';
+import { BUTTON_CONFIGS } from '../constants/buttonConstants';
 import { ActionButton } from './ActionButton';
 
 export interface ActionButtonsContainerProps {
@@ -20,17 +21,9 @@ export const ActionButtonsContainer: React.FC<ActionButtonsContainerProps> = ({
         <></>
       ) : (
         <ActionButton
-          title="SIGN IN"
-          subtitle="Register and Sign In"
-          icon="👤"
-          iconBgColor="bg-blue-100"
-          buttonBgColor="bg-white/90"
-          buttonBgHelpColor="bg-blue-500"
-          labelBgHelpColor="bg-blue-500"
-          labelTextBgHelpColor="text-blue-500"
+          {...BUTTON_CONFIGS.SIGN_IN}
           onPress={onSignInPress}
           isLandscape={isLandscape}
-          helpVideoUrl="https://www.youtube.com/watch?v=dTrBa2hqWoU" // Replace with actual help video URL
         />
       )}
 
@@ -38,17 +31,9 @@ export const ActionButtonsContainer: React.FC<ActionButtonsContainerProps> = ({
         <></>
       ) : (
         <ActionButton
-          title="SIGN OUT"
-          subtitle="Sign Out Properly"
-          icon="🚪"
-          iconBgColor="bg-green-100"
-          buttonBgColor="bg-white/90"
-          buttonBgHelpColor="bg-green-500"
-          labelBgHelpColor="bg-green-500"
-          labelTextBgHelpColor="text-green-500"
+          {...BUTTON_CONFIGS.SIGN_OUT}
           onPress={onSignOutPress}
           isLandscape={isLandscape}
-          helpVideoUrl="https://www.youtube.com/watch?v=cqVaD4RFEVk" // Replace with actual help video URL
         />
       )}
     </View>

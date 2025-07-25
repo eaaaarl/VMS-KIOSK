@@ -1,10 +1,17 @@
+import type FontAwesome from '@expo/vector-icons/FontAwesome';
+import type { ComponentProps } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { HelpButton } from './HelpButton';
 
 export interface ActionButtonProps {
   title: string;
   subtitle: string;
-  icon: string;
+  iconComponent: typeof FontAwesome;
+  iconProps: {
+    name: ComponentProps<typeof FontAwesome>['name'];
+    size: number;
+    color: string;
+  };
   iconBgColor: string;
   buttonBgColor: string;
   onPress: () => void;
@@ -18,7 +25,8 @@ export interface ActionButtonProps {
 export const ActionButton: React.FC<ActionButtonProps> = ({
   title,
   subtitle,
-  icon,
+  iconComponent: IconComponent,
+  iconProps,
   iconBgColor,
   buttonBgColor,
   onPress,
@@ -39,9 +47,9 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
           className={`${isLandscape ? 'h-16 w-16' : 'h-20 w-20'} ${iconBgColor} items-center justify-center rounded-xl ${isLandscape ? 'mb-3' : 'mb-6'}`}
         >
           <View
-            className={`h-8 w-8 ${iconBgColor.replace('100', '500')} items-center justify-center rounded`}
+            className={`h-12 w-12 items-center justify-center rounded-lg`}
           >
-            <Text className="text-lg text-white">{icon}</Text>
+            <IconComponent {...iconProps} />
           </View>
         </View>
 
