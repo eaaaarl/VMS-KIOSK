@@ -12,10 +12,11 @@ import {
 import { IFormData } from '@/features/visitors/types/visitorTypes';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hook';
 import { setCardImageId, setFaceImageId } from '@/lib/redux/state/visitorSlice';
+import { useFocusEffect } from '@react-navigation/native';
 import { format } from 'date-fns';
 import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Platform } from 'react-native';
 
 export const useSignInScreen = () => {
@@ -38,13 +39,22 @@ export const useSignInScreen = () => {
   const [getVisitorsTodays, { data: visitorsTodays }] = useLazyGetVisitorsTodaysQuery();
   const [getAllAvailableVisitors, { data: visitors }] = useLazyGetAllAvailableVisitorsQuery();
 
-  useEffect(() => {
+  // Fetch fresh data whenever screen comes into focus
+  const fetchAllData = useCallback(() => {
+    const today = format(new Date(), 'yyyy-MM-dd');
     getOffices();
     getServices();
-    getVisitorsReturned({ date: format(new Date(), 'yyyy-MM-dd') });
-    getVisitorsTodays({ date: format(new Date(), 'yyyy-MM-dd') });
-    getAllAvailableVisitors({ dateNow: format(new Date(), 'yyyy-MM-dd') });
+    getVisitorsReturned({ date: today });
+    getVisitorsTodays({ date: today });
+    getAllAvailableVisitors({ dateNow: today });
   }, [getOffices, getServices, getVisitorsReturned, getVisitorsTodays, getAllAvailableVisitors]);
+
+  // Use focus effect to refresh data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllData();
+    }, [fetchAllData])
+  );
 
   const {
     getPrefixId,
