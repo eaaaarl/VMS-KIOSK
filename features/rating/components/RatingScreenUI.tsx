@@ -24,4 +24,4 @@ export function RatingScreenUI({
       onDepartmentRating={onDepartmentRating}
     />
   );
-} 
+}

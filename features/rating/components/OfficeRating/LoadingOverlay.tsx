@@ -8,4 +8,4 @@ export const LoadingOverlay: React.FC = () => {
       <Text className="text-xl text-gray-600">Loading questions...</Text>
     </SafeAreaView>
   );
-}; 
+};

@@ -1,8 +1,8 @@
 import { useConfig } from '@/features/config/hooks/useConfig';
 import {
-    RatingSubmitPayload,
-    useLazyGetRatingQuestionQuery,
-    useSubmitRatingMutation,
+  RatingSubmitPayload,
+  useLazyGetRatingQuestionQuery,
+  useSubmitRatingMutation,
 } from '@/features/rating/api/ratingApi';
 import { format, parse } from 'date-fns';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -130,16 +130,16 @@ export const useOfficeRatingScreen = () => {
     answers,
     enabledRequireComment,
     enabledRatingType,
-    
+
     // Handlers
     handleStarPress,
     handleCommentChange,
     handleBack,
     handleNext,
     handleQuestionSelect,
-    
+
     // Utilities
     getProgressWidth,
     getProgressPercentage,
   };
-}; 
+};

@@ -110,4 +110,4 @@ export const OfficeRatingUI: React.FC<OfficeRatingUIProps> = ({
       </TouchableWithoutFeedback>
     </SafeAreaView>
   );
-}; 
+};

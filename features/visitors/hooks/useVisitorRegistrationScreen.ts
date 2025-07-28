@@ -9,7 +9,6 @@ export function useVisitorRegistrationScreen() {
   const { formData, handleInputChange, handleBlur, errors, isFormValid } =
     useVisitorRegistrationForm();
 
-
   const refreshDataForAvailableID = () => {
     visitorApi.util.invalidateTags(['AllAvailableVisitors']);
     visitorApi.util.invalidateTags(['VisitorsReturned']);

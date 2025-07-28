@@ -49,9 +49,11 @@ export const RatingCard: React.FC<RatingCardProps> = ({
             <MaterialCommunityIcons
               name={iconMap[emojiRating as keyof typeof iconMap] || 'emoticon-neutral'}
               size={48}
-              color={emojiRating <= currentAnswer.rating
-                ? iconColors[emojiRating as keyof typeof iconColors]
-                : `${iconColors[emojiRating as keyof typeof iconColors]}30`}
+              color={
+                emojiRating <= currentAnswer.rating
+                  ? iconColors[emojiRating as keyof typeof iconColors]
+                  : `${iconColors[emojiRating as keyof typeof iconColors]}30`
+              }
             />
           </TouchableOpacity>
         );
@@ -95,4 +97,4 @@ export const RatingCard: React.FC<RatingCardProps> = ({
       </View>
     </View>
   );
-}; 
+};

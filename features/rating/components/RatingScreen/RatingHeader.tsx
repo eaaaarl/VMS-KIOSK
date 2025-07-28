@@ -22,4 +22,4 @@ export function RatingHeader({ name, messageFeedback, message }: RatingHeaderPro
       </View>
     </View>
   );
-} 
+}

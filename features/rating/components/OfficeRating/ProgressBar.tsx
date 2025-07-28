@@ -23,11 +23,8 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
         <Text className="text-base text-gray-500">{progressPercentage}% Complete</Text>
       </View>
       <View className="h-2 w-full rounded-full bg-gray-200">
-        <View
-          className="h-full rounded-full bg-blue-500"
-          style={{ width: progressWidth as any }}
-        />
+        <View className="h-full rounded-full bg-blue-500" style={{ width: progressWidth as any }} />
       </View>
     </View>
   );
-}; 
+};

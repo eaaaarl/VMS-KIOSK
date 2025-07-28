@@ -21,20 +21,13 @@ export function RatingScreenContainer({
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <View className="flex-1 px-8 py-12">
-        <RatingHeader
-          name={name}
-          messageFeedback={messageFeedback}
-          message={message}
-        />
-        
-        <RatingButtons
-          onOfficeRating={onOfficeRating}
-          onDepartmentRating={onDepartmentRating}
-        />
+        <RatingHeader name={name} messageFeedback={messageFeedback} message={message} />
+
+        <RatingButtons onOfficeRating={onOfficeRating} onDepartmentRating={onDepartmentRating} />
 
         {/* Bottom Spacer */}
         <View className="h-16" />
       </View>
     </SafeAreaView>
   );
-} 
+}

@@ -37,33 +37,28 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
   labelTextBgHelpColor,
 }) => {
   return (
-    <View className="relative min-w-[280px] min-h-[150px]">
+    <View className="relative min-h-[150px] min-w-[280px]">
       <TouchableOpacity
-        className={`flex-1 border border-gray-300 py-5 ${buttonBgColor} min-w-[280px] max-w-[320px] items-center rounded-2xl transition-transform active:scale-95 active:bg-white/80 overflow-hidden`}
+        className={`flex-1 border border-gray-300 py-5 ${buttonBgColor} min-w-[280px] max-w-[320px] items-center overflow-hidden rounded-2xl transition-transform active:scale-95 active:bg-white/80`}
         onPress={onPress}
         activeOpacity={0.8}
       >
         <View
           className={`${isLandscape ? 'h-16 w-16' : 'h-20 w-20'} ${iconBgColor} items-center justify-center rounded-xl ${isLandscape ? 'mb-3' : 'mb-6'}`}
         >
-          <View
-            className={`h-12 w-12 items-center justify-center rounded-lg`}
-          >
+          <View className={`h-12 w-12 items-center justify-center rounded-lg`}>
             <IconComponent {...iconProps} />
           </View>
         </View>
 
         <Text
-          className={`text-gray-800 ${isLandscape ? 'text-2xl' : 'text-2xl'} mb-2 font-bold tracking-wide px-4`}
+          className={`text-gray-800 ${isLandscape ? 'text-2xl' : 'text-2xl'} mb-2 px-4 font-bold tracking-wide`}
           numberOfLines={1}
         >
           {title}
         </Text>
 
-        <Text
-          className="text-center text-base text-gray-600 px-4"
-          numberOfLines={2}
-        >
+        <Text className="px-4 text-center text-base text-gray-600" numberOfLines={2}>
           {subtitle}
         </Text>
       </TouchableOpacity>
