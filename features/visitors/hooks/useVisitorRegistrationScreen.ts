@@ -1,5 +1,5 @@
 import { ICreateVisitorPayload } from '@/features/visitors/api/interface';
-import { useCreateVisitorMutation } from '@/features/visitors/api/visitorApi';
+import { useCreateVisitorMutation, visitorApi } from '@/features/visitors/api/visitorApi';
 import { useVisitorRegistrationForm } from '@/features/visitors/hooks/useVisitorRegistrationForm';
 import { router } from 'expo-router';
 import { useMemo } from 'react';
@@ -8,6 +8,13 @@ import Toast from 'react-native-toast-message';
 export function useVisitorRegistrationScreen() {
   const { formData, handleInputChange, handleBlur, errors, isFormValid } =
     useVisitorRegistrationForm();
+
+
+  const refreshDataForAvailableID = () => {
+    visitorApi.util.invalidateTags(['AllAvailableVisitors']);
+    visitorApi.util.invalidateTags(['VisitorsReturned']);
+    visitorApi.util.invalidateTags(['VisitorsTodays']);
+  };
 
   const [createVisitor, { isLoading }] = useCreateVisitorMutation();
 
@@ -30,6 +37,8 @@ export function useVisitorRegistrationScreen() {
         text2: 'You can now proceed to the sign in screen',
       });
 
+      refreshDataForAvailableID();
+
       router.push('/(visitor)/SignInScreen');
     } catch (error) {
       console.log(error);
@@ -42,6 +51,7 @@ export function useVisitorRegistrationScreen() {
   };
 
   const handleSkip = () => {
+    refreshDataForAvailableID();
     router.push('/(visitor)/SignInScreen');
   };
 
