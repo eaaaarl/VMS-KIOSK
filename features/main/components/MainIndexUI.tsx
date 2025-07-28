@@ -49,7 +49,6 @@ export const MainIndexUI: React.FC<MainIndexUIProps> = ({
         onClose={onCloseModal}
         onConfirm={onConfirmModal}
       />
-
     </SafeAreaView>
   );
 };

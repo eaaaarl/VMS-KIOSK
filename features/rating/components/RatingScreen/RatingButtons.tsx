@@ -14,9 +14,7 @@ export function RatingButtons({ onOfficeRating, onDepartmentRating }: RatingButt
         className="w-full max-w-md rounded-2xl bg-blue-500 px-8 py-6 shadow-lg active:bg-blue-600"
         activeOpacity={0.8}
       >
-        <Text className="text-center text-xl font-semibold text-white">
-          Office Level Rating
-        </Text>
+        <Text className="text-center text-xl font-semibold text-white">Office Level Rating</Text>
       </TouchableOpacity>
 
       {/* Office to Department Level Rating Button */}
@@ -31,4 +29,4 @@ export function RatingButtons({ onOfficeRating, onDepartmentRating }: RatingButt
       </TouchableOpacity>
     </View>
   );
-} 
+}

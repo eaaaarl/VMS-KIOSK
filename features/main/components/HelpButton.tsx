@@ -19,7 +19,7 @@ export const HelpButton: React.FC<HelpButtonProps> = ({
   showLabel = true,
   color = 'bg-blue-500',
   labelBgHelpColor = 'bg-white',
-  labelTextBgColor = 'text-blue-600'
+  labelTextBgColor = 'text-blue-600',
 }) => {
   const handleHelpPress = async () => {
     try {
@@ -44,18 +44,18 @@ export const HelpButton: React.FC<HelpButtonProps> = ({
     }
   };
 
-
-
   return (
     <View className={`absolute ${getPositionClasses()} ${className}`}>
       <View className="flex-col items-center">
         {showLabel && (
-          <View className={`mb-1 absolute -top-8 w-24`}>
+          <View className={`absolute -top-8 mb-1 w-24`}>
             <View
-              className={`bg-white px-2 py-1 rounded-md shadow-sm border border-gray-300 ${labelBgHelpColor}`}
+              className={`rounded-md border border-gray-300 bg-white px-2 py-1 shadow-sm ${labelBgHelpColor}`}
               style={{ elevation: 2 }}
             >
-              <Text className={`${labelTextBgColor} font-medium text-xs text-center`}>Need Help?</Text>
+              <Text className={`${labelTextBgColor} text-center text-xs font-medium`}>
+                Need Help?
+              </Text>
             </View>
           </View>
         )}

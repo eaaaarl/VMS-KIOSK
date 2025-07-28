@@ -30,10 +30,8 @@ export const CommentInput: React.FC<CommentInputProps> = ({
         }}
       />
       {hasError && (
-        <Text className="ml-2 mt-2 text-red-500">
-          Please provide a comment before proceeding
-        </Text>
+        <Text className="ml-2 mt-2 text-red-500">Please provide a comment before proceeding</Text>
       )}
     </View>
   );
-}; 
+};

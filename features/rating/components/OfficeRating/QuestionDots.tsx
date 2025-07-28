@@ -33,4 +33,4 @@ export const QuestionDots: React.FC<QuestionDotsProps> = ({
       ))}
     </View>
   );
-}; 
+};

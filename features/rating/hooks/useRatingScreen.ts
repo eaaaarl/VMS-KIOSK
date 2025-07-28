@@ -54,4 +54,4 @@ export function useRatingScreen({ ticketNumber, name, logIn, visitorId }: UseRat
     handleOfficeRating,
     handleDepartmentRating,
   };
-} 
+}

@@ -5,12 +5,7 @@ import { useLocalSearchParams } from 'expo-router';
 export default function Rating() {
   const { ticketNumber, name, logIn, visitorId } = useLocalSearchParams();
 
-  const {
-    message,
-    messageFeedback,
-    handleOfficeRating,
-    handleDepartmentRating
-  } = useRatingScreen({
+  const { message, messageFeedback, handleOfficeRating, handleDepartmentRating } = useRatingScreen({
     ticketNumber: ticketNumber as string,
     name: name as string,
     logIn: logIn as string,

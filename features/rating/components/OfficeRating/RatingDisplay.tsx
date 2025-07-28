@@ -102,10 +102,8 @@ export const RatingDisplay: React.FC<RatingDisplayProps> = ({
     <View className="mb-8 rounded-2xl bg-white p-8 shadow-lg">
       <View className="items-center">
         <Text className="mb-4 text-2xl font-bold text-gray-800">{questionName}</Text>
-        <View className="flex-row items-center justify-center">
-          {renderStars()}
-        </View>
+        <View className="flex-row items-center justify-center">{renderStars()}</View>
       </View>
     </View>
   );
-}; 
+};

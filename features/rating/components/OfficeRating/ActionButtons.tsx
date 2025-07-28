@@ -49,4 +49,4 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
       </TouchableOpacity>
     </View>
   );
-}; 
+};

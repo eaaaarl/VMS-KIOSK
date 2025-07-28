@@ -1,12 +1,12 @@
 import React from 'react';
 import { Keyboard, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ProgressBar } from '../ProgressBar';
-import { QuestionDots } from '../QuestionDots';
-import { RatingDisplay } from '../RatingDisplay';
 import { ActionButtons } from './ActionButtons';
 import { CommentInput } from './CommentInput';
 import { LoadingOverlay } from './LoadingOverlay';
+import { ProgressBar } from './ProgressBar';
+import { QuestionDots } from './QuestionDots';
+import { RatingDisplay } from './RatingDisplay';
 
 interface OfficeRatingUIProps {
   // State
@@ -19,14 +19,14 @@ interface OfficeRatingUIProps {
   isSubmitting: boolean;
   enabledRequireComment: boolean;
   enabledRatingType: boolean;
-  
+
   // Handlers
   handleStarPress: (rating: number) => void;
   handleCommentChange: (comment: string) => void;
   handleBack: () => void;
   handleNext: () => void;
   handleQuestionSelect: (index: number) => void;
-  
+
   // Utilities
   getProgressWidth: () => string;
   getProgressPercentage: () => number;
@@ -43,14 +43,14 @@ export const OfficeRatingUI: React.FC<OfficeRatingUIProps> = ({
   isSubmitting,
   enabledRequireComment,
   enabledRatingType,
-  
+
   // Handlers
   handleStarPress,
   handleCommentChange,
   handleBack,
   handleNext,
   handleQuestionSelect,
-  
+
   // Utilities
   getProgressWidth,
   getProgressPercentage,
@@ -110,4 +110,4 @@ export const OfficeRatingUI: React.FC<OfficeRatingUIProps> = ({
       </TouchableWithoutFeedback>
     </SafeAreaView>
   );
-}; 
+};

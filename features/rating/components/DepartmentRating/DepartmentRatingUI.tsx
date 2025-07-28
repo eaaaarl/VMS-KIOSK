@@ -88,4 +88,4 @@ export const DepartmentRatingUI: React.FC<DepartmentRatingUIProps> = ({
       </TouchableWithoutFeedback>
     </SafeAreaView>
   );
-}; 
+};

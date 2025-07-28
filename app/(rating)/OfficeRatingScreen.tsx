@@ -13,14 +13,14 @@ export default function OfficeRating() {
     isSubmitting,
     enabledRequireComment,
     enabledRatingType,
-    
+
     // Handlers
     handleStarPress,
     handleCommentChange,
     handleBack,
     handleNext,
     handleQuestionSelect,
-    
+
     // Utilities
     getProgressWidth,
     getProgressPercentage,
@@ -38,14 +38,12 @@ export default function OfficeRating() {
       isSubmitting={isSubmitting}
       enabledRequireComment={enabledRequireComment}
       enabledRatingType={enabledRatingType}
-      
       // Handlers
       handleStarPress={handleStarPress}
       handleCommentChange={handleCommentChange}
       handleBack={handleBack}
       handleNext={handleNext}
       handleQuestionSelect={handleQuestionSelect}
-      
       // Utilities
       getProgressWidth={getProgressWidth}
       getProgressPercentage={getProgressPercentage}

@@ -32,4 +32,4 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
       )}
     </View>
   );
-}; 
+};

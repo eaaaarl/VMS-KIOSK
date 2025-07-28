@@ -6,15 +6,8 @@ import DevelopmentTips from '../../features/developer/components/DevelopmentTips
 import { useDeveloperSetting } from '../../features/developer/hooks/useDeveloperSetting';
 
 export default function SettingDeveloperScreen() {
-  const {
-    currentConfig,
-    ipAddress,
-    port,
-    isLoading,
-    setIpAddress,
-    setPort,
-    handleSave
-  } = useDeveloperSetting();
+  const { currentConfig, ipAddress, port, isLoading, setIpAddress, setPort, handleSave } =
+    useDeveloperSetting();
 
   return (
     <>

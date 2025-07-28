@@ -89,7 +89,7 @@ export default function SignInScreen() {
                   contentContainerStyle={{ flexGrow: 1 }}
                 >
                   <View className="flex-1 px-8 py-6">
-                    <View className="flex-row items-center justify-between mb-8">
+                    <View className="mb-8 flex-row items-center justify-between">
                       <Text className="text-3xl font-bold text-gray-800">Sign In</Text>
                     </View>
 
@@ -161,7 +161,6 @@ export default function SignInScreen() {
         onSelectService={handleServiceSelect}
         onClose={() => setServiceModalVisible(false)}
       />
-
     </View>
   );
 }

@@ -2,7 +2,6 @@ import { MainIndexUI, useMainIndex } from '@/features/main';
 import { useAppInitialization } from '@/features/main/hooks/useAppInitialization';
 import { Image, View } from 'react-native';
 
-
 export default function Index() {
   const { isInitialized } = useAppInitialization();
 

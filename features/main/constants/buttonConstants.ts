@@ -43,4 +43,4 @@ export const BUTTON_CONFIGS = {
     labelTextBgHelpColor: 'text-green-500',
     helpVideoUrl: HELP_VIDEO_URLS.SIGN_OUT,
   },
-} as const; 
+} as const;
