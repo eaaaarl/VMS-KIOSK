@@ -7,7 +7,7 @@
 - Show discard confirmation if user presses back during registration with filled fields - CHECK
 - Show toast "Visitor already exists" on response code 2002 - CHECK
 - Validate IP address and port settings (avoid invalid formats like commas)
-- Move admin confirmation (username) to settings button before entering the module
+- Move admin confirmation (username) to settings button before entering the module - CHECK
 - Face Capture: Rename Timer(3s) to Capture
 - Remove "Capture" button in Capture Face screen
 - Add search button to Sign In screen
