@@ -18,25 +18,27 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 }) => {
   return (
     <View className="mb-6 flex-row items-center justify-between">
-      {/* Back Button */}
-      <TouchableOpacity
-        onPress={onBack}
-        disabled={currentQuestion === 0 || isSubmitting}
-        className={`rounded-full px-8 py-4 shadow-sm ${currentQuestion === 0 ? 'bg-gray-200' : 'border-2 border-gray-300 bg-white'}`}
-        activeOpacity={currentQuestion === 0 ? 1 : 0.8}
-      >
-        <Text
-          className={`text-xl font-semibold ${currentQuestion === 0 ? 'text-gray-400' : 'text-gray-700'}`}
+      {/* Back Button - Hide when there's only one question */}
+      {totalQuestions > 1 && (
+        <TouchableOpacity
+          onPress={onBack}
+          disabled={currentQuestion === 0 || isSubmitting}
+          className={`rounded-full px-8 py-4 shadow-sm ${currentQuestion === 0 ? 'bg-gray-200' : 'border-2 border-gray-300 bg-white'}`}
+          activeOpacity={currentQuestion === 0 ? 1 : 0.8}
         >
-          Back
-        </Text>
-      </TouchableOpacity>
+          <Text
+            className={`text-xl font-semibold ${currentQuestion === 0 ? 'text-gray-400' : 'text-gray-700'}`}
+          >
+            Back
+          </Text>
+        </TouchableOpacity>
+      )}
 
-      {/* Next/Submit Button */}
+      {/* Next/Submit Button - Adjust position when there's only one question */}
       <TouchableOpacity
         onPress={onNext}
         disabled={isSubmitting}
-        className={`rounded-full px-12 py-4 shadow-lg ${isSubmitting ? 'bg-gray-400' : 'bg-blue-500 active:bg-blue-600'}`}
+        className={`rounded-full px-12 py-4 shadow-lg ${isSubmitting ? 'bg-gray-400' : 'bg-blue-500 active:bg-blue-600'} ${totalQuestions === 1 ? 'ml-auto' : ''}`}
         activeOpacity={0.8}
       >
         <Text className="text-xl font-semibold text-white">

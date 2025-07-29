@@ -13,14 +13,14 @@
 - Add search button to Sign In screen
 - During sign in, verify that the visitor is registered
 - Remove close button and add X icon on upper right of search box
-- Rating: hide back button if only one question is left
+- Rating: hide back button if only one question is left - CHECK
 - Number Info: change "Ask me again" to "Close" - CHECK
-- Return ID screen: show only unreturned IDs (make selectable)
+- Return ID screen: show only unreturned IDs
 - Dynamically add background logo and footer Powered by GHOVEN IT SOLUTIONS (link: https://g-hoven.com)
-- Printer management: validate discovered devices and handle connections
+- Printer management: validate discovered devices and handle connections - CHECK
 
-New features (Optional)
+### New features (Optional)
 
-1. after registration all information must be carried in the sign in module
-2. printer persist connected
-3. add a printing of their office visited
+- after registration all information must be carried in the sign in module
+- printer persist connected - CHECK
+- add a printing of their office visited
