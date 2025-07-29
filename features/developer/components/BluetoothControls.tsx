@@ -21,30 +21,32 @@ export const BluetoothControls: React.FC<BluetoothControlsProps> = ({
   onStartDiscovery,
   onDisconnect,
 }) => (
-  <View className="mb-4 rounded-lg bg-white p-4 shadow-sm">
-    <Text className="mb-3 text-lg font-semibold">Bluetooth Controls</Text>
-    {!isBluetoothEnabled && (
-      <TouchableOpacity onPress={onEnableBluetooth} className="mb-2 rounded-lg bg-blue-500 p-3">
-        <Text className="text-center font-semibold text-white">Enable Bluetooth</Text>
-      </TouchableOpacity>
-    )}
-    <TouchableOpacity
-      onPress={onStartDiscovery}
-      disabled={!isBluetoothEnabled || isScanning}
-      className={`mb-2 rounded-lg p-3 ${!isBluetoothEnabled || isScanning ? 'bg-gray-300' : 'bg-green-500'}`}
-    >
-      <Text className="text-center font-semibold text-white">
-        {isScanning ? 'Scanning...' : 'Discover Devices'}
-      </Text>
-    </TouchableOpacity>
-    {connectedDevice && (
+  <View className="mb-2 rounded-lg bg-white p-6 shadow-sm">
+    <Text className="mb-4 text-xl font-semibold text-gray-800">Bluetooth Controls</Text>
+    <View className="gap-3">
+      {!isBluetoothEnabled && (
+        <TouchableOpacity onPress={onEnableBluetooth} className="rounded-lg bg-blue-500 p-4">
+          <Text className="text-center text-lg font-semibold text-white">Enable Bluetooth</Text>
+        </TouchableOpacity>
+      )}
       <TouchableOpacity
-        onPress={onDisconnect}
-        disabled={isConnecting}
-        className="rounded-lg bg-red-500 p-3"
+        onPress={onStartDiscovery}
+        disabled={!isBluetoothEnabled || isScanning}
+        className={`rounded-lg p-4 ${!isBluetoothEnabled || isScanning ? 'bg-gray-300' : 'bg-green-500'}`}
       >
-        <Text className="text-center font-semibold text-white">Disconnect</Text>
+        <Text className="text-center text-lg font-semibold text-white">
+          {isScanning ? 'Scanning...' : 'Discover Devices'}
+        </Text>
       </TouchableOpacity>
-    )}
+      {connectedDevice && (
+        <TouchableOpacity
+          onPress={onDisconnect}
+          disabled={isConnecting}
+          className="rounded-lg bg-red-500 p-4"
+        >
+          <Text className="text-center text-lg font-semibold text-white">Disconnect</Text>
+        </TouchableOpacity>
+      )}
+    </View>
   </View>
 );

@@ -15,8 +15,9 @@ export const useKioskSettingScreen = () => {
     { skip: !selectedKioskId }
   );
 
+  // Change this into an '/' route later
   const handleClose = () => {
-    router.replace('/');
+    router.replace('/(developer)/setting');
   };
 
   const handleSave = () => {
