@@ -6,10 +6,10 @@
 - Add password protection for settings config (same as admin confirm) - CHECK
 - Show discard confirmation if user presses back during registration with filled fields - CHECK
 - Show toast "Visitor already exists" on response code 2002 - CHECK
-- Validate IP address and port settings (avoid invalid formats like commas)
+- Validate IP address and port settings (avoid invalid formats like commas) - CHECK
 - Move admin confirmation (username) to settings button before entering the module - CHECK
-- Face Capture: Rename Timer(3s) to Capture
-- Remove "Capture" button in Capture Face screen
+- Face Capture: Rename Timer(3s) to Capture - CHECK
+- Remove "Capture" button in Capture Face screen - CHECK
 - Add search button to Sign In screen
 - During sign in, verify that the visitor is registered
 - Remove close button and add X icon on upper right of search box
