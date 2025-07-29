@@ -1,9 +1,11 @@
 import { useGetAllKioskSettingQuery, useGetKioskSettingQuery } from '@/features/kiosk/api/kioskApi';
-import { useAppSelector } from '@/lib/redux/hook';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hook';
+import { setKioskSettingId } from '@/lib/redux/state/kioskSlice';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
 export const useKioskSettingScreen = () => {
+  const dispatch = useAppDispatch();
   const { kioskSettingId } = useAppSelector(state => state.kiosk);
   const router = useRouter();
   const { data } = useGetAllKioskSettingQuery();
@@ -17,17 +19,13 @@ export const useKioskSettingScreen = () => {
 
   // Change this into an '/' route later
   const handleClose = () => {
-    router.replace('/(developer)/setting');
+    router.replace('/(main)/SelectScreen');
   };
 
   const handleSave = () => {
     if (selectedKioskId) {
-      router.replace({
-        pathname: '/(user)/UserConfirmationScreen',
-        params: {
-          kioskSettingId: selectedKioskId.toString(),
-        },
-      });
+      dispatch(setKioskSettingId({ kioskSettingId: selectedKioskId }));
+      router.replace('/(main)/SelectScreen');
     } else {
       alert('Please select a kiosk setting before saving.');
     }

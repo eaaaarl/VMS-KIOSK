@@ -1,6 +1,6 @@
 export default {
   expo: {
-    name: 'VMS-KIOSK',
+    name: 'VMS Kiosk',
     slug: 'vms-kiosk',
     version: '1.0.0',
     orientation: 'portrait',

@@ -38,7 +38,7 @@ export const useMainIndex = (): UseMainIndexReturn => {
   };
 
   const handleSettingsPress = () => {
-    router.push('/SelectScreen');
+    router.push('/(user)/UserConfirmationScreen');
   };
 
   return {
