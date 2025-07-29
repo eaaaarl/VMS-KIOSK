@@ -15,27 +15,31 @@ export const DeviceList: React.FC<DeviceListProps> = ({
   isConnecting,
   onConnect,
 }) => (
-  <View className="mb-4 rounded-lg bg-white p-4 shadow-sm">
-    <Text className="mb-3 text-lg font-semibold">Available Devices</Text>
+  <View className="rounded-lg bg-white p-6 shadow-sm">
+    <Text className="mb-4 text-xl font-semibold text-gray-800">Available Devices</Text>
     {devices.length === 0 ? (
-      <Text className="py-4 text-center text-gray-500">
-        No devices found. Tap &quot;Discover Devices&quot; to scan.
-      </Text>
+      <View className="py-8">
+        <Text className="text-center text-lg text-gray-500">
+          No devices found. Tap &quot;Discover Devices&quot; to scan.
+        </Text>
+      </View>
     ) : (
-      devices.map(device => (
-        <TouchableOpacity
-          key={device.id}
-          onPress={() => onConnect(device)}
-          disabled={isConnecting}
-          className={`mb-2 rounded-lg border border-gray-200 p-3 ${connectedDevice?.id === device.id ? 'border-green-300 bg-green-50' : ''}`}
-        >
-          <Text className="font-semibold text-gray-800">{device.name || 'Unknown Device'}</Text>
-          <Text className="text-sm text-gray-600">{device.id}</Text>
-          {connectedDevice?.id === device.id && (
-            <Text className="mt-1 text-sm text-green-600">Connected</Text>
-          )}
-        </TouchableOpacity>
-      ))
+      <View className="gap-3">
+        {devices.map(device => (
+          <TouchableOpacity
+            key={device.id}
+            onPress={() => onConnect(device)}
+            disabled={isConnecting}
+            className={`rounded-lg border-2 p-4 ${connectedDevice?.id === device.id ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-gray-50'}`}
+          >
+            <Text className="text-lg font-semibold text-gray-800">{device.name || 'Unknown Device'}</Text>
+            <Text className="text-base text-gray-600">{device.id}</Text>
+            {connectedDevice?.id === device.id && (
+              <Text className="mt-2 text-base font-semibold text-green-600">✓ Connected</Text>
+            )}
+          </TouchableOpacity>
+        ))}
+      </View>
     )}
   </View>
 );

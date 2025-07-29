@@ -7,15 +7,15 @@ interface DebugInfoProps {
 }
 
 export const DebugInfo: React.FC<DebugInfoProps> = ({ debugInfo, onClear }) => (
-  <View className="rounded-lg bg-white p-4 shadow-sm">
-    <View className="mb-3 flex-row items-center justify-between">
-      <Text className="text-lg font-semibold">Debug Information</Text>
-      <TouchableOpacity onPress={onClear}>
-        <Text className="text-sm font-semibold text-blue-500">Clear</Text>
+  <View className="rounded-lg bg-white p-6 shadow-sm">
+    <View className="mb-4 flex-row items-center justify-between">
+      <Text className="text-xl font-semibold text-gray-800">Debug Information</Text>
+      <TouchableOpacity onPress={onClear} className="rounded-lg bg-blue-500 px-4 py-2">
+        <Text className="text-base font-semibold text-white">Clear</Text>
       </TouchableOpacity>
     </View>
-    <View className="min-h-32 rounded-lg bg-gray-50 p-3">
-      <Text className="font-mono text-xs text-gray-700">
+    <View className="min-h-40 rounded-lg bg-gray-50 p-4">
+      <Text className="font-mono text-sm text-gray-700">
         {debugInfo || 'No debug information yet...'}
       </Text>
     </View>
