@@ -1,3 +1,5 @@
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hook';
+import { clearLastConnectedDevice, setLastConnectedDevice } from '@/lib/redux/state/printerSlice';
 import EscPosEncoder from '@manhnd/esc-pos-encoder';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, PermissionsAndroid, Platform } from 'react-native';
@@ -21,6 +23,10 @@ export interface UseBluetoothPrinter {
 }
 
 export function useBluetoothPrinter(): UseBluetoothPrinter {
+  const dispatch = useAppDispatch();
+  const lastConnectedDevice = useAppSelector(state => state.printer.lastConnectedDevice);
+  const isAutoDiscoveryEnabled = useAppSelector(state => state.printer.isAutoDiscoveryEnabled);
+
   const [isBluetoothEnabled, setIsBluetoothEnabled] = useState(false);
   const [devices, setDevices] = useState<BluetoothDevice[]>([]);
   const [connectedDevice, setConnectedDevice] = useState<BluetoothDevice | null>(null);
@@ -74,9 +80,24 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
         setIsBluetoothEnabled(enabled);
 
         if (enabled) {
+          // Get paired devices
           const pairedDevices = await BluetoothClassic.getBondedDevices();
           setDevices(pairedDevices);
           addDebugInfo('Bluetooth initialized successfully');
+
+          // If auto-discovery is enabled, start discovery
+          if (isAutoDiscoveryEnabled) {
+            startDiscovery();
+          }
+
+          // Try to reconnect to last connected device
+          if (lastConnectedDevice) {
+            const device = pairedDevices.find(d => d.address === lastConnectedDevice.address);
+            if (device) {
+              addDebugInfo(`Attempting to reconnect to ${device.name}...`);
+              connectToDevice(device);
+            }
+          }
         } else {
           addDebugInfo('Bluetooth is disabled');
         }
@@ -85,25 +106,38 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
       }
     };
     initializeBluetooth();
-  }, [requestPermissions, addDebugInfo]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestPermissions, addDebugInfo, lastConnectedDevice, isAutoDiscoveryEnabled]);
 
   const enableBluetooth = useCallback(async () => {
     try {
       await BluetoothClassic.requestBluetoothEnabled();
       setIsBluetoothEnabled(true);
       addDebugInfo('Bluetooth enabled');
+
+      // Start discovery automatically when Bluetooth is enabled
+      if (isAutoDiscoveryEnabled) {
+        startDiscovery();
+      }
     } catch (error: any) {
       addDebugInfo(`Error enabling Bluetooth: ${error.message}`);
     }
-  }, [addDebugInfo]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addDebugInfo, isAutoDiscoveryEnabled]);
 
   const startDiscovery = useCallback(async () => {
     try {
       setIsScanning(true);
       addDebugInfo('Starting device discovery...');
-      setDevices([]);
+
+      // Keep existing devices while scanning
       const discoveredDevices = await BluetoothClassic.startDiscovery();
-      setDevices(discoveredDevices);
+      setDevices(prev => {
+        const existingAddresses = new Set(prev.map(d => d.address));
+        const newDevices = discoveredDevices.filter(d => !existingAddresses.has(d.address));
+        return [...prev, ...newDevices];
+      });
+
       addDebugInfo(`Found ${discoveredDevices.length} devices`);
       setIsScanning(false);
     } catch (error: any) {
@@ -119,6 +153,8 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
         addDebugInfo(`Connecting to ${device.name}...`);
         const connection = await BluetoothClassic.connectToDevice(device.id);
         setConnectedDevice(connection);
+        // Save to Redux for persistence
+        dispatch(setLastConnectedDevice(connection));
         addDebugInfo(`Successfully connected to ${device.name}`);
         setIsConnecting(false);
       } catch (error: any) {
@@ -127,7 +163,7 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
         Alert.alert('Connection Error', error.message);
       }
     },
-    [addDebugInfo]
+    [addDebugInfo, dispatch]
   );
 
   const disconnectDevice = useCallback(async () => {
@@ -135,12 +171,14 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
       if (connectedDevice) {
         await connectedDevice.disconnect();
         setConnectedDevice(null);
+        // Clear from Redux
+        dispatch(clearLastConnectedDevice());
         addDebugInfo('Device disconnected');
       }
     } catch (error: any) {
       addDebugInfo(`Disconnect error: ${error.message}`);
     }
-  }, [connectedDevice, addDebugInfo]);
+  }, [connectedDevice, addDebugInfo, dispatch]);
 
   const printVisitorPass = useCallback(async () => {
     if (!connectedDevice) {
