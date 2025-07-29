@@ -9,12 +9,14 @@ import { visitorApi } from '@/features/visitors/api/visitorApi';
 import { combineReducers } from '@reduxjs/toolkit';
 import { configReducer } from './state/configSlice';
 import { kioskReducer } from './state/kioskSlice';
+import { printerReducer } from './state/printerSlice';
 import { visitorReducer } from './state/visitorSlice';
 
 const rootReducer = combineReducers({
   kiosk: kioskReducer,
   visitor: visitorReducer,
   config: configReducer,
+  printer: printerReducer,
 
   [kioskApi.reducerPath]: kioskApi.reducer,
   [visitorApi.reducerPath]: visitorApi.reducer,
@@ -38,5 +40,4 @@ export const apis = [
 ];
 
 export const apisReducerPath = apis.map(api => api.reducerPath);
-
 export default rootReducer;

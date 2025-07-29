@@ -45,22 +45,6 @@ export const FaceCameraControls: React.FC<FaceCameraControlsProps> = ({
       ) : (
         <View className="flex-row gap-4">
           <TouchableOpacity
-            onPress={onTakePicture}
-            disabled={!cameraReady || isCapturing}
-            className={`rounded-full ${isTablet ? 'px-8 py-4' : 'px-6 py-3'} ${cameraReady && !isCapturing ? 'bg-yellow-400' : 'bg-gray-600'}`}
-            style={{
-              minWidth: isTablet ? 120 : 100,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Text
-              className={`font-semibold ${isTablet ? 'text-lg' : 'text-sm'} ${cameraReady && !isCapturing ? 'text-black' : 'text-gray-400'}`}
-            >
-              {isCapturing ? 'Capturing...' : 'Capture'}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
             onPress={onStartCountdown}
             disabled={!cameraReady || isCapturing}
             className={`rounded-full ${isTablet ? 'px-8 py-4' : 'px-6 py-3'} ${cameraReady && !isCapturing ? 'bg-blue-500' : 'bg-gray-600'}`}
@@ -73,7 +57,7 @@ export const FaceCameraControls: React.FC<FaceCameraControlsProps> = ({
             <Text
               className={`font-semibold ${isTablet ? 'text-lg' : 'text-sm'} ${cameraReady && !isCapturing ? 'text-white' : 'text-gray-400'}`}
             >
-              Timer (3s)
+              {isCapturing ? 'Capturing...' : 'Capture'}
             </Text>
           </TouchableOpacity>
         </View>

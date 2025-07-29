@@ -16,7 +16,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { format } from 'date-fns';
 import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 
 export const useSignInScreen = () => {
@@ -50,11 +50,23 @@ export const useSignInScreen = () => {
   }, [getOffices, getServices, getVisitorsReturned, getVisitorsTodays, getAllAvailableVisitors]);
 
   // Use focus effect to refresh data when screen comes into focus
+  const [isFirstMount, setIsFirstMount] = useState(true);
+
   useFocusEffect(
     useCallback(() => {
-      fetchAllData();
-    }, [fetchAllData])
+      if (isFirstMount) {
+        fetchAllData();
+        setIsFirstMount(false);
+      }
+    }, [fetchAllData, isFirstMount])
   );
+
+  // Reset isFirstMount when unmounting
+  useEffect(() => {
+    return () => {
+      setIsFirstMount(true);
+    };
+  }, []);
 
   const {
     getPrefixId,
