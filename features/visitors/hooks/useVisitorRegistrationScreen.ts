@@ -3,6 +3,7 @@ import { useCreateVisitorMutation, visitorApi } from '@/features/visitors/api/vi
 import { useVisitorRegistrationForm } from '@/features/visitors/hooks/useVisitorRegistrationForm';
 import { router } from 'expo-router';
 import { useMemo } from 'react';
+import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 export function useVisitorRegistrationScreen() {
@@ -20,33 +21,57 @@ export function useVisitorRegistrationScreen() {
   const handleRegister = async () => {
     if (!isFormValid) return;
 
-    try {
-      const payload: ICreateVisitorPayload = {
-        firstname: formData.firstName.toUpperCase(),
-        lastname: formData.lastName.toUpperCase(),
-        middlename: formData.middleName ? formData.middleName.toUpperCase() : '',
-        contactNo1: formData.mobileNumber,
-      };
+    Alert.alert(
+      'Confirm Registration',
+      `Please confirm the following details:\n\nFirst Name: ${formData.firstName.toUpperCase()}\nLast Name: ${formData.lastName.toUpperCase()}\nMiddle Name: ${formData.middleName ? formData.middleName.toUpperCase() : 'N/A'}\nMobile Number: ${formData.mobileNumber}`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Confirm',
+          onPress: async () => {
+            try {
+              const payload: ICreateVisitorPayload = {
+                firstname: formData.firstName.toUpperCase(),
+                lastname: formData.lastName.toUpperCase(),
+                middlename: formData.middleName ? formData.middleName.toUpperCase() : '',
+                contactNo1: formData.mobileNumber,
+              };
 
-      await createVisitor(payload);
+              const response = await createVisitor(payload);
 
-      Toast.show({
-        type: 'success',
-        text1: 'Visitor created successfully',
-        text2: 'You can now proceed to the sign in screen',
-      });
+              if (response.data?.ghError === 2002) {
+                Toast.show({
+                  type: 'error',
+                  text1: 'The name is already taken',
+                });
+                return;
+              }
 
-      refreshDataForAvailableID();
+              Toast.show({
+                type: 'success',
+                text1: 'Visitor created successfully',
+                text2: 'You can now proceed to the sign in screen',
+              });
 
-      router.push('/(visitor)/SignInScreen');
-    } catch (error) {
-      console.log(error);
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Failed to create visitor',
-      });
-    }
+              refreshDataForAvailableID();
+
+              router.push('/(visitor)/SignInScreen');
+            } catch (error) {
+              console.log(error);
+              Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Failed to create visitor',
+              });
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   const handleSkip = () => {
@@ -55,7 +80,25 @@ export function useVisitorRegistrationScreen() {
   };
 
   const handleBack = () => {
-    router.push('/(main)');
+    if (formData) {
+      Alert.alert(
+        'Confirm Navigation',
+        'Are you sure you want to go back? Your registration data will be lost.',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Go Back',
+            onPress: () => router.replace('/(main)'),
+          },
+        ],
+        { cancelable: false }
+      );
+    } else {
+      router.replace('/(main)');
+    }
   };
 
   const isRegisterButtonDisabled = useMemo(() => {
