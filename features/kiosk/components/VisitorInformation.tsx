@@ -117,7 +117,7 @@ export default function VisitorInformationModal({
                     className="rounded-full bg-blue-500 px-4 py-3"
                   >
                     <Text className="text-center text-base font-medium text-white">
-                      Ask me next time
+                      Close
                     </Text>
                   </TouchableOpacity>
 

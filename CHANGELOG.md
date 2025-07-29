@@ -14,7 +14,7 @@
 - During sign in, verify that the visitor is registered
 - Remove close button and add X icon on upper right of search box
 - Rating: hide back button if only one question is left
-- Number Info: change "Ask me again" to "Close"
+- Number Info: change "Ask me again" to "Close" - CHECK
 - Return ID screen: show only unreturned IDs (make selectable)
 - Dynamically add background logo and footer Powered by GHOVEN IT SOLUTIONS (link: https://g-hoven.com)
 - Printer management: validate discovered devices and handle connections
