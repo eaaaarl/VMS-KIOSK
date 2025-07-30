@@ -2,7 +2,7 @@ export default {
   expo: {
     name: 'VMS Kiosk',
     slug: 'vms-kiosk',
-    version: '1.0.0',
+    version: '1.1.1',
     orientation: 'portrait',
     icon: './assets/images/icon.png',
     scheme: 'vmskiosk',

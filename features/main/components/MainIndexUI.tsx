@@ -1,5 +1,5 @@
 import VisitorInformationModal from '@/features/kiosk/components/VisitorInformation';
-import { Image, SafeAreaView, Text, View } from 'react-native';
+import { Image, Linking, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { ActionButtonsContainer } from './ActionButtonsContainer';
 import { MainHeader } from './MainHeader';
 import { SettingsButton } from './SettingsButton';
@@ -34,6 +34,11 @@ export const MainIndexUI: React.FC<MainIndexUIProps> = ({
   port,
 }) => {
   const url = `http://${ipAddress}:${port}/uploads/company/bg_logo_transparent.png`;
+
+  const handleGhovenPress = () => {
+    Linking.openURL('https://g-hoven.com');
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-gradient-to-br from-blue-400 to-blue-600">
       <Image
@@ -60,9 +65,10 @@ export const MainIndexUI: React.FC<MainIndexUIProps> = ({
               className="w-4 h-4"
               resizeMode="contain"
             />
-            <Text className="text-gray-700 text-xs font-medium ">
-              Powered by <Text className="font-bold">GHOVEN APP WORLD</Text>
-            </Text>
+            <Text className="text-gray-700 text-xs font-lightt- ">Powered by</Text>
+            <TouchableOpacity onPress={handleGhovenPress} className="font-bold text-blue-600 underline">
+              <Text className="text-gray-700 text-xs font-bold ml-1">GHOVEN APP WORLD</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>

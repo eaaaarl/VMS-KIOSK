@@ -29,7 +29,6 @@ export default function SelectScreenUI({
   confirmReturnAllIds,
   isSigningOutAllVisitors,
 }: SelectScreenProps) {
-
   return (
     <SafeAreaView className="flex-1 items-center justify-center bg-gray-100">
       <View className="mx-4 w-full max-w-md overflow-hidden rounded-t-2xl bg-white shadow-2xl">
@@ -70,6 +69,7 @@ export default function SelectScreenUI({
           <TouchableOpacity
             onPress={onReturnIds}
             className="flex-row items-center justify-center rounded-full border border-pink-200 bg-pink-50 px-6 py-4"
+            disabled={countReturned === 0}
           >
             <Text className="text-lg font-medium text-gray-800">Return IDs</Text>
             <View className="ml-2 h-6 w-6 items-center justify-center rounded-full bg-pink-500">
@@ -78,7 +78,6 @@ export default function SelectScreenUI({
           </TouchableOpacity>
         </View>
       </View>
-
 
       <Modal
         visible={isModalVisible}

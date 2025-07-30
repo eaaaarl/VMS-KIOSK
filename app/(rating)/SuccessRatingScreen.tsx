@@ -22,11 +22,6 @@ export default function SuccessRatingScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 px-8 py-6">
-        {/* Header */}
-        <View className="mb-8">
-          <Text className="text-4xl font-bold text-gray-700">Rate us</Text>
-        </View>
-
         {/* Main Content Container */}
         <View className="flex-1 items-center justify-center px-4">
           {/* Thank You Message */}
