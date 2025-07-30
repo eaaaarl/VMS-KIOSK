@@ -10,7 +10,7 @@ export function useUserConfirmation() {
   const router = useRouter();
 
   const handleBack = () => {
-    router.back();
+    router.replace('/(main)');
   };
 
   const handleConfirm = async () => {
@@ -24,7 +24,24 @@ export function useUserConfirmation() {
       return;
     }
     try {
-      await userLogin({ username, password });
+      const response = await userLogin({ username, password });
+
+      if (response.data?.ghError === 101) {
+        Toast.show({
+          type: 'error',
+          text1: 'Invalid Credentials',
+          position: 'top',
+        });
+        return;
+      } else if (response.data?.ghError === 102) {
+        Toast.show({
+          type: 'error',
+          text1: 'Invalid Credentials',
+          position: 'top',
+        });
+        return;
+      }
+
       Toast.show({
         type: 'success',
         text1: 'Success',

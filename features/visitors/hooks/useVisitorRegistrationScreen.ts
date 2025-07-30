@@ -80,7 +80,7 @@ export function useVisitorRegistrationScreen() {
   };
 
   const handleBack = () => {
-    if (formData) {
+    if (formData.firstName || formData.lastName || formData.middleName || formData.mobileNumber) {
       Alert.alert(
         'Confirm Navigation',
         'Are you sure you want to go back? Your registration data will be lost.',

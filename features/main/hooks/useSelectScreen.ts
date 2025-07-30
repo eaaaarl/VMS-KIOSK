@@ -16,7 +16,7 @@ export const useSelectScreen = () => {
       .map(item => ({ id: item.strId, remarks: 'Return for reuse' })) || [];
 
   const handleClose = () => {
-    router.back();
+    router.replace('/(main)');
   };
 
   const handleSetKioskFunction = () => {
