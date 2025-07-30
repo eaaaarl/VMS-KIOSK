@@ -40,14 +40,42 @@ export const SignInFormFields: React.FC<SignInFormFieldsProps> = ({
         <Text className="mb-2 text-base font-semibold text-gray-700">
           Visitor&apos;s Name <Text className="text-red-500">*</Text>
         </Text>
-        <TouchableOpacity
-          onPress={onVisitorNamePress}
-          className="rounded-lg border border-blue-300 bg-white px-4 py-4 text-lg"
-        >
-          <Text className={`text-lg ${formData.visitorName ? 'text-gray-900' : 'text-gray-400'}`}>
-            {formData.visitorName || 'Search visitor'}
-          </Text>
-        </TouchableOpacity>
+        <View className="flex-row items-center gap-2">
+          <TouchableOpacity
+            className="rounded-lg border border-blue-300 bg-white px-4 py-4 text-lg flex-1 mr-2"
+          >
+            <Text className={`text-lg ${formData.visitorName ? 'text-gray-900' : 'text-gray-400'}`}>
+              {formData.visitorName || 'Enter visitor name (LAST, FIRST)'}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={onVisitorNamePress}
+            className="rounded-lg bg-blue-500 px-10 py-5"
+          >
+            <Text className="text-white text-base font-medium">Search</Text>
+          </TouchableOpacity>
+        </View>
+        {/* Error Messages */}
+        {formData.visitorName && (
+          <View className="mt-2">
+            {!formData.visitorName.includes(',') && (
+              <Text className="text-sm text-red-500">
+                Name must be in format: LAST, FIRST
+              </Text>
+            )}
+            {formData.visitorName.includes(',') && formData.visitorName.split(',').length !== 2 && (
+              <Text className="text-sm text-red-500">
+                Invalid name format
+              </Text>
+            )}
+            {formData.visitorName.split(',').length === 2 &&
+              formData.visitorName.split(',').some(part => part.trim().length < 2) && (
+                <Text className="text-sm text-red-500">
+                  Both last name and first name must be at least 2 characters
+                </Text>
+              )}
+          </View>
+        )}
       </View>
 
       {/* Mobile Number */}

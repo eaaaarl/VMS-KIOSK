@@ -14,11 +14,11 @@
 - Number Info: change "Ask me again" to "Close" - CHECK
 - Printer management: validate discovered devices and handle connections - CHECK
 - Return ID screen: show only unreturned IDs - CHECK
+- Add search button to Sign In screen - CHECK
+- During sign in, verify that the visitor is registered - CHECK
+- Remove close button and add X icon on upper right of search box - CHECK
 
 - Dynamically add background logo and footer Powered by GHOVEN IT SOLUTIONS (link: https://g-hoven.com)
-- Add search button to Sign In screen
-- During sign in, verify that the visitor is registered
-- Remove close button and add X icon on upper right of search box
 
 ### New features (Optional)
 

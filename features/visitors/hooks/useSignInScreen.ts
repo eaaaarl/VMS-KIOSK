@@ -11,27 +11,22 @@ import {
 } from '@/features/visitors/api/visitorApi';
 import { IFormData } from '@/features/visitors/types/visitorTypes';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hook';
+import { resetVisitorFormData, setVisitorFormData } from '@/lib/redux/state/visitorFormSlice';
 import { setCardImageId, setFaceImageId } from '@/lib/redux/state/visitorSlice';
 import { useFocusEffect } from '@react-navigation/native';
 import { format } from 'date-fns';
 import * as FileSystem from 'expo-file-system';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 
 export const useSignInScreen = () => {
   const dispatch = useAppDispatch();
+
+  const formData = useAppSelector(state => state.visitorForm.formData);
+
   const { faceImageId, cardImageId } = useAppSelector(state => state.visitor);
   const { ipAddress, port } = useAppSelector(state => state.config);
-  const [formData, setFormData] = useState<IFormData>({
-    visitorName: '',
-    visitorId: 0,
-    mobileNumber: '',
-    officeToVisitId: 0,
-    serviceId: null,
-    reasonForVisit: '',
-    otherReason: null,
-  });
 
   const [getOffices, { data: offices }] = useLazyGetOfficesQuery();
   const [getServices, { data: services }] = useLazyGetServicesQuery();
@@ -108,29 +103,45 @@ export const useSignInScreen = () => {
   const [serviceModalVisible, setServiceModalVisible] = useState(false);
 
   const handleInputChange = (field: keyof IFormData, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
+    dispatch(
+      setVisitorFormData({
+        formData: {
+          ...formData,
+          [field]: value,
+        },
+      })
+    );
 
     if (field === 'visitorName') {
-      const filtered = availableVisitors.filter(visitor =>
-        visitor.name.toLowerCase().includes(value.toLowerCase())
-      );
+      // Allow searching with any input
+      const searchTerms = value.split(',').map(term => term.trim());
+      const filtered = availableVisitors.filter(visitor => {
+        const visitorNameLower = visitor.name.toLowerCase();
+        // If there's a comma, search by both terms
+        if (searchTerms.length > 1) {
+          return searchTerms.every(term => term && visitorNameLower.includes(term.toLowerCase()));
+        }
+        // If no comma, search by the single term
+        return searchTerms[0] && visitorNameLower.includes(searchTerms[0].toLowerCase());
+      });
       setFilteredVisitors(filtered);
     }
   };
 
   const handleSelectVisitor = (visitor: (typeof availableVisitors)[0]) => {
-    setFormData(prev => ({
-      ...prev,
-      visitorName: visitor.name,
-      mobileNumber:
-        visitor.contactNo1.toString() ??
-        visitor.contactNo2.toString() ??
-        visitor.contactNo3.toString(),
-      visitorId: visitor.id,
-    }));
+    dispatch(
+      setVisitorFormData({
+        formData: {
+          ...formData,
+          visitorName: visitor.name,
+          mobileNumber:
+            visitor.contactNo1.toString() ??
+            visitor.contactNo2.toString() ??
+            visitor.contactNo3.toString(),
+          visitorId: visitor.id,
+        },
+      })
+    );
   };
 
   const handleIdSnapshot = () => {
@@ -152,9 +163,27 @@ export const useSignInScreen = () => {
   };
 
   const handleBack = () => {
-    dispatch(setFaceImageId({ faceImageId: '' }));
-    dispatch(setCardImageId({ cardImageId: '' }));
-    router.push('/(visitor)/VisitorRegistrationScreen');
+    if (formData) {
+      Alert.alert('Are you sure you want to go back?', 'You will lose all unsaved data', [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            dispatch(setFaceImageId({ faceImageId: '' }));
+            dispatch(setCardImageId({ cardImageId: '' }));
+            dispatch(resetVisitorFormData());
+            router.push('/(visitor)/VisitorRegistrationScreen');
+          },
+        },
+      ]);
+    } else {
+      dispatch(setFaceImageId({ faceImageId: '' }));
+      dispatch(setCardImageId({ cardImageId: '' }));
+      router.push('/(visitor)/VisitorRegistrationScreen');
+    }
   };
 
   const [signInVisitorLog, { isLoading: isSignInLoading }] = useSignInVisitorLogMutation();
@@ -269,6 +298,8 @@ export const useSignInScreen = () => {
       dispatch(setFaceImageId({ faceImageId: '' }));
       dispatch(setCardImageId({ cardImageId: '' }));
 
+      dispatch(resetVisitorFormData());
+
       router.replace({
         pathname: '/(visitor)/SignInSuccess',
         params: {
@@ -290,8 +321,24 @@ export const useSignInScreen = () => {
   const isSnapshotValid: boolean =
     (!enabledRequiredFace || Boolean(faceImageId)) && (!enabledRequiredId || Boolean(cardImageId));
 
+  const isValidVisitorName = (name: string): boolean => {
+    // Check if name follows the format "LAST, FIRST"
+    const nameParts = name.split(',').map(part => part.trim());
+    if (nameParts.length !== 2) return false;
+
+    const [lastName, firstName] = nameParts;
+    // Check if both parts exist and are at least 2 characters long
+    return (
+      lastName.length >= 2 &&
+      firstName.length >= 2 &&
+      // Prevent names that are just repeated characters
+      !/^(.)\1+$/.test(lastName) &&
+      !/^(.)\1+$/.test(firstName)
+    );
+  };
+
   const isFormValid: boolean =
-    formData.visitorName.trim() !== '' &&
+    isValidVisitorName(formData.visitorName) &&
     formData.officeToVisitId !== 0 &&
     formData.reasonForVisit !== '' &&
     (formData.reasonForVisit !== 'Other' ||
@@ -330,6 +377,5 @@ export const useSignInScreen = () => {
     setVisitorModalVisible,
     setOfficeModalVisible,
     setServiceModalVisible,
-    setFormData,
   };
 };

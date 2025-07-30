@@ -10,6 +10,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 import { bluetoothReducer } from './state/bluetoothSlice';
 import { configReducer } from './state/configSlice';
 import { kioskReducer } from './state/kioskSlice';
+import { visitorFormReducer } from './state/visitorFormSlice';
 import { visitorReducer } from './state/visitorSlice';
 
 const rootReducer = combineReducers({
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   visitor: visitorReducer,
   config: configReducer,
   bluetooth: bluetoothReducer,
+  visitorForm: visitorFormReducer,
 
   [kioskApi.reducerPath]: kioskApi.reducer,
   [visitorApi.reducerPath]: visitorApi.reducer,
