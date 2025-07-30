@@ -163,7 +163,7 @@ export const useSignInScreen = () => {
   };
 
   const handleBack = () => {
-    if (formData) {
+    if (formData.visitorName) {
       Alert.alert('Are you sure you want to go back?', 'You will lose all unsaved data', [
         {
           text: 'Cancel',
@@ -179,11 +179,11 @@ export const useSignInScreen = () => {
           },
         },
       ]);
-    } else {
-      dispatch(setFaceImageId({ faceImageId: '' }));
-      dispatch(setCardImageId({ cardImageId: '' }));
-      router.push('/(visitor)/VisitorRegistrationScreen');
+      return;
     }
+    dispatch(setFaceImageId({ faceImageId: '' }));
+    dispatch(setCardImageId({ cardImageId: '' }));
+    router.push('/(visitor)/VisitorRegistrationScreen');
   };
 
   const [signInVisitorLog, { isLoading: isSignInLoading }] = useSignInVisitorLogMutation();

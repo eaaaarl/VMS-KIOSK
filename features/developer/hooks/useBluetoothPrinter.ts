@@ -21,6 +21,7 @@ export interface UseBluetoothPrinter {
   printVisitorBarcode: () => Promise<void>;
   printVisitorQR: () => Promise<void>;
   clearDebugInfo: () => void;
+  reconnectToPersistedDevice: () => Promise<void>;
 }
 
 export function useBluetoothPrinter(): UseBluetoothPrinter {
@@ -32,7 +33,6 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
   const [isScanning, setIsScanning] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [debugInfo, setDebugInfo] = useState('');
-
 
   // Keep the actual bluetooth connection reference separate from Redux
   const connectedDeviceRef = useRef<BluetoothDevice | null>(null);
@@ -337,5 +337,6 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
     printVisitorBarcode,
     printVisitorQR,
     clearDebugInfo,
+    reconnectToPersistedDevice,
   };
 }
