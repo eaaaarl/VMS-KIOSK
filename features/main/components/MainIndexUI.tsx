@@ -65,9 +65,9 @@ export const MainIndexUI: React.FC<MainIndexUIProps> = ({
               className="w-4 h-4"
               resizeMode="contain"
             />
-            <Text className="text-gray-700 text-xs font-medium ">Powered by</Text>
+            <Text className="text-gray-700 text-xs font-lightt- ">Powered by</Text>
             <TouchableOpacity onPress={handleGhovenPress} className="font-bold text-blue-600 underline">
-              <Text className="text-gray-700 text-xs font-medium ml-2">GHOVEN APP WORLD</Text>
+              <Text className="text-gray-700 text-xs font-bold ml-1">GHOVEN APP WORLD</Text>
             </TouchableOpacity>
           </View>
         </View>
