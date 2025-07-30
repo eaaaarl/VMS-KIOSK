@@ -1,7 +1,6 @@
 import { useAppSelector } from '@/lib/redux/hook';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import Toast from 'react-native-toast-message';
 import { useBluetoothPrinter } from '../../developer/hooks/useBluetoothPrinter';
 
 export const useAppInitialization = () => {
@@ -30,10 +29,6 @@ export const useAppInitialization = () => {
       // Step 3: Attempt to reconnect to the printer if previously connected
       try {
         await reconnectToPersistedDevice();
-        Toast.show({
-          type: 'success',
-          text1: 'Printer reconnected successfully',
-        });
       } catch (error) {
         console.log('Failed to reconnect to printer:', error);
         // Continue initialization even if printer reconnection fails
