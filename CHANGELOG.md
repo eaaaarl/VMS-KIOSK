@@ -13,8 +13,8 @@
 - Rating: hide back button if only one question is left - CHECK
 - Number Info: change "Ask me again" to "Close" - CHECK
 - Printer management: validate discovered devices and handle connections - CHECK
+- Return ID screen: show only unreturned IDs - CHECK
 
-- Return ID screen: show only unreturned IDs
 - Dynamically add background logo and footer Powered by GHOVEN IT SOLUTIONS (link: https://g-hoven.com)
 - Add search button to Sign In screen
 - During sign in, verify that the visitor is registered

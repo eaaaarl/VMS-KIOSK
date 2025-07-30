@@ -33,7 +33,6 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
   const [isConnecting, setIsConnecting] = useState(false);
   const [debugInfo, setDebugInfo] = useState('');
 
-  console.log(connectedDevice);
 
   // Keep the actual bluetooth connection reference separate from Redux
   const connectedDeviceRef = useRef<BluetoothDevice | null>(null);

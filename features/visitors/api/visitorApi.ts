@@ -184,6 +184,7 @@ export const visitorApi = createApi({
         method: 'PUT',
         body: { returned: true },
       }),
+      invalidatesTags: ['VisitorsReturned'],
     }),
 
     createPublicReturnId: builder.mutation<string, ICreatePublicReturnIdPayload>({
