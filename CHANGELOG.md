@@ -17,8 +17,7 @@
 - Add search button to Sign In screen - CHECK
 - During sign in, verify that the visitor is registered - CHECK
 - Remove close button and add X icon on upper right of search box - CHECK
-
-- Dynamically add background logo and footer Powered by GHOVEN IT SOLUTIONS (link: https://g-hoven.com)
+- Dynamically add background logo and footer Powered by GHOVEN IT SOLUTIONS (link: https://g-hoven.com) - CHECK
 
 ### New features (Optional)
 

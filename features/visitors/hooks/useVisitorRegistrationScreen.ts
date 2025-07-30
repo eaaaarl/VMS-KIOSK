@@ -96,9 +96,10 @@ export function useVisitorRegistrationScreen() {
         ],
         { cancelable: false }
       );
-    } else {
-      router.replace('/(main)');
+
+      return;
     }
+    router.replace('/(main)');
   };
 
   const isRegisterButtonDisabled = useMemo(() => {
