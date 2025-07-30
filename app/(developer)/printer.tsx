@@ -25,76 +25,70 @@ export default function PrinterScreen() {
   } = useBluetoothPrinter();
 
   const { width, height } = useWindowDimensions();
-  const isTablet = width >= 768 || height >= 1024;
   const isLandscape = width > height;
-  
+
   // Responsive layout configuration
   const isLargeScreen = width >= 1024;
   const isMediumScreen = width >= 768 && width < 1024;
   const isSmallScreen = width < 768;
-  
+
   // Layout decisions based on screen size and orientation
   const shouldUseSideBySide = isLargeScreen || (isMediumScreen && isLandscape);
   const shouldUseStacked = isSmallScreen || (isMediumScreen && !isLandscape);
-  
+
   // Responsive spacing and sizing - reduced gaps
   const containerPadding = isLargeScreen ? 24 : isMediumScreen ? 20 : 16;
   const sectionGap = isLargeScreen ? 20 : isMediumScreen ? 16 : 12;
   const headerGap = isLargeScreen ? 20 : isMediumScreen ? 16 : 12;
 
   return (
-    <ScrollView 
-      className="flex-1 bg-gray-100" 
+    <ScrollView
+      className="flex-1 bg-gray-100"
       contentContainerStyle={{ padding: containerPadding }}
     >
       {/* Header Section */}
       <View style={{ marginBottom: headerGap }}>
-        <Text 
-          className={`font-bold text-gray-800 ${
-            isLargeScreen ? 'text-4xl' : isMediumScreen ? 'text-3xl' : 'text-2xl'
-          }`}
+        <Text
+          className={`font-bold text-gray-800 ${isLargeScreen ? 'text-4xl' : isMediumScreen ? 'text-3xl' : 'text-2xl'
+            }`}
           style={{ marginBottom: 12 }}
         >
           Printer Management
         </Text>
-        <View 
+        <View
           className={`${shouldUseStacked ? 'flex-col' : 'flex-row'}`}
           style={{ gap: sectionGap }}
         >
-          <View 
+          <View
             className="flex-1 rounded-lg bg-white shadow-sm"
             style={{ padding: isLargeScreen ? 24 : 16 }}
           >
-            <Text 
-              className={`font-semibold text-gray-700 ${
-                isLargeScreen ? 'text-xl' : 'text-lg'
-              }`}
+            <Text
+              className={`font-semibold text-gray-700 ${isLargeScreen ? 'text-xl' : 'text-lg'
+                }`}
             >
               Bluetooth Status
             </Text>
-            <Text 
-              className={`text-gray-600 ${
-                isLargeScreen ? 'text-lg' : 'text-base'
-              }`}
+            <Text
+              className={`text-gray-600 ${isLargeScreen ? 'text-lg' : 'text-base'
+                }`}
             >
               Status: {isBluetoothEnabled ? 'Enabled' : 'Disabled'}
             </Text>
           </View>
-          <View 
+          <View
             className="flex-1 rounded-lg bg-white shadow-sm"
             style={{ padding: isLargeScreen ? 24 : 16 }}
           >
-            <Text 
-              className={`font-semibold text-gray-700 ${
-                isLargeScreen ? 'text-xl' : 'text-lg'
-              }`}
+            <Text
+              className={`font-semibold text-gray-700 ${isLargeScreen ? 'text-xl' : 'text-lg'
+                }`}
             >
               Connection
             </Text>
-            <Text 
-              className={`text-gray-600 ${
-                isLargeScreen ? 'text-lg' : 'text-base'
-              }`}
+            <Text
+              className={`text-gray-600 ${isLargeScreen ? 'text-lg' : 'text-base'
+                }`}
             >
               {connectedDevice ? connectedDevice.name : 'Not Connected'}
             </Text>
@@ -149,7 +143,7 @@ export default function PrinterScreen() {
             onStartDiscovery={startDiscovery}
             onDisconnect={disconnectDevice}
           />
-          
+
           {/* Device List Section */}
           <DeviceList
             devices={devices}
@@ -157,7 +151,7 @@ export default function PrinterScreen() {
             isConnecting={isConnecting}
             onConnect={connectToDevice}
           />
-          
+
           {/* Printing Controls Section */}
           <PrintingControls
             connected={!!connectedDevice}
@@ -165,7 +159,7 @@ export default function PrinterScreen() {
             onPrintBarcode={printVisitorBarcode}
             onPrintQR={printVisitorQR}
           />
-          
+
           {/* Debug Info Section */}
           <DebugInfo debugInfo={debugInfo} onClear={clearDebugInfo} />
         </View>

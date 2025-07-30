@@ -16,11 +16,9 @@ export default function SettingDeveloperScreen() {
   // Responsive layout configuration
   const isLargeScreen = width >= 1024;
   const isMediumScreen = width >= 768 && width < 1024;
-  const isSmallScreen = width < 768;
 
   // Layout decisions based on screen size and orientation
   const shouldUseSideBySide = isLargeScreen || (isMediumScreen && isLandscape);
-  const shouldUseStacked = isSmallScreen || (isMediumScreen && !isLandscape);
 
   // Responsive spacing and sizing - compact gaps
   const containerPadding = isLargeScreen ? 16 : isMediumScreen ? 12 : 8;

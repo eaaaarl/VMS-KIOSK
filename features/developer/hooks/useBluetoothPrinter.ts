@@ -1,14 +1,15 @@
-import { useAppDispatch, useAppSelector } from '@/lib/redux/hook';
-import { clearLastConnectedDevice, setLastConnectedDevice } from '@/lib/redux/state/printerSlice';
+import { resetConnectedDevice, setConnectedDevice } from '@/lib/redux/state/bluetoothSlice';
+import { RootState } from '@/lib/redux/store';
 import EscPosEncoder from '@manhnd/esc-pos-encoder';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, PermissionsAndroid, Platform } from 'react-native';
 import BluetoothClassic, { BluetoothDevice } from 'react-native-bluetooth-classic';
+import { useDispatch, useSelector } from 'react-redux';
 
 export interface UseBluetoothPrinter {
   isBluetoothEnabled: boolean;
   devices: BluetoothDevice[];
-  connectedDevice: BluetoothDevice | null;
+  connectedDevice: any | null; // This will be the serializable version
   isScanning: boolean;
   isConnecting: boolean;
   debugInfo: string;
@@ -23,21 +24,40 @@ export interface UseBluetoothPrinter {
 }
 
 export function useBluetoothPrinter(): UseBluetoothPrinter {
-  const dispatch = useAppDispatch();
-  const lastConnectedDevice = useAppSelector(state => state.printer.lastConnectedDevice);
-  const isAutoDiscoveryEnabled = useAppSelector(state => state.printer.isAutoDiscoveryEnabled);
+  const dispatch = useDispatch();
+  const connectedDevice = useSelector((state: RootState) => state.bluetooth.connectedDevice);
 
   const [isBluetoothEnabled, setIsBluetoothEnabled] = useState(false);
   const [devices, setDevices] = useState<BluetoothDevice[]>([]);
-  const [connectedDevice, setConnectedDevice] = useState<BluetoothDevice | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [debugInfo, setDebugInfo] = useState('');
+
+  console.log(connectedDevice);
+
+  // Keep the actual bluetooth connection reference separate from Redux
+  const connectedDeviceRef = useRef<BluetoothDevice | null>(null);
 
   const addDebugInfo = useCallback((info: string) => {
     const timestamp = new Date().toLocaleTimeString();
     setDebugInfo(prev => `${prev}[${timestamp}] ${info}\n`);
   }, []);
+
+  // Function to reconnect to a persisted device
+  const reconnectToPersistedDevice = useCallback(async () => {
+    if (connectedDevice && !connectedDeviceRef.current) {
+      try {
+        addDebugInfo(`Attempting to reconnect to ${connectedDevice.name}...`);
+        const connection = await BluetoothClassic.connectToDevice(connectedDevice.id);
+        connectedDeviceRef.current = connection;
+        addDebugInfo(`Successfully reconnected to ${connectedDevice.name}`);
+      } catch (error: any) {
+        addDebugInfo(`Failed to reconnect: ${error.message}`);
+        // Clear the persisted device if reconnection fails
+        dispatch(resetConnectedDevice());
+      }
+    }
+  }, [connectedDevice, addDebugInfo, dispatch]);
 
   const requestPermissions = useCallback(async () => {
     if (Platform.OS === 'android') {
@@ -80,24 +100,12 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
         setIsBluetoothEnabled(enabled);
 
         if (enabled) {
-          // Get paired devices
           const pairedDevices = await BluetoothClassic.getBondedDevices();
           setDevices(pairedDevices);
           addDebugInfo('Bluetooth initialized successfully');
 
-          // If auto-discovery is enabled, start discovery
-          if (isAutoDiscoveryEnabled) {
-            startDiscovery();
-          }
-
-          // Try to reconnect to last connected device
-          if (lastConnectedDevice) {
-            const device = pairedDevices.find(d => d.address === lastConnectedDevice.address);
-            if (device) {
-              addDebugInfo(`Attempting to reconnect to ${device.name}...`);
-              connectToDevice(device);
-            }
-          }
+          // Try to reconnect to persisted device
+          await reconnectToPersistedDevice();
         } else {
           addDebugInfo('Bluetooth is disabled');
         }
@@ -105,39 +113,27 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
         addDebugInfo(`Initialization error: ${error.message}`);
       }
     };
+
     initializeBluetooth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [requestPermissions, addDebugInfo, lastConnectedDevice, isAutoDiscoveryEnabled]);
+  }, [requestPermissions, addDebugInfo, reconnectToPersistedDevice]);
 
   const enableBluetooth = useCallback(async () => {
     try {
       await BluetoothClassic.requestBluetoothEnabled();
       setIsBluetoothEnabled(true);
       addDebugInfo('Bluetooth enabled');
-
-      // Start discovery automatically when Bluetooth is enabled
-      if (isAutoDiscoveryEnabled) {
-        startDiscovery();
-      }
     } catch (error: any) {
       addDebugInfo(`Error enabling Bluetooth: ${error.message}`);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addDebugInfo, isAutoDiscoveryEnabled]);
+  }, [addDebugInfo]);
 
   const startDiscovery = useCallback(async () => {
     try {
       setIsScanning(true);
       addDebugInfo('Starting device discovery...');
-
-      // Keep existing devices while scanning
+      setDevices([]);
       const discoveredDevices = await BluetoothClassic.startDiscovery();
-      setDevices(prev => {
-        const existingAddresses = new Set(prev.map(d => d.address));
-        const newDevices = discoveredDevices.filter(d => !existingAddresses.has(d.address));
-        return [...prev, ...newDevices];
-      });
-
+      setDevices(discoveredDevices);
       addDebugInfo(`Found ${discoveredDevices.length} devices`);
       setIsScanning(false);
     } catch (error: any) {
@@ -151,10 +147,20 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
       try {
         setIsConnecting(true);
         addDebugInfo(`Connecting to ${device.name}...`);
+
         const connection = await BluetoothClassic.connectToDevice(device.id);
-        setConnectedDevice(connection);
-        // Save to Redux for persistence
-        dispatch(setLastConnectedDevice(connection));
+        connectedDeviceRef.current = connection;
+
+        // Extract only serializable properties before dispatching
+        const serializableDevice = {
+          address: connection.address,
+          name: connection.name,
+          bonded: Boolean(connection.bonded),
+          id: connection.id,
+          type: connection.type,
+        };
+
+        dispatch(setConnectedDevice(serializableDevice));
         addDebugInfo(`Successfully connected to ${device.name}`);
         setIsConnecting(false);
       } catch (error: any) {
@@ -168,23 +174,23 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
 
   const disconnectDevice = useCallback(async () => {
     try {
-      if (connectedDevice) {
-        await connectedDevice.disconnect();
-        setConnectedDevice(null);
-        // Clear from Redux
-        dispatch(clearLastConnectedDevice());
+      if (connectedDeviceRef.current) {
+        await connectedDeviceRef.current.disconnect();
+        connectedDeviceRef.current = null;
+        dispatch(resetConnectedDevice());
         addDebugInfo('Device disconnected');
       }
     } catch (error: any) {
       addDebugInfo(`Disconnect error: ${error.message}`);
     }
-  }, [connectedDevice, addDebugInfo, dispatch]);
+  }, [addDebugInfo, dispatch]);
 
   const printVisitorPass = useCallback(async () => {
-    if (!connectedDevice) {
+    if (!connectedDeviceRef.current) {
       Alert.alert('No Connection', 'Please connect to a printer first');
       return;
     }
+
     try {
       const encoder = new EscPosEncoder();
       const result = encoder
@@ -210,22 +216,30 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
         .newline()
         .newline()
         .encode();
+
       const base64Data = btoa(String.fromCharCode(...new Uint8Array(result)));
-      addDebugInfo(`Sending simple test (${result.length} bytes)...`);
-      await BluetoothClassic.writeToDevice(connectedDevice.address, base64Data, 'base64');
+      addDebugInfo(`Sending visitor pass (${result.length} bytes)...`);
+
+      await BluetoothClassic.writeToDevice(
+        connectedDeviceRef.current.address,
+        base64Data,
+        'base64'
+      );
+
       addDebugInfo('Visitor pass printed');
       Alert.alert('Success', 'Visitor pass printed successfully!');
     } catch (error: any) {
       addDebugInfo(`Print error: ${error.message}`);
       Alert.alert('Print Error', error.message);
     }
-  }, [connectedDevice, addDebugInfo]);
+  }, [addDebugInfo]);
 
   const printVisitorBarcode = useCallback(async () => {
-    if (!connectedDevice) {
+    if (!connectedDeviceRef.current) {
       Alert.alert('No Connection', 'Please connect to a printer first');
       return;
     }
+
     try {
       const visitorId = 'VIS' + Date.now().toString().slice(-6);
       const encoder = new EscPosEncoder();
@@ -240,22 +254,30 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
         .newline()
         .newline()
         .encode();
+
       const base64Data = btoa(String.fromCharCode(...new Uint8Array(result)));
-      addDebugInfo(`Sending simple test (${result.length} bytes)...`);
-      await BluetoothClassic.writeToDevice(connectedDevice.address, base64Data, 'base64');
+      addDebugInfo(`Sending barcode (${result.length} bytes)...`);
+
+      await BluetoothClassic.writeToDevice(
+        connectedDeviceRef.current.address,
+        base64Data,
+        'base64'
+      );
+
       addDebugInfo('Visitor barcode printed');
       Alert.alert('Success', 'Visitor barcode printed successfully!');
     } catch (error: any) {
       addDebugInfo(`Barcode print error: ${error.message}`);
       Alert.alert('Print Error', error.message);
     }
-  }, [connectedDevice, addDebugInfo]);
+  }, [addDebugInfo]);
 
   const printVisitorQR = useCallback(async () => {
-    if (!connectedDevice) {
+    if (!connectedDeviceRef.current) {
       Alert.alert('No Connection', 'Please connect to a printer first');
       return;
     }
+
     try {
       const visitorId = 'VIS' + Date.now().toString().slice(-6);
       const qrData = JSON.stringify({
@@ -266,6 +288,7 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
         date: new Date().toISOString().split('T')[0],
         timeIn: new Date().toLocaleTimeString(),
       });
+
       const encoder = new EscPosEncoder();
       const result = encoder
         .initialize()
@@ -278,16 +301,23 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
         .newline()
         .newline()
         .encode();
+
       const base64Data = btoa(String.fromCharCode(...new Uint8Array(result)));
-      addDebugInfo(`Sending simple test (${result.length} bytes)...`);
-      await BluetoothClassic.writeToDevice(connectedDevice.address, base64Data, 'base64');
+      addDebugInfo(`Sending QR code (${result.length} bytes)...`);
+
+      await BluetoothClassic.writeToDevice(
+        connectedDeviceRef.current.address,
+        base64Data,
+        'base64'
+      );
+
       addDebugInfo('Visitor QR code printed');
       Alert.alert('Success', 'Visitor QR code printed successfully!');
     } catch (error: any) {
       addDebugInfo(`QR code print error: ${error.message}`);
       Alert.alert('Print Error', error.message);
     }
-  }, [connectedDevice, addDebugInfo]);
+  }, [addDebugInfo]);
 
   const clearDebugInfo = useCallback(() => {
     setDebugInfo('');
@@ -296,7 +326,7 @@ export function useBluetoothPrinter(): UseBluetoothPrinter {
   return {
     isBluetoothEnabled,
     devices,
-    connectedDevice,
+    connectedDevice, // This returns the serializable version from Redux
     isScanning,
     isConnecting,
     debugInfo,
