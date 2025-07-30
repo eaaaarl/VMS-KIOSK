@@ -7,6 +7,8 @@ import {
   SignInVisitorModal,
   useSignInScreen,
 } from '@/features/visitors';
+import { useAppDispatch } from '@/lib/redux/hook';
+import { setVisitorFormData } from '@/lib/redux/state/visitorFormSlice';
 import React from 'react';
 import {
   Keyboard,
@@ -20,6 +22,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function SignInScreen() {
+  const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
 
   const {
@@ -53,7 +56,6 @@ export default function SignInScreen() {
     setVisitorModalVisible,
     setOfficeModalVisible,
     setServiceModalVisible,
-    setFormData,
   } = useSignInScreen();
 
   const dismissKeyboard = () => {
@@ -61,11 +63,13 @@ export default function SignInScreen() {
   };
 
   const handleServiceSelect = (serviceId: number, serviceName: string) => {
-    setFormData(prev => ({
-      ...prev,
-      reasonForVisit: serviceName,
-      serviceId: serviceId === 0 ? null : serviceId,
-      otherReason: serviceId === 0 ? prev.otherReason : null,
+    dispatch(setVisitorFormData({
+      formData: {
+        ...formData,
+        reasonForVisit: serviceName,
+        serviceId: serviceId === 0 ? null : serviceId,
+        otherReason: serviceId === 0 ? formData.otherReason : null,
+      },
     }));
   };
 
@@ -77,49 +81,52 @@ export default function SignInScreen() {
       <TouchableWithoutFeedback onPress={dismissKeyboard}>
         <View className="flex-1">
           <View className="flex-1 flex-row">
-            <View className="flex-1 px-8 py-6">
-              <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              className="flex-1"
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+            >
+              <ScrollView
+                showsVerticalScrollIndicator={false}
                 className="flex-1"
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+                contentContainerStyle={{ flexGrow: 1 }}
               >
-                <ScrollView
-                  showsVerticalScrollIndicator={false}
-                  className="flex-1"
-                  contentContainerStyle={{ flexGrow: 1 }}
-                >
-                  <View className="flex-1 px-8 py-6">
-                    <View className="mb-8 flex-row items-center justify-between">
-                      <Text className="text-3xl font-bold text-gray-800">Sign In</Text>
-                    </View>
 
-                    {/* Camera Buttons */}
-                    <SignInCameraButtons
-                      idSnapshotTaken={idSnapshotTaken}
-                      photoSnapshotTaken={photoSnapshotTaken}
-                      onIdSnapshot={handleIdSnapshot}
-                      onPhotoSnapshot={handlePhotoSnapshot}
-                      faceImageId={faceImageId}
-                      cardImageId={cardImageId}
-                    />
-
-                    {/* Form Fields */}
-                    <SignInFormFields
-                      formData={formData}
-                      availableOffices={availableOffices}
-                      onVisitorNamePress={() => setVisitorModalVisible(true)}
-                      onMobileNumberChange={value => handleInputChange('mobileNumber', value)}
-                      onOfficePress={() => setOfficeModalVisible(true)}
-                      onServicePress={() => setServiceModalVisible(true)}
-                      onOtherReasonChange={value =>
-                        setFormData(prev => ({ ...prev, otherReason: value }))
-                      }
-                    />
+                <View className="flex-1 px-8 py-6">
+                  <View className="mb-8 flex-row items-center justify-between">
+                    <Text className="text-3xl font-bold text-gray-800">Sign In</Text>
                   </View>
-                </ScrollView>
-              </KeyboardAvoidingView>
-            </View>
 
+                  {/* Camera Buttons */}
+                  <SignInCameraButtons
+                    idSnapshotTaken={idSnapshotTaken}
+                    photoSnapshotTaken={photoSnapshotTaken}
+                    onIdSnapshot={handleIdSnapshot}
+                    onPhotoSnapshot={handlePhotoSnapshot}
+                    faceImageId={faceImageId}
+                    cardImageId={cardImageId}
+                  />
+
+                  {/* Form Fields */}
+                  <SignInFormFields
+                    formData={formData}
+                    availableOffices={availableOffices}
+                    onVisitorNamePress={() => setVisitorModalVisible(true)}
+                    onMobileNumberChange={value => handleInputChange('mobileNumber', value)}
+                    onOfficePress={() => setOfficeModalVisible(true)}
+                    onServicePress={() => setServiceModalVisible(true)}
+                    onOtherReasonChange={value =>
+                      dispatch(setVisitorFormData({
+                        formData: {
+                          ...formData,
+                          otherReason: value,
+                        },
+                      }))
+                    }
+                  />
+                </View>
+              </ScrollView>
+            </KeyboardAvoidingView>
             {/* Status Sidebar */}
             <SignInStatusSidebar
               enabledRequiredId={enabledRequiredId}
@@ -151,7 +158,13 @@ export default function SignInScreen() {
       <SignInOfficeModal
         visible={officeModalVisible}
         availableOffices={availableOffices}
-        onSelectOffice={officeId => setFormData(prev => ({ ...prev, officeToVisitId: officeId }))}
+        onSelectOffice={officeId =>
+          dispatch(
+            setVisitorFormData({
+              formData: { ...formData, officeToVisitId: officeId },
+            })
+          )
+        }
         onClose={() => setOfficeModalVisible(false)}
       />
 

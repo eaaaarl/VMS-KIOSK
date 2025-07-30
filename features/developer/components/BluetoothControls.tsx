@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import type { BluetoothDevice } from 'react-native-bluetooth-classic';
 
 interface BluetoothControlsProps {
@@ -35,7 +35,7 @@ export const BluetoothControls: React.FC<BluetoothControlsProps> = ({
         className={`rounded-lg p-4 ${!isBluetoothEnabled || isScanning ? 'bg-gray-300' : 'bg-green-500'}`}
       >
         <Text className="text-center text-lg font-semibold text-white">
-          {isScanning ? 'Scanning...' : 'Discover Devices'}
+          {isScanning ? <ActivityIndicator size="small" color="white" /> : 'Discover Devices'}
         </Text>
       </TouchableOpacity>
       {connectedDevice && (

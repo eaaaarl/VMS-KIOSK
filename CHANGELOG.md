@@ -10,17 +10,19 @@
 - Move admin confirmation (username) to settings button before entering the module - CHECK
 - Face Capture: Rename Timer(3s) to Capture - CHECK
 - Remove "Capture" button in Capture Face screen - CHECK
-- Add search button to Sign In screen
-- During sign in, verify that the visitor is registered
-- Remove close button and add X icon on upper right of search box
 - Rating: hide back button if only one question is left - CHECK
 - Number Info: change "Ask me again" to "Close" - CHECK
-- Return ID screen: show only unreturned IDs
-- Dynamically add background logo and footer Powered by GHOVEN IT SOLUTIONS (link: https://g-hoven.com)
 - Printer management: validate discovered devices and handle connections - CHECK
+- Return ID screen: show only unreturned IDs - CHECK
+- Add search button to Sign In screen - CHECK
+- During sign in, verify that the visitor is registered - CHECK
+- Remove close button and add X icon on upper right of search box - CHECK
+
+- Dynamically add background logo and footer Powered by GHOVEN IT SOLUTIONS (link: https://g-hoven.com)
 
 ### New features (Optional)
 
-- after registration all information must be carried in the sign in module
 - printer persist connected - CHECK
+
+- after registration all information must be carried in the sign in module
 - add a printing of their office visited

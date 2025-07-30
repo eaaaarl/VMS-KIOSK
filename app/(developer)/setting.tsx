@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, View, useWindowDimensions } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View, useWindowDimensions } from 'react-native';
 import ApiConfigForm from '../../features/developer/components/ApiConfigForm';
 import ConfigDisplay from '../../features/developer/components/ConfigDisplay';
 import DevelopmentTips from '../../features/developer/components/DevelopmentTips';
@@ -16,11 +16,9 @@ export default function SettingDeveloperScreen() {
   // Responsive layout configuration
   const isLargeScreen = width >= 1024;
   const isMediumScreen = width >= 768 && width < 1024;
-  const isSmallScreen = width < 768;
 
   // Layout decisions based on screen size and orientation
   const shouldUseSideBySide = isLargeScreen || (isMediumScreen && isLandscape);
-  const shouldUseStacked = isSmallScreen || (isMediumScreen && !isLandscape);
 
   // Responsive spacing and sizing - compact gaps
   const containerPadding = isLargeScreen ? 16 : isMediumScreen ? 12 : 8;
@@ -28,7 +26,11 @@ export default function SettingDeveloperScreen() {
   const bottomPadding = isLargeScreen ? 20 : isMediumScreen ? 16 : 12;
 
   return (
-    <>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
+    >
       <View className="flex-1 bg-gray-50">
         <ScrollView
           className="flex-1"
@@ -37,6 +39,7 @@ export default function SettingDeveloperScreen() {
             paddingBottom: bottomPadding
           }}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
           {/* Header Section */}
           <View style={{ marginBottom: sectionGap }}>
@@ -89,6 +92,6 @@ export default function SettingDeveloperScreen() {
           )}
         </ScrollView>
       </View>
-    </>
+    </KeyboardAvoidingView>
   );
 }

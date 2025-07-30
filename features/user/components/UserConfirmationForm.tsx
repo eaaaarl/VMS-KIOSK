@@ -1,14 +1,11 @@
 import React from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface UserConfirmationFormProps {
   username: string;
@@ -29,7 +26,7 @@ const UserConfirmationForm: React.FC<UserConfirmationFormProps> = ({
   onConfirm,
   onBack,
 }) => (
-  <SafeAreaView className="mt-10 flex-1 bg-gray-100">
+  <SafeAreaView className="flex-1 bg-gray-100">
     {/* Header */}
     <View className="flex-row items-center justify-between bg-blue-500 px-4 py-3">
       <Text className="mr-2 flex-1 text-base font-semibold text-white sm:text-lg" numberOfLines={2}>
@@ -43,72 +40,61 @@ const UserConfirmationForm: React.FC<UserConfirmationFormProps> = ({
       </TouchableOpacity>
     </View>
     {/* Content with KeyboardAvoidingView */}
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1"
-    >
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View className="flex-1 justify-center px-4 py-6">
-          {/* Form Container */}
-          <View className="mx-2 rounded-lg bg-white shadow-lg">
-            <View className="m-2 rounded-lg border-2 border-blue-300 p-4 sm:m-4 sm:p-6">
-              {/* Username Field */}
-              <View className="mb-4 sm:mb-6">
-                <Text className="mb-2 text-base font-medium text-gray-700 sm:text-lg">
-                  Username
-                </Text>
-                <View className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 sm:px-4 sm:py-3">
-                  <TextInput
-                    value={username}
-                    onChangeText={onUsernameChange}
-                    placeholder="Enter username"
-                    className="text-base text-gray-700 sm:text-lg"
-                    autoCapitalize="none"
-                    editable={!isLoading}
-                    autoCorrect={false}
-                    placeholderTextColor="gray"
-                  />
-                </View>
-              </View>
-              {/* Password Field */}
-              <View className="mb-6 sm:mb-8">
-                <Text className="mb-2 text-base font-medium text-gray-700 sm:text-lg">
-                  Password
-                </Text>
-                <View className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 sm:px-4 sm:py-3">
-                  <TextInput
-                    value={password}
-                    onChangeText={onPasswordChange}
-                    placeholder="Enter password"
-                    placeholderTextColor="gray"
-                    secureTextEntry
-                    className="text-base text-gray-700 sm:text-lg"
-                    editable={!isLoading}
-                    autoCorrect={false}
-                  />
-                </View>
-              </View>
-              {/* Confirm Button */}
-              <View className="items-center sm:items-end">
-                <TouchableOpacity
-                  onPress={onConfirm}
-                  disabled={isLoading}
-                  className={`min-w-[120px] rounded-full bg-blue-500 px-8 py-3 shadow-md sm:px-12 ${isLoading ? 'opacity-50' : ''}`}
-                >
-                  <Text className="text-center text-base font-semibold text-white sm:text-lg">
-                    {isLoading ? 'Loading...' : 'Confirm'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+    <View className="flex-1 items-center justify-center px-4 py-6">
+      {/* Form Container */}
+      <View className="w-full max-w-md rounded-lg bg-white shadow-lg">
+        <View className="m-2 rounded-lg border-2 border-blue-300 p-4 sm:m-4 sm:p-6">
+          {/* Username Field */}
+          <View className="mb-4 sm:mb-6">
+            <Text className="mb-2 text-base font-medium text-gray-700 sm:text-lg">
+              Username
+            </Text>
+            <View className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 sm:px-4 sm:py-3">
+              <TextInput
+                value={username}
+                onChangeText={onUsernameChange}
+                placeholder="Enter username"
+                className="text-base text-gray-700 sm:text-lg"
+                autoCapitalize="none"
+                editable={!isLoading}
+                autoCorrect={false}
+                placeholderTextColor="gray"
+              />
             </View>
           </View>
+          {/* Password Field */}
+          <View className="mb-6 sm:mb-8">
+            <Text className="mb-2 text-base font-medium text-gray-700 sm:text-lg">
+              Password
+            </Text>
+            <View className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 sm:px-4 sm:py-3">
+              <TextInput
+                value={password}
+                onChangeText={onPasswordChange}
+                placeholder="Enter password"
+                placeholderTextColor="gray"
+                secureTextEntry
+                className="text-base text-gray-700 sm:text-lg"
+                editable={!isLoading}
+                autoCorrect={false}
+              />
+            </View>
+          </View>
+          {/* Confirm Button */}
+          <View className="items-center sm:items-end">
+            <TouchableOpacity
+              onPress={onConfirm}
+              disabled={isLoading}
+              className={`min-w-[120px] rounded-full bg-blue-500 px-8 py-3 shadow-md sm:px-12 ${isLoading ? 'opacity-50' : ''}`}
+            >
+              <Text className="text-center text-base font-semibold text-white sm:text-lg">
+                {isLoading ? 'Loading...' : 'Confirm'}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </View>
+    </View>
   </SafeAreaView>
 );
 

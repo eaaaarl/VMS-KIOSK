@@ -1,5 +1,6 @@
 import { useSelectScreen } from '@/features/main';
 import SelectScreenUI from '@/features/main/components/SelectScreenUI';
+import { useVisitorsReturnedModal } from '@/features/visitors/hooks/useVisitorsReturned';
 import React from 'react';
 
 export default function SelectScreen() {
@@ -9,7 +10,13 @@ export default function SelectScreen() {
     handleSetKioskFunction,
     handlePrinterManagement,
     handleIpPortConfiguration,
+    handleReturnIds,
+    isModalVisible,
+    setIsModalVisible,
+    unreturnedIds,
   } = useSelectScreen();
+
+  const { handleReturnAllVisitors, isSigningOutAllVisitors } = useVisitorsReturnedModal()
 
   return (
     <SelectScreenUI
@@ -18,6 +25,12 @@ export default function SelectScreen() {
       onSetKioskFunction={handleSetKioskFunction}
       onPrinterManagement={handlePrinterManagement}
       onIpPortConfiguration={handleIpPortConfiguration}
+      onReturnIds={handleReturnIds}
+      isModalVisible={isModalVisible}
+      setIsModalVisible={setIsModalVisible}
+      unreturnedIds={unreturnedIds}
+      confirmReturnAllIds={handleReturnAllVisitors}
+      isSigningOutAllVisitors={isSigningOutAllVisitors}
     />
   );
 }

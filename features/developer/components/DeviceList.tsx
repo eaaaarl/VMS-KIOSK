@@ -16,7 +16,7 @@ export const DeviceList: React.FC<DeviceListProps> = ({
   onConnect,
 }) => (
   <View className="rounded-lg bg-white p-6 shadow-sm">
-    <Text className="mb-4 text-xl font-semibold text-gray-800">Available Devices</Text>
+    <Text className="mb-4 text-xl font-semibold text-gray-800">MY DEVICES</Text>
     {devices.length === 0 ? (
       <View className="py-8">
         <Text className="text-center text-lg text-gray-500">
